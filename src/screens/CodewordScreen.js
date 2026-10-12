@@ -214,7 +214,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         <View style={[styles.hidden, solved && styles.hiddenDone]}>
           <Text style={[styles.hiddenLabel, solved && { color: colors.good }]} numberOfLines={2}>
             {solved
-              ? `${hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'} · “${hidden.text}” — ${hidden.tr}`
+              ? `${hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'} ÇÖZÜLDÜ ✓`
               : `${hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'} · SAYILARI ÇÖZDÜKÇE ORTAYA ÇIKAR`}
           </Text>
           <View style={styles.hiddenRow}>
@@ -229,7 +229,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                     );
                   }
                   const n = p.code[ch];
-                  const l = s.committed[n] || typed[n];
+                  // bulmaca bitince cümle mutlaka tam okunsun: harfi doğrudan cümleden yaz
+                  const l = solved ? ch : s.committed[n] || typed[n];
                   return (
                     <Pressable
                       key={ci}
@@ -237,13 +238,14 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                       style={[
                         styles.hiddenBox,
                         { width: hBox, height: hBox + 8 },
-                        s.committed[n] && { backgroundColor: colors.okCell },
+                        (solved || s.committed[n]) && { backgroundColor: colors.okCell },
                         !s.committed[n] && typed[n] && { backgroundColor: '#FFFFFF' },
                         n === selNum && { backgroundColor: colors.cellActive },
                       ]}
                     >
                       <Text style={styles.keyNum}>{n}</Text>
-                      <Text allowFontScaling={false} style={[styles.keyLetter, { fontSize: hBox * 0.55 }]}>
+                      {/* sabit genişlik + tek satır: iOS'ta ince harfler (I) alt satıra kayıp kaybolmasın */}
+                      <Text allowFontScaling={false} numberOfLines={1} style={[styles.keyLetter, { fontSize: hBox * 0.55, lineHeight: hBox * 0.72, width: hBox - 2, textAlign: 'center' }]}>
                         {l || ''}
                       </Text>
                     </Pressable>
@@ -271,7 +273,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 ]}
               >
                 <Text style={styles.keyNum}>{n}</Text>
-                <Text style={[styles.keyLetter, givenNums.has(n) && { color: colors.inkSoft }]}>{s.committed[n] || typed[n] || ''}</Text>
+                <Text allowFontScaling={false} numberOfLines={1} style={[styles.keyLetter, { width: boxW - 2, textAlign: 'center', lineHeight: 19 }, givenNums.has(n) && { color: colors.inkSoft }]}>{s.committed[n] || typed[n] || ''}</Text>
               </Pressable>
             ))}
           </View>
@@ -279,7 +281,20 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       </View>
       )}
 
-      <Keyboard onKey={onKey} onDelete={onDelete} keyHeight={keyH} />
+      {solved && hidden ? (
+        // Bulmaca bitti: klavye yerine gizli cümle büyük ve okunaklı
+        <View style={[styles.doneCard, { height: keyH * 3 + 12 }]}>
+          <Text style={styles.doneLabel}>{hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'}</Text>
+          <Text style={styles.doneText} numberOfLines={2} adjustsFontSizeToFit>
+            {hidden.text}
+          </Text>
+          <Text style={styles.doneTr} numberOfLines={2}>
+            {hidden.tr}
+          </Text>
+        </View>
+      ) : (
+        <Keyboard onKey={onKey} onDelete={onDelete} keyHeight={keyH} />
+      )}
       <BackBar onPress={onBack} bottomInset={insets.bottom} caption={`${solvedNums}/${present.size} sayı çözüldü`} />
 
       <HintMenu
@@ -336,5 +351,9 @@ const styles = StyleSheet.create({
   hiddenRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 8, rowGap: 4 },
   hiddenWord: { flexDirection: 'row', gap: 2, alignItems: 'flex-end' },
   hiddenBox: { borderWidth: 1, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FBF9F3' },
+  doneCard: { marginHorizontal: 10, paddingHorizontal: 14, paddingTop: 10, alignItems: 'center', borderWidth: 2, borderColor: colors.ink, backgroundColor: '#FBF9F3' },
+  doneLabel: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.6, color: colors.good },
+  doneText: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 28, color: colors.ink, textAlign: 'center', marginTop: 4 },
+  doneTr: { fontFamily: fonts.serifItalic, fontSize: 15, lineHeight: 20, color: colors.inkSoft, textAlign: 'center', marginTop: 4 },
   hiddenPunct: { fontFamily: fonts.letter, color: colors.ink, textAlign: 'center' },
 });

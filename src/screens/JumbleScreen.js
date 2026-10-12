@@ -136,7 +136,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 onPress={() => tapTile(it, t)}
                 style={[styles.tile, { width: tile, height: tile }, (used || ok) && styles.tileUsed, locked && styles.tileLocked]}
               >
-                <Text allowFontScaling={false} style={[styles.tileText, { fontSize: tile * 0.5 }]}>
+                <Text allowFontScaling={false} numberOfLines={1} style={[styles.tileText, { fontSize: tile * 0.5, lineHeight: tile * 0.66, width: tile - 3, textAlign: 'center' }]}>
                   {locked ? '?' : ch}
                 </Text>
               </Pressable>
@@ -159,7 +159,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                   bad && { backgroundColor: colors.badCell },
                 ]}
               >
-                <Text allowFontScaling={false} style={[styles.tileText, { fontSize: tile * 0.5 }]}>
+                <Text allowFontScaling={false} numberOfLines={1} style={[styles.tileText, { fontSize: tile * 0.5, lineHeight: tile * 0.66, width: tile - 3, textAlign: 'center' }]}>
                   {t == null ? '' : it.tiles[t]}
                 </Text>
               </Pressable>

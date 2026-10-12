@@ -125,7 +125,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                     <View style={[styles.top, { height: cell, backgroundColor: bg }]}>
                       <Text
                         allowFontScaling={false}
-                        style={[styles.guess, { fontSize: cell * 0.6, lineHeight: cell * 0.8 }, fixed && { color: st.revealed[ch] ? colors.revealed : colors.inkSoft }]}
+                        numberOfLines={1}
+                        style={[styles.guess, { fontSize: cell * 0.6, lineHeight: cell * 0.8, width: cell - 3, textAlign: 'center' }, fixed && { color: st.revealed[ch] ? colors.revealed : colors.inkSoft }]}
                       >
                         {g || ''}
                       </Text>
