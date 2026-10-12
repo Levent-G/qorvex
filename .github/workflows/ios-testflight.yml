@@ -1,6 +1,7 @@
 # QORVEX iOS build -> TestFlight (ücretsiz: GitHub'ın Mac sunucusunda yerel EAS build)
 # Çalıştırma: GitHub > Actions > "iOS TestFlight" > Run workflow
 # Gerekli gizli anahtar: EXPO_TOKEN (expo.dev > Account settings > Access tokens)
+# Not: Actions sekmesinde görünmezse Settings > Actions > General > Allow all actions
 name: iOS TestFlight
 
 on:
