@@ -27,7 +27,7 @@ export default function LevelsTab() {
     <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
       <Text style={styles.h1}>Seviyeler</Text>
       <Text style={styles.lead}>
-        Kendi seviyeni seç. Her seviye öncekilerin kelimelerini de kapsar; Kendi seviyende {LEVEL_GOAL} bulmaca çözünce otomatik olarak bir üst seviyeye geçersin.
+        Kendi seviyeni seç: bütün oyunlar doğrudan bu seviyede açılır. Her seviye öncekilerin kelimelerini de kapsar. Kendi seviyende {LEVEL_GOAL} bulmaca çözünce otomatik olarak bir üst seviyeye geçersin.
       </Text>
       {LEVELS.map((lv) => {
         const done = Math.max(stats.levelSolved[lv.id] || 0, solvedAt(lv.id));

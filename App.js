@@ -29,7 +29,7 @@ import JumbleScreen from './src/screens/JumbleScreen';
 import CryptogramScreen from './src/screens/CryptogramScreen';
 import { getGame } from './src/games';
 import { loadStore } from './src/storage';
-import { refreshStoredClues } from './src/engine/session';
+import { refreshStoredClues, getProfile } from './src/engine/session';
 import { ui } from './src/theme';
 
 export default function App() {
@@ -89,7 +89,8 @@ export default function App() {
       <MainTabs
         tab={tab}
         onTab={setTab}
-        onOpenLevels={(gameId) => push({ name: 'levels', gameId })}
+        // Oyun doğrudan profil seviyesinde açılır (seviye Profil/Seviyeler sekmesinden değiştirilir)
+        onOpenLevels={(gameId) => push({ name: getGame(gameId).route, kind: 'level', levelId: getProfile().level })}
         onOpenDaily={(gameId) => push({ name: getGame(gameId).route, kind: 'daily' })}
       />
     );
