@@ -30,6 +30,16 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Expo hesabı kontrolü
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::EXPO_TOKEN gizli anahtarı yok. Settings > Secrets and variables > Actions > New repository secret ile ekle."
+            exit 1
+          fi
+          eas whoami
+
       - run: npm ci
 
       # İmza sertifikaları Expo'da kayıtlı olanlardan indirilir; build numarası otomatik artar
