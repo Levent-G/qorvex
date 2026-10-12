@@ -20,6 +20,25 @@ export const colors = {
   good: '#2E6B34',
 };
 
+// "Puzzle Club" arayüz paleti: lacivert zemin, turkuaz vurgu, krem kartlar (uygulama kabuğu)
+export const ui = {
+  bg: '#0B1D33', // ana lacivert
+  bgDeep: '#081628',
+  card: '#112A45', // koyu kart
+  cardHi: '#16365A',
+  border: '#1F4468',
+  teal: '#19B5C2',
+  tealDeep: '#0E8E99',
+  tealSoft: '#7FD8E0',
+  cream: '#F4EFE2',
+  creamInk: '#152238',
+  white: '#FFFFFF',
+  text: '#E8F0F7',
+  muted: '#8FA7BE',
+  flame: '#FF7A3D',
+  gold: '#F2C14E',
+};
+
 export const fonts = {
   masthead: 'UnifrakturMaguntia_400Regular',
   serif: 'OldStandardTT_400Regular',

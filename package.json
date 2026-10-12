@@ -21,6 +21,7 @@
   },
   "scripts": {
     "start": "expo start",
+    "test": "node scripts/test-board.mjs && node scripts/test-wordsearch.mjs && node scripts/test-ladder.mjs && node scripts/test-ladder-board.mjs && node scripts/test-newgames.mjs && node scripts/test-codeword.mjs && node scripts/test-hidden.mjs && node scripts/test-crypto.mjs",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

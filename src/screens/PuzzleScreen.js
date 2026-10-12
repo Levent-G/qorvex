@@ -5,6 +5,8 @@ import * as Haptics from 'expo-haptics';
 import ArrowGrid from '../components/ArrowGrid';
 import Keyboard from '../components/Keyboard';
 import LearnModal from '../components/LearnModal';
+import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
+import { GameHeader } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { buildModel, wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
@@ -160,7 +162,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
 
   // Boyutlandırma
   const keyH = Math.min(48, Math.max(40, height * 0.056));
-  const reserved = insets.top + insets.bottom + 50 + 6 + 66 + keyH * 3 + 12 + 26;
+  const reserved = insets.top + insets.bottom + 50 + 6 + 66 + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT;
   const size = Math.floor(Math.min((width - 8 - 4) / puzzle.w, (height - reserved) / puzzle.h));
 
   const w = model.words[s.active];
@@ -173,28 +175,14 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   };
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom + 6 }]}>
-      <View style={styles.header}>
-        <Pressable onPress={onBack} hitSlop={14} style={styles.headerSide}>
-          <View style={styles.backRow}>
-            <ChevronIcon dir="left" size={15} />
-            <Text style={styles.back}>Geri</Text>
-          </View>
-        </Pressable>
-        <View style={styles.headerMid}>
-          <Text style={styles.title}>QORVEX</Text>
-          <Text style={styles.sub} numberOfLines={1}>
-            {kind === 'daily' ? 'Günün Bulmacası' : `${level.title} · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {puzzle.no}
-          </Text>
-        </View>
-        <View style={[styles.headerSide, styles.headerRight]}>
-          <Timer session={session} running={!s.solved} />
-          <Pressable onPress={() => setMenu(true)} hitSlop={14} style={styles.bulb}>
-            <BulbIcon size={26} />
-          </Pressable>
-        </View>
-      </View>
-      <View style={styles.doubleRule} />
+    <View style={styles.root}>
+      <GameHeader
+        insetTop={insets.top}
+        session={session}
+        running={!s.solved}
+        subtitle={<>{kind === 'daily' ? 'Günün Bulmacası' : `${level.title} · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {puzzle.no}</>}
+        onMenu={() => setMenu(true)}
+      />
 
       <View style={styles.gridWrap}>
         <ArrowGrid
@@ -241,6 +229,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       </View>
 
       <Keyboard onKey={onKey} onDelete={onDelete} keyHeight={keyH} />
+      <BackBar onPress={onBack} bottomInset={insets.bottom} />
 
       {/* Ampul menüsü */}
       <Modal visible={menu} transparent animationType="fade" onRequestClose={() => setMenu(false)}>
@@ -302,7 +291,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       </Modal>
 
       {s.solved && !showWin && kind !== 'daily' ? (
-        <Pressable style={[styles.nextFab, { bottom: insets.bottom + 16 }]} onPress={onNext}>
+        <Pressable style={[styles.nextFab, { bottom: insets.bottom + BACK_BAR_HEIGHT + 16 }]} onPress={onNext}>
           <Text style={styles.btnText}>Sonraki bulmaca →</Text>
         </Pressable>
       ) : null}
@@ -411,11 +400,8 @@ const styles = StyleSheet.create({
   winKicker: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 3, color: colors.wrong, textAlign: 'center' },
   winHead: { fontFamily: fonts.masthead, fontSize: 40, color: colors.ink, textAlign: 'center', marginBottom: 6 },
   winBody: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 23, color: colors.ink, marginTop: 12, textAlign: 'center' },
-  btn: { flex: 1, backgroundColor: colors.ink, paddingVertical: 12, alignItems: 'center' },
+  btn: { flex: 1, backgroundColor: '#19B5C2', paddingVertical: 12, alignItems: 'center', borderRadius: 22 },
   btnGhost: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.ink },
   btnText: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.paper, letterSpacing: 0.5 },
-  nextFab: {
-    position: 'absolute', left: 24, right: 24, backgroundColor: colors.ink, paddingVertical: 14,
-    alignItems: 'center', borderWidth: 2, borderColor: colors.paper,
-  },
+  nextFab: { position: 'absolute', left: 24, right: 24, backgroundColor: '#19B5C2', paddingVertical: 15, alignItems: 'center', borderRadius: 26 },
 });

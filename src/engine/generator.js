@@ -178,9 +178,11 @@ function evaluate(g, entry, r, c, dir, first, ctx) {
   const newLetters = n - cross + (extra ? 0 : 0);
   let score =
     newLetters * 2 + cross * 4 + (extra ? extra.length * 9 : 0) - newGrey * 2 + blockToClue * 5 +
-    (opt.kind === C ? 1 : 0) + ctx.rand() * 2.5;
+    (opt.kind === C ? 1 : 0) + ctx.rand() * 4;
   if (ctx.prio && ctx.prio.has(word)) score += 30;
   if (entry.bonus) score += entry.bonus;
+  // kendiliğinden oluşan ek kelimelerin tazeliği de sayılsın
+  if (extra) for (const x of extra) if (x.entry.bonus) score += x.entry.bonus;
   return { r, c, dir, opt, extra, score };
 }
 
@@ -388,16 +390,18 @@ function prioCount(g, ctx) {
 }
 
 function stats(g) {
-  let letters = 0, blanks = 0;
+  let letters = 0, blanks = 0, fresh = 0;
+  for (const x of g.words) fresh += x.entry.bonus || 0;
   for (let i = 0; i < g.t.length; i++) {
     if (g.t[i] === L) letters++;
     else if (g.t[i] === E || (g.t[i] === B && !g.clues[i].length)) blanks++;
   }
-  return { letters, blanks, words: g.words.length };
+  return { letters, blanks, words: g.words.length, fresh };
 }
 
 function scoreOf(s, pc) {
-  return s.letters * 2 - s.blanks * 6 + s.words * 1.5 + pc * 8;
+  // fresh: kelimelerin tazelik toplamı (yakın zamanda/sık gelenler eksi) — iyileştirme aynı kelimeleri geri getirmesin
+  return s.letters * 2 - s.blanks * 6 + s.words * 1.5 + pc * 8 + (s.fresh || 0) * 0.6;
 }
 
 function attempt(w, h, entries, ctx) {

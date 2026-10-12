@@ -1,18 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="560" viewBox="0 0 1720 560"><rect width="1720" height="560" fill="#F4F0E6"/>
-  <path fill-rule="evenodd" fill="#141414" d="
+<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="560" viewBox="0 0 1720 560"><rect width="1720" height="560" fill="#0B1D33"/>
+  <path fill-rule="evenodd" fill="#F4EFE2" d="
     M82.56 234.24 A156 165.36 0 1 0 394.56 234.24 A156 165.36 0 1 0 82.56 234.24 Z
     M137.68 234.24 A100.88000000000001 136.24 0 1 0 339.44 234.24 A100.88000000000001 136.24 0 1 0 137.68 234.24 Z"/>
-    <path d="M256.24 378.8 V457.84000000000003 H359.2" fill="none" stroke="#141414" stroke-width="31.200000000000003" stroke-linejoin="miter"/>
-    <polygon points="354,417.28000000000003 354,498.40000000000003 421.6,457.84000000000003" fill="#141414"/>
-    <rect x="182.4" y="176" width="112.32000000000001" height="112.32000000000001" fill="#FFFFFF"/>
-    <rect x="182.4" y="176" width="56.160000000000004" height="56.160000000000004" fill="#A8A49A"/>
-    <path d="M238.56 176 V288.32 M182.4 232.16 H294.72" stroke="#141414" stroke-width="3.64"/>
-    <rect x="182.4" y="176" width="112.32000000000001" height="112.32000000000001" fill="none" stroke="#141414" stroke-width="7.28"/>
-    <polygon points="238.56,194.20000000000002 238.56,213.96 253.38,204.08" fill="#141414"/>
-    <polygon points="200.6,232.16 220.36,232.16 210.48,246.98000000000002" fill="#141414"/>
-  <text x="496" y="296" textLength="1144" lengthAdjust="spacing" font-family="Old Standard TT" font-weight="700" font-size="220" fill="#141414">QORVEX</text>
-  <rect x="500" y="356" width="1140" height="9" fill="#141414"/>
-  <rect x="500" y="372" width="1140" height="3" fill="#141414"/>
-  <text x="502" y="446" font-family="UnifrakturMaguntia" font-size="56" fill="#141414">The Daily Arrowword</text>
-  <text x="1640" y="442" text-anchor="end" font-family="Libre Franklin" font-weight="700" font-size="27" letter-spacing="4" fill="#141414">İNGİLİZCE ÇENGEL BULMACA</text>
+    <path d="M256.24 378.8 V457.84000000000003 H359.2" fill="none" stroke="#19B5C2" stroke-width="31.200000000000003" stroke-linejoin="miter"/>
+    <polygon points="354,417.28000000000003 354,498.40000000000003 421.6,457.84000000000003" fill="#19B5C2"/>
+    <rect x="182.4" y="176" width="112.32000000000001" height="112.32000000000001" fill="#F4EFE2"/>
+    <rect x="182.4" y="176" width="56.160000000000004" height="56.160000000000004" fill="#19B5C2"/>
+    <path d="M238.56 176 V288.32 M182.4 232.16 H294.72" stroke="#0B1D33" stroke-width="3.64"/>
+    <rect x="182.4" y="176" width="112.32000000000001" height="112.32000000000001" fill="none" stroke="#0B1D33" stroke-width="7.28"/>
+    <polygon points="238.56,194.20000000000002 238.56,213.96 253.38,204.08" fill="#0B1D33"/>
+    <polygon points="200.6,232.16 220.36,232.16 210.48,246.98000000000002" fill="#0B1D33"/>
+  <text x="496" y="300" textLength="1144" lengthAdjust="spacing" font-family="Libre Franklin" font-weight="900" font-size="220" fill="#F4EFE2">QORVEX</text>
+  <rect x="500" y="352" width="1140" height="8" rx="4" fill="#19B5C2"/>
+  <text x="502" y="440" font-family="Libre Franklin" font-weight="700" font-size="44" letter-spacing="14" fill="#19B5C2">THINK · SOLVE · LEARN</text>
 </svg>

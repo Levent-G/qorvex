@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Modal, View, Text, Pressable, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import * as Speech from 'expo-speech';
 import { getWord, posTr, similarWords, familyWords, LEVEL_NAMES } from '../engine/words';
 import { SpeakerIcon } from './Icons';
@@ -7,6 +7,7 @@ import { colors, fonts } from '../theme';
 
 // Kelime kartı: Türkçe ipucuna basınca kelimeyi öğretir.
 export default function LearnModal({ answer, clue, remaining, limit, onClose }) {
+  const { width } = useWindowDimensions();
   const word = answer ? getWord(answer) : null;
   useEffect(() => {
     if (answer) Speech.speak(answer.toLowerCase(), { language: 'en-US', rate: 0.9 });
@@ -20,6 +21,10 @@ export default function LearnModal({ answer, clue, remaining, limit, onClose }) 
   const similar = word ? similarWords(word) : [];
   const family = word ? familyWords(word) : [];
   const lower = answer.toLowerCase();
+  // Kelime boyutu: uzunluğa ve kart genişliğine göre hesaplanır (otomatik küçültme bazı kelimeleri çok küçültüyordu).
+  // Kullanılabilir genişlik ≈ ekran − kenar boşlukları − hoparlör düğmesi; serif kalın harf ≈ 0.56 em.
+  const avail = Math.min(width, 520) - 36 - 36 - 44 - 10;
+  const wordSize = Math.max(26, Math.min(40, Math.floor(avail / (lower.length * 0.56))));
 
   const highlight = (sentence) => {
     // örnek cümlede kelimeyi kalın göster
@@ -44,7 +49,7 @@ export default function LearnModal({ answer, clue, remaining, limit, onClose }) 
             <Text style={styles.kicker}>KELİME KARTI · VOCABULARY</Text>
             <View style={styles.doubleRule} />
             <View style={styles.headRow}>
-              <Text style={styles.word} adjustsFontSizeToFit numberOfLines={1}>
+              <Text allowFontScaling={false} style={[styles.word, { fontSize: wordSize, lineHeight: Math.round(wordSize * 1.25) }]} numberOfLines={2}>
                 {lower}
               </Text>
               <Pressable
@@ -105,11 +110,15 @@ export default function LearnModal({ answer, clue, remaining, limit, onClose }) 
 
             <View style={styles.note}>
               <Text style={styles.noteText}>
-                ★ Bu kelime defterine eklendi. Sonraki bulmacalarda ara ara tekrar karşına çıkacak.
+                {remaining == null
+                  ? '★ Bu kelime defterinde. Bulmacalarda ara ara tekrar karşına çıkar; öğrendikçe daha seyrek gelir.'
+                  : '★ Bu kelime defterine eklendi. Sonraki bulmacalarda ara ara tekrar karşına çıkacak.'}
               </Text>
-              <Text style={styles.noteSub}>
-                Bu bulmacada kalan kelime kartı hakkı: {remaining}/{limit}
-              </Text>
+              {remaining == null ? null : (
+                <Text style={styles.noteSub}>
+                  Bu bulmacada kalan kelime kartı hakkı: {remaining}/{limit}
+                </Text>
+              )}
             </View>
 
             <Pressable onPress={onClose} style={({ pressed }) => [styles.btn, pressed && { opacity: 0.85 }]}>

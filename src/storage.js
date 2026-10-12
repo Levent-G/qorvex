@@ -8,6 +8,10 @@ const empty = () => ({
   levels: {}, // { A1: { no, solvedCount, current: Session } }
   daily: null, // Session + date
   learn: { counter: 0, marked: {}, recent: {} },
+  ws: { levels: {}, daily: null }, // Kelime Avı
+  ladder: { levels: {}, daily: null }, // Kelime Merdiveni
+  stats: { streak: 0, best: 0, lastDay: null, total: 0, byDay: {} }, // seri ve sayaçlar
+  profile: { level: 'A1' }, // oyuncunun seçtiği seviye
 });
 
 export async function loadStore() {

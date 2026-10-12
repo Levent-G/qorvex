@@ -20,31 +20,33 @@ const FONTS = [
   'node_modules/@expo-google-fonts/old-standard-tt/400Regular_Italic/OldStandardTT_400Regular_Italic.ttf',
 ].map((f) => path.join(ROOT, f));
 
-// Uygulama teması ile aynı renkler
-const PAPER = '#F4F0E6';
-const INK = '#141414';
-const CLUE = '#A8A49A';
-const WHITE = '#FFFFFF';
+// "Puzzle Club" teması: lacivert zemin, krem halka, turkuaz ok ve ipucu karesi
+const NAVY = '#0B1D33';
+const NAVY_HI = '#163A5F';
+const CREAM = '#F4EFE2';
+const TEAL = '#19B5C2';
+const INK = '#0B1D33';
+const PAPER = NAVY; // ikon zemini
 
 /**
  * Q işareti: gazete serifi kontrastında (yanlar kalın, üst/alt ince) halka,
  * kuyruğu çengel bulmaca oku (↳), içinde gri ipucu kareli 2x2 bulmaca ızgarası.
  * (cx, cy) işaretin görsel merkezi, s ölçek (1 = 1024'lük ikonda tam boy)
  */
-function qMark({ cx = 512, cy = 512, s = 1, ink = INK, clue = CLUE, cell = WHITE, mono = false }) {
+function qMark({ cx = 512, cy = 512, s = 1, ring: ringC = CREAM, tailC = TEAL, ink = INK, clue = TEAL, cell = CREAM, mono = false }) {
   // Halka merkezini, kuyruk dahil tüm işaret ortalanacak şekilde kaydır
   const ox = cx - 22 * s, oy = cy - 88 * s;
   const X = (v) => ox + v * s, Y = (v) => oy + v * s;
   const R = { orx: 300, ory: 318, irx: 194, iry: 262 };
-  const ring = `<path fill-rule="evenodd" fill="${ink}" d="
+  const ring = `<path fill-rule="evenodd" fill="${ringC}" d="
     M${X(-R.orx)} ${Y(0)} A${R.orx * s} ${R.ory * s} 0 1 0 ${X(R.orx)} ${Y(0)} A${R.orx * s} ${R.ory * s} 0 1 0 ${X(-R.orx)} ${Y(0)} Z
     M${X(-R.irx)} ${Y(0)} A${R.irx * s} ${R.iry * s} 0 1 0 ${X(R.irx)} ${Y(0)} A${R.irx * s} ${R.iry * s} 0 1 0 ${X(-R.irx)} ${Y(0)} Z"/>`;
 
   // Kuyruk: halkanın altından inen ve sağa kırılan kalın ok
   const sw = 60;
   const tail = `
-    <path d="M${X(34)} ${Y(278)} V${Y(430)} H${X(232)}" fill="none" stroke="${ink}" stroke-width="${sw * s}" stroke-linejoin="miter"/>
-    <polygon points="${X(222)},${Y(352)} ${X(222)},${Y(508)} ${X(352)},${Y(430)}" fill="${ink}"/>`;
+    <path d="M${X(34)} ${Y(278)} V${Y(430)} H${X(232)}" fill="none" stroke="${tailC}" stroke-width="${sw * s}" stroke-linejoin="miter"/>
+    <polygon points="${X(222)},${Y(352)} ${X(222)},${Y(508)} ${X(352)},${Y(430)}" fill="${tailC}"/>`;
 
   // Izgara: halkanın iç boşluğunda, uygulamadaki ipucu karesi + oklar
   const g = 108, half = g; // hücre
@@ -93,7 +95,7 @@ function chunk(type, data) {
   crc.writeUInt32BE(crc32(td));
   return Buffer.concat([len, td, crc]);
 }
-function encodeRGB(rgba, w, h, bg = [244, 240, 230]) {
+function encodeRGB(rgba, w, h, bg = [11, 29, 51]) {
   const raw = Buffer.alloc((w * 3 + 1) * h);
   for (let y = 0; y < h; y++) {
     raw[y * (w * 3 + 1)] = 0;
@@ -126,7 +128,8 @@ function writePng(file, svgText, width, { rgb = false } = {}) {
 
 // 1) Ana ikon (iOS / App Store 1024, alfa yok)
 const iconBody = qMark({ cx: 512, cy: 512, s: 0.92 });
-const iconSvg = svg(1024, 1024, iconBody, PAPER);
+const glow = `<defs><radialGradient id="g" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="${NAVY_HI}"/><stop offset="1" stop-color="${NAVY}"/></radialGradient></defs><rect width="1024" height="1024" fill="url(#g)"/>`;
+const iconSvg = svg(1024, 1024, glow + iconBody);
 fs.writeFileSync(path.join(BRAND, 'qorvex-icon.svg'), iconSvg);
 writePng(path.join(ASSETS, 'icon.png'), iconSvg, 1024, { rgb: true });
 
@@ -134,7 +137,7 @@ writePng(path.join(ASSETS, 'icon.png'), iconSvg, 1024, { rgb: true });
 const fgSvg = svg(1024, 1024, qMark({ cx: 512, cy: 512, s: 0.6 }));
 writePng(path.join(ASSETS, 'android-icon-foreground.png'), fgSvg, 512);
 writePng(path.join(ASSETS, 'android-icon-background.png'), svg(1024, 1024, '', PAPER), 512);
-const monoSvg = svg(1024, 1024, qMark({ cx: 512, cy: 512, s: 0.6, ink: '#FFFFFF', mono: true }));
+const monoSvg = svg(1024, 1024, qMark({ cx: 512, cy: 512, s: 0.6, ring: '#FFFFFF', tailC: '#FFFFFF', ink: '#FFFFFF', mono: true }));
 writePng(path.join(ASSETS, 'android-icon-monochrome.png'), monoSvg, 432);
 
 // 3) Splash ikonu (saydam) ve favicon
@@ -144,12 +147,10 @@ writePng(path.join(ASSETS, 'favicon.png'), iconSvg, 48);
 // 4) Yatay logo (mağaza görselleri, web, sosyal medya)
 const word = `
   ${qMark({ cx: 250, cy: 280, s: 0.52 })}
-  <text x="496" y="296" textLength="1144" lengthAdjust="spacing" font-family="Old Standard TT" font-weight="700" font-size="220" fill="${INK}">QORVEX</text>
-  <rect x="500" y="356" width="1140" height="9" fill="${INK}"/>
-  <rect x="500" y="372" width="1140" height="3" fill="${INK}"/>
-  <text x="502" y="446" font-family="UnifrakturMaguntia" font-size="56" fill="${INK}">The Daily Arrowword</text>
-  <text x="1640" y="442" text-anchor="end" font-family="Libre Franklin" font-weight="700" font-size="27" letter-spacing="4" fill="${INK}">İNGİLİZCE ÇENGEL BULMACA</text>
-`;const wordSvg = svg(1720, 560, word, PAPER);
+  <text x="496" y="300" textLength="1144" lengthAdjust="spacing" font-family="Libre Franklin" font-weight="900" font-size="220" fill="${CREAM}">QORVEX</text>
+  <rect x="500" y="352" width="1140" height="8" rx="4" fill="${TEAL}"/>
+  <text x="502" y="440" font-family="Libre Franklin" font-weight="700" font-size="44" letter-spacing="14" fill="${TEAL}">THINK · SOLVE · LEARN</text>
+`;const wordSvg = svg(1720, 560, word, NAVY);
 fs.writeFileSync(path.join(BRAND, 'qorvex-logo.svg'), wordSvg);
 writePng(path.join(BRAND, 'qorvex-logo.png'), wordSvg, 1720);
 
@@ -159,7 +160,7 @@ let x = 40;
 let sheet = '';
 for (const sz of sizes) {
   const sc = sz / 1024;
-  sheet += `<g transform="translate(${x},${40 + (512 - sz)})"><clipPath id="c${sz}"><rect width="${sz}" height="${sz}" rx="${sz * 0.2237}"/></clipPath><g clip-path="url(#c${sz})"><g transform="scale(${sc})"><rect width="1024" height="1024" fill="${PAPER}"/>${iconBody}</g></g></g>`;
+  sheet += `<g transform="translate(${x},${40 + (512 - sz)})"><clipPath id="c${sz}"><rect width="${sz}" height="${sz}" rx="${sz * 0.2237}"/></clipPath><g clip-path="url(#c${sz})"><g transform="scale(${sc})">${glow.replace('id="g"', `id="g${sz}"`).replace('url(#g)', `url(#g${sz})`)}${iconBody}</g></g></g>`;
   x += sz + 40;
 }
-writePng(path.join(BRAND, 'icon-sizes-preview.png'), svg(x, 600, sheet, '#D9D4C7'), x);
+writePng(path.join(BRAND, 'icon-sizes-preview.png'), svg(x, 600, sheet, '#E8ECF1'), x);
