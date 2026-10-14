@@ -17,4 +17,17 @@ const entries = WORDS.filter((w) => w.l <= lvl || w.a.length === 2).map((w) => (
 const dict = new Map(entries.map((e) => [e.a, e]));
 const p = await generatePuzzle({ w: W, h: H, entries, dict, prio: null, seed, budgetMs: 1200 });
 console.log(p.rows.map((r) => r.split('').join(' ')).join('\n'));
+// boş karelerin komşuluğu: kaç tanesi harf satırı/sütununun bitişinde (kelime sonu), kaç tanesi tamamen yalnız
+let endOfWord = 0, isolated = 0, other = 0;
+const at = (r, c) => (r < 0 || c < 0 || r >= H || c >= W ? '#' : p.rows[r][c]);
+const isL = (ch) => /[A-Z]/.test(ch);
+for (let r = 0; r < H; r++)
+  for (let c = 0; c < W; c++) {
+    if (p.rows[r][c] !== '.') continue;
+    const nb = [at(r - 1, c), at(r + 1, c), at(r, c - 1), at(r, c + 1)].filter(isL).length;
+    if (isL(at(r, c - 1)) || isL(at(r - 1, c))) endOfWord++;
+    else if (nb === 0) isolated++;
+    else other++;
+  }
+console.log('kelime sonundaki boş:', endOfWord, ' yalnız boş:', isolated, ' diğer:', other);
 console.log('boş:', p.stats.blanks, '/', W * H, ' kelime:', p.clues.length, ' az kesişme puanı:', p.stats.lowCross);

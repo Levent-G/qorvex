@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, View, Text, Pressable, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
-import * as Speech from 'expo-speech';
+import { speakWord, stopSpeaking } from '../speech';
 import { getWord, posTr, similarWords, familyWords, LEVEL_NAMES } from '../engine/words';
 import { SpeakerIcon } from './Icons';
 import { colors, fonts } from '../theme';
@@ -10,9 +10,9 @@ export default function LearnModal({ answer, clue, remaining, limit, onClose }) 
   const { width } = useWindowDimensions();
   const word = answer ? getWord(answer) : null;
   useEffect(() => {
-    if (answer) Speech.speak(answer.toLowerCase(), { language: 'en-US', rate: 0.9 });
+    if (answer) speakWord(answer, 0.9);
     return () => {
-      Speech.stop();
+      stopSpeaking();
     };
   }, [answer]);
   if (!answer) return null;
@@ -54,7 +54,7 @@ export default function LearnModal({ answer, clue, remaining, limit, onClose }) 
               </Text>
               <Pressable
                 hitSlop={10}
-                onPress={() => Speech.speak(lower, { language: 'en-US', rate: 0.85 })}
+                onPress={() => speakWord(lower, 0.85)}
                 style={({ pressed }) => [styles.speak, pressed && { backgroundColor: colors.paperDark }]}
               >
                 <SpeakerIcon />

@@ -3,7 +3,7 @@
 // Oklar: R  ipucu solda, kelime sağa | D  ipucu üstte, kelime aşağı
 //        RD ipucu solda, kelime sağdaki hücreden aşağı | DR ipucu üstte, kelime alttaki hücreden sağa
 
-const E = 0, L = 1, B = 2, C = 3;
+const E = 0, L = 1, B = 2, C = 3, X = 4; // X: fotoğraf alanı (resimli çengel), harf/ipucu konmaz
 
 export function mulberry32(seed) {
   let s = seed >>> 0;
@@ -25,11 +25,14 @@ export function shuffle(arr, rand) {
   return arr;
 }
 
-function makeGrid(w, h) {
+function makeGrid(w, h, blocks) {
   const n = w * h;
+  const t = new Uint8Array(n);
+  // blocks: [{ r, c, w, h }] — ayrılmış (fotoğraf) alanlar
+  if (blocks) for (const b of blocks) for (let r = b.r; r < b.r + b.h; r++) for (let c = b.c; c < b.c + b.w; c++) t[r * w + c] = X;
   return {
     w, h,
-    t: new Uint8Array(n),
+    t,
     ch: new Array(n).fill(''),
     covA: new Uint8Array(n),
     covD: new Uint8Array(n),
@@ -58,7 +61,7 @@ function clueOpts(g, r, c, dir) {
     if (cr < 0 || cc < 0 || cr >= g.h || cc >= g.w) continue;
     const i = cr * g.w + cc;
     const t = g.t[i];
-    if (t === L) continue;
+    if (t === L || t === X) continue;
     const cl = g.clues[i];
     if (cl.length >= 2) continue;
     if (cl.length && cl[0].arrow === a[k][2]) continue;
@@ -333,8 +336,8 @@ function relocateClues(g) {
 }
 
 // Kelime listesinden ızgarayı yeniden kur
-function rebuild(w, h, words) {
-  const g = makeGrid(w, h);
+function rebuild(w, h, words, blocks) {
+  const g = makeGrid(w, h, blocks);
   for (const wd of words) placeOne(g, wd.entry, wd.r, wd.c, wd.dir, { i: wd.ci, arrow: wd.arrow });
   return g;
 }
@@ -363,7 +366,7 @@ function improve(g, idx, ctx, deadline) {
       if (bestW) remove.add(bestW);
     }
     if ([...remove].some((x) => ctx.prio && ctx.prio.has(x.entry.a)) && ctx.rand() < 0.8) continue;
-    const ng = rebuild(cur.w, cur.h, ws.filter((x) => !remove.has(x)));
+    const ng = rebuild(cur.w, cur.h, ws.filter((x) => !remove.has(x)), ctx.blocks);
     if (!runsValid(ng, remove)) continue;
     greedy(ng, idx, ctx, 40);
     const s = scoreOf(stats(ng), prioCount(ng, ctx));
@@ -421,7 +424,7 @@ function scoreOf(s, pc) {
 }
 
 function attempt(w, h, entries, ctx) {
-  const g = makeGrid(w, h);
+  const g = makeGrid(w, h, ctx.blocks);
   const idx = buildIndex(entries);
   const minLen = Math.min(w, h) - 3;
   // İlk kelime: öncelikli kelimelerden biri olabilir, üst satır ya da sol sütun
@@ -452,7 +455,7 @@ function serialize(g) {
     let s = '';
     for (let c = 0; c < w; c++) {
       const i = r * w + c;
-      s += g.t[i] === L ? g.ch[i] : g.t[i] === C ? '#' : '.';
+      s += g.t[i] === L ? g.ch[i] : g.t[i] === C ? '#' : g.t[i] === X ? '@' : '.';
     }
     rows.push(s);
   }
@@ -480,39 +483,51 @@ function serialize(g) {
 export async function generatePuzzle(opts) {
   const { w, h, entries, dict, prio, seed = Date.now(), budgetMs = 900, minAttempts = 4, maxAttempts = 60, yieldFn } = opts;
   const rand = mulberry32(seed);
-  const ctx = { rand, dict, prio };
+  const ctx = { rand, dict, prio, blocks: opts.blocks || null };
   const fit = entries.filter((e) => e.a.length >= 2 && e.a.length <= Math.max(w, h) - 1);
   const prioList = fit.filter((e) => prio && prio.has(e.a));
   const rest = fit.filter((e) => !(prio && prio.has(e.a)));
-  const start = Date.now();
-  const attemptBudget = budgetMs * 0.35;
-  let best = null;
-  for (let a = 0; a < maxAttempts; a++) {
-    if (a >= minAttempts && Date.now() - start > attemptBudget) break;
-    const sample = [...prioList, ...shuffle(rest.slice(), rand).slice(0, opts.sampleSize || 650)];
-    const g = attempt(w, h, sample, ctx);
-    if (g) {
-      const sc = scoreOf(stats(g), prioCount(g, ctx));
-      if (!best || sc > best.sc) best = { g, sc };
-    }
-    if (yieldFn) await yieldFn();
-  }
-  if (!best) throw new Error('Bulmaca üretilemedi');
-  // Yerel arama ile iyileştir (parça parça, arada UI'a nefes aldır)
   const bigIdx = buildIndex(fit);
-  let g = best.g;
-  const end = start + budgetMs;
-  while (Date.now() < end) {
-    g = improve(g, bigIdx, ctx, Math.min(end, Date.now() + 60));
-    if (yieldFn) await yieldFn();
-  }
-  // Son rötuş: cepleri doldur, ipuçlarını blok hücrelere dağıt
-  g = cloneGrid(g);
   // cepler de yalnızca havuzdaki kelimelerle dolsun (görülmüş/öğrenilmeyen kelimeler sızmasın)
   const pocketPool = fit.slice();
-  shuffle(pocketPool, rand);
-  fillPockets(g, pocketPool.slice(0, 1500), ctx);
-  relocateClues(g);  const out = serialize(g);
-  out.stats = stats(g);
+  // Boşluk sayısı tohuma çok bağlı: bütçeyi birkaç bağımsız tura böl, her tur tam bir bulmaca üretsin,
+  // sonunda en iyi puanlıyı (en az gri boşluk, en çok kesişme) seç.
+  const restarts = opts.restarts || 3;
+  const start = Date.now();
+  let winner = null;
+  for (let round = 0; round < restarts; round++) {
+    const rStart = Date.now();
+    const rBudget = (start + budgetMs - rStart) / (restarts - round);
+    let best = null;
+    for (let a = 0; a < maxAttempts; a++) {
+      if (a >= minAttempts && Date.now() - rStart > rBudget * 0.35) break;
+      const sample = [...prioList, ...shuffle(rest.slice(), rand).slice(0, opts.sampleSize || 650)];
+      const g = attempt(w, h, sample, ctx);
+      if (g) {
+        const sc = scoreOf(stats(g), prioCount(g, ctx));
+        if (!best || sc > best.sc) best = { g, sc };
+      }
+      if (yieldFn) await yieldFn();
+    }
+    if (!best) continue;
+    // Yerel arama ile iyileştir (parça parça, arada UI'a nefes aldır)
+    let g = best.g;
+    const end = rStart + rBudget;
+    while (Date.now() < end) {
+      g = improve(g, bigIdx, ctx, Math.min(end, Date.now() + 60));
+      if (yieldFn) await yieldFn();
+    }
+    // Son rötuş: cepleri doldur, ipuçlarını blok hücrelere dağıt
+    g = cloneGrid(g);
+    shuffle(pocketPool, rand);
+    fillPockets(g, pocketPool.slice(0, 1500), ctx);
+    relocateClues(g);
+    const sc = scoreOf(stats(g), prioCount(g, ctx));
+    if (!winner || sc > winner.sc) winner = { g, sc };
+    if (yieldFn) await yieldFn();
+  }
+  if (!winner) throw new Error('Bulmaca üretilemedi');
+  const out = serialize(winner.g);
+  out.stats = stats(winner.g);
   return out;
 }

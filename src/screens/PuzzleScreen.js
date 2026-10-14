@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, useWindowDimensions, Modal, AppState, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Image, Linking, StyleSheet, useWindowDimensions, Modal, AppState, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import ArrowGrid from '../components/ArrowGrid';
@@ -38,8 +38,10 @@ function Timer({ session, running }) {
 }
 
 // ---------------- Bulmaca tahtası ----------------
-function Board({ session, kind, levelId, onBack, onNext }) {
+function Board({ session, kind, levelId, onBack, onNext, store }) {
   const puzzle = session.puzzle;
+  const photo = puzzle.photo || null; // resimli çengel: ortadaki fotoğraf ve cevabı
+  const [zoom, setZoom] = useState(false);
   const model = useMemo(() => buildModel(puzzle), [puzzle]);
   const [s, dispatch] = useReducer(reducer, null, () => {
     const init = {
@@ -72,7 +74,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     if (s.solved && !wasSolved.current) {
       wasSolved.current = true;
       session.solved = true;
-      markSolved(kind, levelId);
+      if (store) store.markSolved(kind, levelId);
+      else markSolved(kind, levelId);
       setShowWin(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     }
@@ -128,9 +131,10 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         opened.push(w.answer);
         markLearned(w.answer);
       }
-      setLearn({ answer: w.answer, clue: w.text });
+      // resimdeki kelimenin kartında gerçek Türkçesi görünsün
+      setLearn({ answer: w.answer, clue: photo && w.answer === photo.answer ? photo.tr : w.text });
     },
-    [model, opened],
+    [model, opened, photo],
   );
 
   // Seçili kelime (dokunma işleyicisini her harfte yeniden oluşturmamak için ref)
@@ -147,6 +151,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         // İlk dokunuş kelimeyi seçer; zaten seçiliyse kelime kartını açar
         if (idx === activeRef.current) openLearn(idx);
         else dispatch({ type: 'selectWord', idx });
+      } else if (ch === '@') {
+        setZoom(true);
       } else if (ch !== '.') {
         dispatch({ type: 'tapCell', r, c });
       }
@@ -180,7 +186,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         insetTop={insets.top}
         session={session}
         running={!s.solved}
-        subtitle={<>{kind === 'daily' ? 'Günün Bulmacası' : `${level.title} · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {puzzle.no}</>}
+        subtitle={<>{kind === 'daily' ? (photo ? 'Günün Resimli Bulmacası' : 'Günün Bulmacası') : `${photo ? 'Resimli Bulmaca' : level.title} · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {puzzle.no}</>}
         onMenu={() => setMenu(true)}
       />
 
@@ -207,13 +213,22 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         <Pressable onPress={() => dispatch({ type: 'step', delta: -1 })} hitSlop={8} style={styles.clueNav}>
           <ChevronIcon dir="left" size={22} />
         </Pressable>
+        {photo && w.answer === photo.answer ? (
+          <Pressable onPress={() => setZoom(true)} style={styles.clueThumb}>
+            <Image source={{ uri: photo.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+          </Pressable>
+        ) : null}
         <Pressable style={{ flex: 1 }} onPress={() => openLearn(s.active)}>
           <Text style={[styles.clueMeta, toast && { color: colors.wrong }]} numberOfLines={1}>
-            {toast || `${w.dir === 'A' ? 'ACROSS · YATAY' : 'DOWN · DİKEY'} ${ARROW_LABEL[w.arrow]} (${w.answer.length})`}
+            {toast ||
+              `${w.dir === 'A' ? 'ACROSS · YATAY' : 'DOWN · DİKEY'} ${ARROW_LABEL[w.arrow]} (${w.answer.length})${
+                // defterdeki kelime bu bulmacaya tekrar için geldiyse belli olsun
+                learned.has(w.answer) && !opened.includes(w.answer) ? ' · DEFTERDEN TEKRAR' : ''
+              }`}
           </Text>
           <View style={styles.clueRow}>
             <Text style={styles.clueText} numberOfLines={1} adjustsFontSizeToFit>
-              {w.text}
+              {photo && w.answer === photo.answer ? 'Resimdeki nesne ne?' : w.text}
             </Text>
             <View style={styles.learnTag}>
               <BookIcon size={14} />
@@ -263,6 +278,23 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         </Pressable>
       </Modal>
 
+      {/* Büyütülmüş fotoğraf */}
+      <Modal visible={zoom && !!photo} transparent animationType="fade" onRequestClose={() => setZoom(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setZoom(false)}>
+          {photo ? (
+            <View style={styles.zoomCard}>
+              <Image source={{ uri: photo.url }} style={{ width: '100%', aspectRatio: 1 }} resizeMode="cover" />
+              <View style={{ padding: 10 }}>
+                <Text style={styles.zoomMeta}>RESİMDEKİ NESNE · {photo.answer.length} HARF</Text>
+                <Text style={styles.zoomCredit} onPress={() => photo.link && Linking.openURL(photo.link).catch(() => {})}>
+                  Fotoğraf: {photo.by} · Pexels
+                </Text>
+              </View>
+            </View>
+          ) : null}
+        </Pressable>
+      </Modal>
+
       {learn ? (
         <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={LEARN_LIMIT} onClose={() => setLearn(null)} />
       ) : null}
@@ -300,7 +332,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
 }
 
 // ---------------- Ekran: oturumu yükler / üretir ----------------
-export default function PuzzleScreen({ kind, levelId, onBack }) {
+export default function PuzzleScreen({ kind, levelId, onBack, store }) {
   const [session, setSession] = useState(null);
   const [error, setError] = useState(null);
   const insets = useSafeAreaInsets();
@@ -310,13 +342,19 @@ export default function PuzzleScreen({ kind, levelId, onBack }) {
       setSession(null);
       setError(null);
       try {
-        const sess = kind === 'daily' ? await getDailySession() : await getLevelSession(levelId, forceNew);
+        const sess = store
+          ? kind === 'daily'
+            ? await store.getDaily()
+            : await store.getSession(levelId, forceNew)
+          : kind === 'daily'
+            ? await getDailySession()
+            : await getLevelSession(levelId, forceNew);
         setSession(sess);
       } catch (e) {
         setError(String(e?.message || e));
       }
     },
-    [kind, levelId],
+    [kind, levelId, store],
   );
 
   useEffect(() => {
@@ -350,12 +388,17 @@ export default function PuzzleScreen({ kind, levelId, onBack }) {
       levelId={kind === 'daily' ? 'MIX' : levelId}
       onBack={onBack}
       onNext={() => load(true)}
+      store={store}
     />
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.paper },
+  clueThumb: { width: 50, height: 50, borderWidth: 1.5, borderColor: colors.ink, marginRight: 8, overflow: 'hidden', backgroundColor: colors.paperDark },
+  zoomCard: { backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, overflow: 'hidden' },
+  zoomMeta: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 1.2, color: colors.wrong },
+  zoomCredit: { fontFamily: fonts.sans, fontSize: 11, color: colors.muted, marginTop: 6 },
   loading: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30 },
   loadingKicker: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 3, color: colors.wrong },
   loadingHead: { fontFamily: fonts.masthead, fontSize: 34, color: colors.ink, textAlign: 'center' },

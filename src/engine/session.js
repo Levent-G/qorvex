@@ -1,13 +1,13 @@
 // Bulmaca oturumları: seviye başına tek aktif bulmaca, günün bulmacası, öğrenme takibi.
-import { generatePuzzle } from './generator';
+import { generatePuzzle, mulberry32 } from './generator';
 import { generateWordSearch } from './wordsearch';
 import { generateLadder } from './ladder';
 import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
 import { generateSpiral, generateJumble, generateCryptogram } from './wordgames';
 import { WORDS } from './words';
-import { freshnessPenalty } from './freshness';
-import { PICTURE_LEVELS, pictureCandidates, makeRound } from './picture';
+import { buildInputs as buildPoolInputs, recordAnswersTo } from './pool';
 import { findPhoto, photoCache } from '../services/pexels';
+import { photoBlock } from './picture';
 import { getStore, persist } from '../storage';
 
 export const LEVELS = [
@@ -22,84 +22,10 @@ export const LEVELS = [
 export const getLevel = (id) => LEVELS.find((l) => l.id === id);
 
 export const LEARN_LIMIT = 5; // bir bulmacada açılabilecek kelime kartı
-const PRIO_MAX = 6;
 const yieldFn = () => new Promise((r) => setTimeout(r, 0));
 
-// İşaretli kelime vadesi geldi mi? İlk 3 tekrar sık (aralıklı), sonra giderek seyrek.
-function isDue(m, counter) {
-  const gap = counter - m.last;
-  if (m.seen < 3) return gap >= 1;
-  return gap >= 3 * (m.seen - 1);
-}
-
-const MIN_FRESH = 300; // havuzda en az bu kadar (3+ harfli) kelime kalsın
-
-function prioOf(learn, dict, withPrio) {
-  if (!withPrio) return null;
-  return new Set(
-    Object.entries(learn.marked)
-      .filter(([a, m]) => dict.has(a) && isDue(m, learn.counter))
-      .sort((x, y) => x[1].last - y[1].last)
-      .slice(0, PRIO_MAX)
-      .map(([a]) => a),
-  );
-}
-
-function buildSoftInputs(level, learn, withPrio) {
-  const entries = [];
-  const dict = new Map();
-  for (const w of WORDS) {
-    if (w.l > level.idx && w.a.length > 2) continue;
-    let bonus = 0;
-    if (!level.mixed && w.l === level.idx) bonus += 3;
-    if (!learn.marked[w.a]) bonus -= freshnessPenalty(w.a, learn); // yakın zamanda / sık geldiyse geri plana
-    const e = { a: w.a, c: w.c, bonus };
-    entries.push(e);
-    dict.set(w.a, e);
-  }
-  return { entries, dict, prio: prioOf(learn, dict, withPrio) };
-}
-
-// strict: ızgara oyunları (çengel, kare, şifreli) — görülmüş/öğrenilmeyen kelimeler tamamen dışarıda.
-// strict değilse (kelime avı, merdiven, jumble...) havuz tam kalır, görülenler yalnızca cezalanır;
-// bu oyunlar belirli uzunluk/zincir ister, havuz daralırsa üretilemeyebilir.
-function buildInputs(level, learn, withPrio, strict = false) {
-  if (!strict) return buildSoftInputs(level, learn, withPrio);
-  // Kümülatif havuz: A2 = A1 + A2, B1 = A1..B1 ... (2 harfli kelimeler her zaman)
-  // Tekrar kuralı: daha önce gelmiş ama öğrenilmeyen (deftere eklenmemiş) kelimeler havuza girmez.
-  // Defterdeki (öğrenilen) kelimeler her zaman havuzdadır; vadesi gelenler prio ile öne çıkar.
-  // Taze kelime azalırsa en eski görülenler geri döner (havuz hiç tükenmez).
-  const entries = [];
-  const dict = new Map(); // ızgarada kendiliğinden oluşan kelimeleri doğrulamak için (yalnızca havuzdakiler)
-  const seenPool = [];
-  let freshCount = 0;
-  const times = learn.times || {};
-  for (const w of WORDS) {
-    if (w.l > level.idx && w.a.length > 2) continue;
-    let bonus = 0;
-    if (!level.mixed && w.l === level.idx) bonus += 3; // seviyenin kendi kelimeleri öne
-    const seen = times[w.a] || learn.recent[w.a] != null;
-    const marked = !!learn.marked[w.a];
-    if (w.a.length <= 2) bonus -= Math.min(3, (times[w.a] || 0) * 0.3); // az sayıdalar, hafif dönüşüm
-    const e = { a: w.a, c: w.c, bonus };
-    if (w.a.length > 2 && seen && !marked) {
-      seenPool.push(e);
-      continue;
-    }
-    entries.push(e);
-    dict.set(w.a, e);
-    if (w.a.length > 2) freshCount++;
-  }
-  if (freshCount < MIN_FRESH) {
-    // en eski görülenlerden tamamla
-    seenPool.sort((x, y) => (learn.recent[x.a] ?? -1) - (learn.recent[y.a] ?? -1));
-    for (const e of seenPool.slice(0, MIN_FRESH - freshCount)) {
-      entries.push(e);
-      dict.set(e.a, e);
-    }
-  }
-  return { entries, dict, prio: prioOf(learn, dict, withPrio) };
-}
+// Havuz kuralları engine/pool.js'de (simülasyonla aynı kod)
+const buildInputs = (level, learn, withPrio, strict = false) => buildPoolInputs(WORDS, level, learn, withPrio, strict);
 
 function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
@@ -109,7 +35,8 @@ async function makePuzzle(level, seed, withPrio) {
   const store = getStore();
   const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, true);
   const puzzle = await generatePuzzle({
-    w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1200, yieldFn,
+    // 5 bağımsız tur, en az boşluklusu seçilir
+    w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn,
   });
   return puzzle;
 }
@@ -120,18 +47,7 @@ function recordAppearance(puzzle) {
 
 // Bir oyunda çıkan kelimeleri kaydet (tüm oyunlar ortak kelime defterini kullanır)
 function recordAnswers(answers) {
-  const learn = getStore().learn;
-  learn.counter++;
-  const times = learn.times || (learn.times = {});
-  for (const answer of answers) {
-    learn.recent[answer] = learn.counter;
-    times[answer] = (times[answer] || 0) + 1;
-    const m = learn.marked[answer];
-    if (m) {
-      m.seen++;
-      m.last = learn.counter;
-    }
-  }
+  recordAnswersTo(getStore().learn, answers);
 }
 
 export async function getLevelSession(levelId, forceNew = false) {
@@ -182,7 +98,8 @@ export function markSolved(kind, levelId) {
 // Kelime kartı açıldı: kelimeyi işaretle (sonraki bulmacalarda sık gelir)
 export function markLearned(answer) {
   const learn = getStore().learn;
-  learn.marked[answer] = { at: Date.now(), seen: 0, last: learn.counter };
+  // zaten defterdeyse ilerlemesi sıfırlanmasın (yoksa kartı her açışta en sık tekrara döner)
+  if (!learn.marked[answer]) learn.marked[answer] = { at: Date.now(), seen: 0, last: learn.counter };
   persist();
 }
 
@@ -401,27 +318,57 @@ const gridSize = (levelId) => {
   return { w: lv.w, h: lv.h };
 };
 
-// ---- Resim Bulmaca: Pexels fotoğrafındaki nesnenin İngilizcesi ----
+// ---- Resimli Bulmaca: gazetedeki gibi ortasında fotoğraf olan çengel ("Resimdeki nesne ne?") ----
+// Önce fotoğrafı olan bir isim seçilir (Pexels), sonra o kelime öncelikli olarak çengel üretilir;
+// kelimenin ipucu karesinde "Resimdeki nesne" yazar, fotoğraf ızgaranın ortasındaki alanda durur.
 const NOUNS = new Set(WORDS.filter((w) => w.p === 'noun').map((w) => w.a));
-export { PICTURE_LEVELS };
-export const picture = makeGameStore('picture', {
+// 'picture3': önceki biçimlerin kayıtları yeni ekranda açılmasın
+export const picture = makeGameStore('picture3', {
+  strict: true,
   salt: 2246822519,
-  make: async (levelId, seed, { entries, prio }) => {
-    const cfg = PICTURE_LEVELS[levelId];
-    const cands = pictureCandidates(entries, NOUNS, cfg, prio, photoCache(), seed);
-    const rounds = [];
-    // 4'erli gruplar halinde fotoğraf ara; ana konusu o nesne olan fotoğraf bulunanlar tur olur
-    for (let i = 0; i < Math.min(cands.length, 48) && rounds.length < cfg.rounds; i += 4) {
-      const batch = cands.slice(i, i + 4);
-      const photos = await Promise.all(batch.map((c) => findPhoto(c.a)));
-      batch.forEach((c, k) => {
-        if (photos[k] && rounds.length < cfg.rounds) rounds.push(makeRound(c.a, c.c, photos[k], cfg, seed + rounds.length * 7919));
-      });
+  make: async (levelId, seed, { entries, dict, prio }) => {
+    const level = getLevel(levelId);
+    const cache = photoCache();
+    const block = photoBlock(level.w, level.h);
+    // aday isimler: fotoğrafı bilinenler önce, sonra rastgele (fotoğrafı olmadığı bilinenler hariç)
+    const rand = mulberry32(seed);
+    const cands = entries
+      .filter((e) => NOUNS.has(e.a) && e.a.length >= 4 && e.a.length <= Math.min(7, level.w - 1) && cache[e.a] !== null)
+      .map((e) => ({ e, s: (cache[e.a] ? 10 : 0) + rand() * 10 }))
+      .sort((x, y) => y.s - x.s)
+      .map((x) => x.e);
+    const tried = new Set();
+    for (let attempt = 0; attempt < 3; attempt++) {
+      // fotoğrafı olan bir isim bul (en fazla 8 sorgu)
+      let target = null, photo = null;
+      for (const c of cands) {
+        if (tried.has(c.a)) continue;
+        tried.add(c.a);
+        photo = await findPhoto(c.a);
+        if (photo) {
+          target = c;
+          break;
+        }
+        if (tried.size >= 8 * (attempt + 1)) break;
+      }
+      if (!target) break;
+      const pr = new Set([...(prio || []), target.a]);
+      for (let t = 0; t < 2; t++) {
+        const p = await generatePuzzle({
+          w: level.w, h: level.h, entries, dict, prio: pr, seed: (seed + attempt * 7919 + t * 104729) >>> 0,
+          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn,
+        });
+        const clue = p.clues.find((k) => k.answer === target.a);
+        if (!clue) continue;
+        clue.tr = clue.text;
+        clue.text = 'Resimdeki nesne';
+        p.photo = { ...block, ...photo, answer: target.a, tr: target.c };
+        return p;
+      }
     }
-    if (rounds.length < 3) throw new Error('Yeterli fotoğraf bulunamadı. Biraz sonra tekrar dene.');
-    return { rounds, firstGiven: cfg.firstGiven };
+    throw new Error('Resimli bulmaca hazırlanamadı. İnternet bağlantını kontrol edip tekrar dene.');
   },
-  answersOf: (p) => p.rounds.map((r) => r.answer),
+  answersOf: (p) => p.clues.map((k) => k.answer),
 });
 
 // ---- Kare Bulmaca (klasik çapraz bulmaca) ----
@@ -502,7 +449,9 @@ export function refreshStoredClues() {
     seen.add(o);
     if (typeof o.answer === 'string' && byAnswer.has(o.answer)) {
       const c = byAnswer.get(o.answer);
-      if (typeof o.text === 'string') o.text = c;
+      // resimli çengelde "Resimdeki nesne" ipucu (tr alanı olan) Türkçeyle değiştirilmesin
+      if (typeof o.text === 'string' && !o.tr) o.text = c;
+      else if (typeof o.tr === 'string') o.tr = c;
       if (typeof o.clue === 'string') o.clue = c;
     }
     if (typeof o.word === 'string' && typeof o.wordClue === 'string' && byAnswer.has(o.word)) o.wordClue = byAnswer.get(o.word);

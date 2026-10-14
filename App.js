@@ -27,10 +27,9 @@ import GridWordScreen from './src/screens/GridWordScreen';
 import CodewordScreen from './src/screens/CodewordScreen';
 import JumbleScreen from './src/screens/JumbleScreen';
 import CryptogramScreen from './src/screens/CryptogramScreen';
-import PictureScreen from './src/screens/PictureScreen';
 import { getGame } from './src/games';
 import { loadStore } from './src/storage';
-import { refreshStoredClues, getProfile } from './src/engine/session';
+import { refreshStoredClues, getProfile, picture } from './src/engine/session';
 import { ui } from './src/theme';
 
 export default function App() {
@@ -120,7 +119,7 @@ export default function App() {
     else if (route.name === 'codeword') screen = <CodewordScreen key={k} {...props} />;
     else if (route.name === 'jumble') screen = <JumbleScreen key={k} {...props} />;
     else if (route.name === 'cryptogram') screen = <CryptogramScreen key={k} {...props} />;
-    else if (route.name === 'picture') screen = <PictureScreen key={k} {...props} />;
+    else if (route.name === 'picture') screen = <PuzzleScreen key={k} store={picture} {...props} />;
   }
   return (
     <SafeAreaProvider>

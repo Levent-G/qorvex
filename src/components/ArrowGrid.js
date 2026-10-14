@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import Svg, { Path, Polygon } from 'react-native-svg';
 import { colors, fonts } from '../theme';
 
@@ -163,11 +163,14 @@ export default function ArrowGrid({
             lastCol={lastCol} lastRow={lastRow} showText={showClueText}
           />,
         );
+      } else if (ch === '@') {
+        // fotoğraf alanı: üstüne tek parça fotoğraf yerleşir
+        cells.push(<View key={key} style={{ width: size, height: size }} />);
       } else if (ch === '.') {
         cells.push(
           <View
             key={key}
-            style={[styles.cell, styles.clueCell, { width: size, height: size, borderRightWidth: lastCol ? 0 : 1, borderBottomWidth: lastRow ? 0 : 1 }]}
+            style={[styles.cell, styles.deadCell, { width: size, height: size, borderRightWidth: lastCol ? 0 : 1, borderBottomWidth: lastRow ? 0 : 1 }]}
           />,
         );
       } else {
@@ -204,6 +207,17 @@ export default function ArrowGrid({
   return (
     <View style={[styles.frame, { width: puzzle.w * size + BORDER * 2 }]}>
       {rows}
+      {puzzle.photo ? (
+        <View
+          pointerEvents="none"
+          style={[styles.photo, { left: puzzle.photo.c * size, top: puzzle.photo.r * size, width: puzzle.photo.w * size, height: puzzle.photo.h * size }]}
+        >
+          <Image source={{ uri: puzzle.photo.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+          <View style={styles.photoTag}>
+            <Text style={styles.photoTagText}>RESİMDEKİ NESNE</Text>
+          </View>
+        </View>
+      ) : null}
       <Arrows puzzle={puzzle} size={size} />
       {responder ? <View style={StyleSheet.absoluteFill} {...responder} /> : null}
     </View>
@@ -213,8 +227,13 @@ export default function ArrowGrid({
 const styles = StyleSheet.create({
   frame: { borderWidth: BORDER, borderColor: colors.ink, backgroundColor: colors.cell },
   row: { flexDirection: 'row' },
+  photo: { position: 'absolute', borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.paperDark, overflow: 'hidden' },
+  photoTag: { position: 'absolute', left: 0, bottom: 0, backgroundColor: colors.ink, paddingHorizontal: 4, paddingVertical: 1 },
+  photoTagText: { fontFamily: fonts.sansBold, fontSize: 8, letterSpacing: 1, color: '#FFFFFF' },
   cell: { borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   clueCell: { backgroundColor: colors.clueCell },
+  // kullanılmayan kare: ipucu karesinden açık, kağıt tonunda (koyu boşluk gibi görünmesin)
+  deadCell: { backgroundColor: '#E2DDD0' },
   clueSlot: { flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 1.5 },
   clueDivider: { borderBottomWidth: StyleSheet.hairlineWidth * 2, borderBottomColor: colors.ink },
   clueText: { fontFamily: fonts.clue, color: colors.ink, textAlign: 'center', includeFontPadding: false },
