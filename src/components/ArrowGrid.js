@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import Svg, { Path, Polygon } from 'react-native-svg';
+import { BulbIcon } from './Icons';
 import { colors, fonts } from '../theme';
 
 const BORDER = 2;
@@ -64,6 +65,12 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
             >
               {t}
             </Text>
+          ) : null}
+          {/* seçili ipucu: bir daha dokununca kelime kartı açılır */}
+          {activeSlot === i ? (
+            <View style={[styles.cardHint, { width: Math.max(10, size * (two ? 0.26 : 0.32)), height: Math.max(10, size * (two ? 0.26 : 0.32)) }]}>
+              <BulbIcon size={Math.max(9, size * (two ? 0.24 : 0.3))} color="#FFFFFF" />
+            </View>
           ) : null}
         </View>
       ))}
@@ -227,6 +234,7 @@ export default function ArrowGrid({
 const styles = StyleSheet.create({
   frame: { borderWidth: BORDER, borderColor: colors.ink, backgroundColor: colors.cell },
   row: { flexDirection: 'row' },
+  cardHint: { position: 'absolute', top: 0, right: 0, alignItems: 'center', justifyContent: 'center' },
   photo: { position: 'absolute', borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.paperDark, overflow: 'hidden' },
   photoTag: { position: 'absolute', left: 0, bottom: 0, backgroundColor: colors.ink, paddingHorizontal: 4, paddingVertical: 1 },
   photoTagText: { fontFamily: fonts.sansBold, fontSize: 8, letterSpacing: 1, color: '#FFFFFF' },

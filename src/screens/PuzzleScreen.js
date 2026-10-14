@@ -231,7 +231,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
               {photo && w.answer === photo.answer ? 'Resimdeki nesne ne?' : w.text}
             </Text>
             <View style={styles.learnTag}>
-              <BookIcon size={14} />
+              <BulbIcon size={15} />
               <Text style={styles.learnTagText}>
                 {left}/{LEARN_LIMIT}
               </Text>
