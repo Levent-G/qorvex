@@ -2,8 +2,8 @@
 import {
   LEVELS, getDailySession, peekDaily, getWordSearchDaily, peekWordSearchDaily, wordSearchLevelState,
   getLadderDaily, peekLadderDaily, ladderLevelState, WS_LEVELS, LADDER_LEVELS,
-  crossword, codeword, spiral, jumble, cryptogram,
-  CODEWORD_GIVEN, SPIRAL_LEVELS, JUMBLE_LEVELS, CRYPTO_LEVELS,
+  crossword, codeword, spiral, jumble, cryptogram, picture,
+  CODEWORD_GIVEN, SPIRAL_LEVELS, JUMBLE_LEVELS, CRYPTO_LEVELS, PICTURE_LEVELS,
 } from './engine/session';
 import { getStore } from './storage';
 
@@ -26,6 +26,7 @@ const startedCodeword = (s) => {
   if (!e.committed) return typedCount(e) > (s.puzzle.given || []).length; // eski kayıt
   return Object.keys(e.cells || {}).length > 0 || Object.keys(e.committed).length > (s.puzzle.given || []).length;
 };
+const startedPicture = (s) => !!(s && !s.solved && s.entries && (Object.keys(s.entries.done || {}).length > 0 || (s.entries.idx || 0) > 0));
 const startedJumble =(s) => !!(s && !s.solved && s.entries?.slots && Object.values(s.entries.slots).some((a) => a.some((x) => x != null)));
 
 const range = (lv) => (lv.mixed ? 'A1–C2 karışık' : lv.idx === 0 ? 'A1 kelimeleri' : `A1–${lv.id} kelimeleri`);
@@ -131,6 +132,20 @@ export const GAMES = [
       return `${c.minChars}–${c.maxChars} harflik cümle · ${c.given} harf verilir`;
     },
   },
+  {
+    id: 'picture', route: 'picture', origin: 'en', no: 'X', kicker: 'PICTURE QUIZ', title: 'Resim Bulmaca',
+    deck: 'Fotoğraftaki nesneye bak, İngilizcesini harf taşlarıyla yaz. Fotoğraflar Pexels\'ten gelir; internet gerekir.',
+    howTo: [
+      'Taşlara dokunarak kelimeyi sırayla diz; kutuya dokunursan harf geri gelir.',
+      'Fazladan harfler yanıltmak için var; hepsi kullanılmaz.',
+      'Takılırsan ampulden Türkçesini gör, harf aç ya da resmi geç.',
+    ],
+    ...fromStore(picture), started: startedPicture,
+    levelInfo: (lv) => {
+      const c = PICTURE_LEVELS[lv.id];
+      return `${c.rounds} resim · ${c.minLen}–${c.maxLen} harf · ${c.decoys} fazla harf${c.firstGiven ? ' · ilk harf verilir' : ''}`;
+    },
+  },
 ];
 
 // Sayfa numaraları ve Romen rakamları sıraya göre: 1 ön sayfa, sonra oyunlar, en sonda arka sayfa
@@ -151,6 +166,7 @@ const TAGLINES = {
   ladder: 'Tek harf değiştir, tırman.',
   jumble: 'Karışık harfleri düzelt.',
   cryptogram: 'Şifreli cümleyi oku.',
+  picture: 'Resimdeki nesneyi bul.',
 };
 GAMES.forEach((g) => (g.tagline = TAGLINES[g.id] || ''));
 

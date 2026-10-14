@@ -44,6 +44,9 @@ jobs:
 
       # İmza sertifikaları Expo'da kayıtlı olanlardan indirilir; build numarası otomatik artar
       - name: iOS build (yerel)
+        env:
+          # Resim Bulmaca fotoğrafları (GitHub > Settings > Secrets > PEXELS_KEY)
+          EXPO_PUBLIC_PEXELS_KEY: ${{ secrets.PEXELS_KEY }}
         run: eas build --platform ios --profile production --local --non-interactive --output ${{ github.workspace }}/qorvex.ipa
 
       - name: App Store Connect'e yükle (TestFlight)

@@ -181,6 +181,7 @@ function evaluate(g, entry, r, c, dir, first, ctx) {
     (opt.kind === C ? 1 : 0) + ctx.rand() * 4;
   if (ctx.prio && ctx.prio.has(word)) score += 30;
   if (entry.bonus) score += entry.bonus;
+  if (n === 2) score -= 3; // 2 harfliler az sayıda; her bulmacada aynıları dolmasın
   // kendiliğinden oluşan ek kelimelerin tazeliği de sayılsın
   if (extra) for (const x of extra) if (x.entry.bonus) score += x.entry.bonus;
   return { r, c, dir, opt, extra, score };
@@ -263,12 +264,14 @@ function fillPockets(g, entries, ctx) {
     if (!byLen.has(l)) byLen.set(l, []);
     byLen.get(l).push(e);
   }
-  for (let iter = 0; iter < 25; iter++) {
+  for (let iter = 0; iter < 40; iter++) {
     let best = null, bestE = null, bestS = -1e9;
     for (let r = 0; r < h; r++)
       for (let c = 0; c < w; c++) {
         const i = r * w + c;
-        if (g.t[i] !== E) continue;
+        // boş hücreden ya da mevcut bir harften başlayan kelime (harften başlarsa ilk harf tutmalı)
+        if (g.t[i] !== E && g.t[i] !== L) continue;
+        const startCh = g.t[i] === L ? g.ch[i] : null;
         for (let d = 0; d < 2; d++) {
           const dir = d === 0 ? 'A' : 'D';
           const dr = d === 0 ? 0 : 1, dc = d === 0 ? 1 : 0;
@@ -280,11 +283,14 @@ function fillPockets(g, entries, ctx) {
             let tries = 0;
             for (const e of list) {
               if (g.used.has(e.a)) continue;
+              if (startCh && e.a[0] !== startCh) continue;
               if (++tries > 120) break;
-              const pl = evaluate(g, e, r, c, dir, true, ctx);
+              // cep kelimesi de en az bir harfiyle kesişmeli (hiç ipucusuz kelime olmasın)
+              const pl = evaluate(g, e, r, c, dir, false, ctx);
               if (!pl) continue;
               let fresh = 0;
               for (let k = 0; k < len; k++) if (g.t[(r + dr * k) * w + (c + dc * k)] === E) fresh++;
+              if (!fresh) continue; // en az bir boş kareyi doldurmalı
               const s = fresh * 4 + pl.score;
               if (s > bestS) {
                 bestS = s;
@@ -390,18 +396,28 @@ function prioCount(g, ctx) {
 }
 
 function stats(g) {
-  let letters = 0, blanks = 0, fresh = 0;
-  for (const x of g.words) fresh += x.entry.bonus || 0;
+  let letters = 0, blanks = 0, fresh = 0, lowCross = 0, zeroCross = 0;
+  for (const x of g.words) {
+    fresh += x.entry.bonus || 0;
+    // kesişme: kelimenin kaç harfi diğer yöndeki bir kelimeyle ortak (diğer kelimeler çözülünce açılan harfler)
+    const n = x.entry.a.length, dr = x.dir === 'A' ? 0 : 1, dc = x.dir === 'A' ? 1 : 0;
+    let cross = 0;
+    for (let k = 0; k < n; k++) { const i = (x.r + dr * k) * g.w + (x.c + dc * k); if (g.covA[i] && g.covD[i]) cross++; }
+    const need = n <= 3 ? 1 : n <= 6 ? 2 : 3;
+    if (cross < need) lowCross += need - cross;
+    if (!cross) zeroCross++;
+  }
   for (let i = 0; i < g.t.length; i++) {
     if (g.t[i] === L) letters++;
     else if (g.t[i] === E || (g.t[i] === B && !g.clues[i].length)) blanks++;
   }
-  return { letters, blanks, words: g.words.length, fresh };
+  return { letters, blanks, words: g.words.length, fresh, lowCross, zeroCross };
 }
 
 function scoreOf(s, pc) {
   // fresh: kelimelerin tazelik toplamı (yakın zamanda/sık gelenler eksi) — iyileştirme aynı kelimeleri geri getirmesin
-  return s.letters * 2 - s.blanks * 6 + s.words * 1.5 + pc * 8 + (s.fresh || 0) * 0.6;
+  // lowCross: yeterince kesişmeyen kelimeler (az ipuçlu) cezalandırılır
+  return s.letters * 2 - s.blanks * 8 + s.words * 1.5 + pc * 8 + (s.fresh || 0) * 0.6 - (s.lowCross || 0) * 9 - (s.zeroCross || 0) * 40;
 }
 
 function attempt(w, h, entries, ctx) {
@@ -492,7 +508,8 @@ export async function generatePuzzle(opts) {
   }
   // Son rötuş: cepleri doldur, ipuçlarını blok hücrelere dağıt
   g = cloneGrid(g);
-  const pocketPool = [...dict.values()].filter((e) => e.a.length <= Math.max(w, h) - 1);
+  // cepler de yalnızca havuzdaki kelimelerle dolsun (görülmüş/öğrenilmeyen kelimeler sızmasın)
+  const pocketPool = fit.slice();
   shuffle(pocketPool, rand);
   fillPockets(g, pocketPool.slice(0, 1500), ctx);
   relocateClues(g);  const out = serialize(g);

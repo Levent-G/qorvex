@@ -6,6 +6,8 @@ import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
 import { generateSpiral, generateJumble, generateCryptogram } from './wordgames';
 import { WORDS } from './words';
 import { freshnessPenalty } from './freshness';
+import { PICTURE_LEVELS, pictureCandidates, makeRound } from './picture';
+import { findPhoto, photoCache } from '../services/pexels';
 import { getStore, persist } from '../storage';
 
 export const LEVELS = [
@@ -30,29 +32,73 @@ function isDue(m, counter) {
   return gap >= 3 * (m.seen - 1);
 }
 
-function buildInputs(level, learn, withPrio) {
-  // Kümülatif havuz: A2 = A1 + A2, B1 = A1..B1 ... (2 harfli kelimeler her zaman)
+const MIN_FRESH = 300; // havuzda en az bu kadar (3+ harfli) kelime kalsın
+
+function prioOf(learn, dict, withPrio) {
+  if (!withPrio) return null;
+  return new Set(
+    Object.entries(learn.marked)
+      .filter(([a, m]) => dict.has(a) && isDue(m, learn.counter))
+      .sort((x, y) => x[1].last - y[1].last)
+      .slice(0, PRIO_MAX)
+      .map(([a]) => a),
+  );
+}
+
+function buildSoftInputs(level, learn, withPrio) {
   const entries = [];
   const dict = new Map();
   for (const w of WORDS) {
     if (w.l > level.idx && w.a.length > 2) continue;
     let bonus = 0;
-    if (!level.mixed && w.l === level.idx) bonus += 3; // seviyenin kendi kelimeleri öne
-    bonus -= freshnessPenalty(w.a, learn); // yakın zamanda / sık geldiyse geri plana
+    if (!level.mixed && w.l === level.idx) bonus += 3;
+    if (!learn.marked[w.a]) bonus -= freshnessPenalty(w.a, learn); // yakın zamanda / sık geldiyse geri plana
     const e = { a: w.a, c: w.c, bonus };
     entries.push(e);
     dict.set(w.a, e);
   }
-  let prio = null;
-  if (withPrio) {
-    const due = Object.entries(learn.marked)
-      .filter(([a, m]) => dict.has(a) && isDue(m, learn.counter))
-      .sort((x, y) => x[1].last - y[1].last)
-      .slice(0, PRIO_MAX)
-      .map(([a]) => a);
-    prio = new Set(due);
+  return { entries, dict, prio: prioOf(learn, dict, withPrio) };
+}
+
+// strict: ızgara oyunları (çengel, kare, şifreli) — görülmüş/öğrenilmeyen kelimeler tamamen dışarıda.
+// strict değilse (kelime avı, merdiven, jumble...) havuz tam kalır, görülenler yalnızca cezalanır;
+// bu oyunlar belirli uzunluk/zincir ister, havuz daralırsa üretilemeyebilir.
+function buildInputs(level, learn, withPrio, strict = false) {
+  if (!strict) return buildSoftInputs(level, learn, withPrio);
+  // Kümülatif havuz: A2 = A1 + A2, B1 = A1..B1 ... (2 harfli kelimeler her zaman)
+  // Tekrar kuralı: daha önce gelmiş ama öğrenilmeyen (deftere eklenmemiş) kelimeler havuza girmez.
+  // Defterdeki (öğrenilen) kelimeler her zaman havuzdadır; vadesi gelenler prio ile öne çıkar.
+  // Taze kelime azalırsa en eski görülenler geri döner (havuz hiç tükenmez).
+  const entries = [];
+  const dict = new Map(); // ızgarada kendiliğinden oluşan kelimeleri doğrulamak için (yalnızca havuzdakiler)
+  const seenPool = [];
+  let freshCount = 0;
+  const times = learn.times || {};
+  for (const w of WORDS) {
+    if (w.l > level.idx && w.a.length > 2) continue;
+    let bonus = 0;
+    if (!level.mixed && w.l === level.idx) bonus += 3; // seviyenin kendi kelimeleri öne
+    const seen = times[w.a] || learn.recent[w.a] != null;
+    const marked = !!learn.marked[w.a];
+    if (w.a.length <= 2) bonus -= Math.min(3, (times[w.a] || 0) * 0.3); // az sayıdalar, hafif dönüşüm
+    const e = { a: w.a, c: w.c, bonus };
+    if (w.a.length > 2 && seen && !marked) {
+      seenPool.push(e);
+      continue;
+    }
+    entries.push(e);
+    dict.set(w.a, e);
+    if (w.a.length > 2) freshCount++;
   }
-  return { entries, dict, prio };
+  if (freshCount < MIN_FRESH) {
+    // en eski görülenlerden tamamla
+    seenPool.sort((x, y) => (learn.recent[x.a] ?? -1) - (learn.recent[y.a] ?? -1));
+    for (const e of seenPool.slice(0, MIN_FRESH - freshCount)) {
+      entries.push(e);
+      dict.set(e.a, e);
+    }
+  }
+  return { entries, dict, prio: prioOf(learn, dict, withPrio) };
 }
 
 function newSession(puzzle) {
@@ -61,7 +107,7 @@ function newSession(puzzle) {
 
 async function makePuzzle(level, seed, withPrio) {
   const store = getStore();
-  const { entries, dict, prio } = buildInputs(level, store.learn, withPrio);
+  const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, true);
   const puzzle = await generatePuzzle({
     w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1200, yieldFn,
   });
@@ -296,7 +342,7 @@ export function ladderLevelState(levelId) {
 }
 // ================= Yeni oyunlar: ortak oturum fabrikası =================
 // Her oyun: seviye başına tek aktif bulmaca + günün bulmacası + ortak kelime defteri.
-function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt }) {
+function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt, strict = false }) {
   const st = () => {
     const store = getStore();
     return store[storeKey] || (store[storeKey] = { levels: {}, daily: null });
@@ -309,7 +355,7 @@ function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt }) 
       if (ls.current && !forceNew) return ls.current;
       await yieldFn();
       const level = getLevel(levelId);
-      const inputs = buildInputs(level, getStore().learn, true);
+      const inputs = buildInputs(level, getStore().learn, true, strict);
       const puzzle = await make(levelId, (Date.now() ^ (ls.no * salt)) >>> 0, inputs);
       recordAnswers(answersOf(puzzle));
       ls.no++;
@@ -324,7 +370,7 @@ function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt }) 
       if (gs.daily && gs.daily.date === key) return gs.daily;
       await yieldFn();
       const seed = (storeKey + key).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 31);
-      const inputs = buildInputs(getLevel(dailyLevel), getStore().learn, false);
+      const inputs = buildInputs(getLevel(dailyLevel), getStore().learn, false, strict);
       const puzzle = await make(dailyLevel, seed, inputs);
       const start = new Date(new Date().getFullYear(), 0, 0);
       puzzle.no = Math.floor((Date.now() - start) / 86400000);
@@ -355,8 +401,32 @@ const gridSize = (levelId) => {
   return { w: lv.w, h: lv.h };
 };
 
+// ---- Resim Bulmaca: Pexels fotoğrafındaki nesnenin İngilizcesi ----
+const NOUNS = new Set(WORDS.filter((w) => w.p === 'noun').map((w) => w.a));
+export { PICTURE_LEVELS };
+export const picture = makeGameStore('picture', {
+  salt: 2246822519,
+  make: async (levelId, seed, { entries, prio }) => {
+    const cfg = PICTURE_LEVELS[levelId];
+    const cands = pictureCandidates(entries, NOUNS, cfg, prio, photoCache(), seed);
+    const rounds = [];
+    // 4'erli gruplar halinde fotoğraf ara; ana konusu o nesne olan fotoğraf bulunanlar tur olur
+    for (let i = 0; i < Math.min(cands.length, 48) && rounds.length < cfg.rounds; i += 4) {
+      const batch = cands.slice(i, i + 4);
+      const photos = await Promise.all(batch.map((c) => findPhoto(c.a)));
+      batch.forEach((c, k) => {
+        if (photos[k] && rounds.length < cfg.rounds) rounds.push(makeRound(c.a, c.c, photos[k], cfg, seed + rounds.length * 7919));
+      });
+    }
+    if (rounds.length < 3) throw new Error('Yeterli fotoğraf bulunamadı. Biraz sonra tekrar dene.');
+    return { rounds, firstGiven: cfg.firstGiven };
+  },
+  answersOf: (p) => p.rounds.map((r) => r.answer),
+});
+
 // ---- Kare Bulmaca (klasik çapraz bulmaca) ----
 export const crossword = makeGameStore('crossword', {
+  strict: true,
   salt: 2654435761,
   make: (levelId, seed, { entries, dict, prio }) => makeBlockPuzzle({ ...gridSize(levelId), entries, dict, prio, seed, yieldFn }),
   answersOf: (p) => p.words.map((x) => x.answer),
@@ -365,6 +435,7 @@ export const crossword = makeGameStore('crossword', {
 // ---- Şifreli Bulmaca (Codeword) ----
 export const CODEWORD_GIVEN = { A1: 4, A2: 3, B1: 3, B2: 2, C1: 2, C2: 2, MIX: 2 };
 export const codeword = makeGameStore('codeword', {
+  strict: true,
   salt: 40503,
   make: async (levelId, seed, { entries, dict, prio }) => {
     const p = makeCodeword(await makeBlockPuzzle({ ...gridSize(levelId), entries, dict, prio, seed, yieldFn }), seed, CODEWORD_GIVEN[levelId]);

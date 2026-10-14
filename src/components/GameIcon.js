@@ -103,6 +103,16 @@ export default function GameIcon({ id, size = 56 }) {
         </View>
       );
       break;
+    case 'picture':
+      // küçük fotoğraf karesi: güneş + dağ
+      body = (
+        <View style={[styles.photo, { width: size * 0.66, height: size * 0.54 }]}>
+          <View style={{ position: 'absolute', top: size * 0.07, right: size * 0.08, width: size * 0.13, height: size * 0.13, borderRadius: size, backgroundColor: ui.gold }} />
+          <View style={{ position: 'absolute', bottom: -size * 0.2, left: size * 0.04, width: size * 0.36, height: size * 0.36, backgroundColor: ui.teal, transform: [{ rotate: '45deg' }] }} />
+          <View style={{ position: 'absolute', bottom: -size * 0.16, left: size * 0.26, width: size * 0.28, height: size * 0.28, backgroundColor: ui.tealSoft, transform: [{ rotate: '45deg' }] }} />
+        </View>
+      );
+      break;
     default:
       body = <Tile ch="?" s={t} />;
   }
@@ -114,5 +124,6 @@ const styles = StyleSheet.create({
   tile: { borderRadius: 4, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   ch: { fontFamily: fonts.sansBlack, includeFontPadding: false },
   eq: { fontFamily: fonts.sansBlack, color: ui.tealSoft },
+  photo: { backgroundColor: ui.white, borderRadius: 5, overflow: 'hidden', borderWidth: 2, borderColor: ui.white },
   spiral: { borderWidth: 3, borderColor: ui.white, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
 });
