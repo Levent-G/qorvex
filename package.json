@@ -1,6 +1,6 @@
 {
   "name": "qorvex",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "dependencies": {
     "@expo-google-fonts/archivo-narrow": "^0.4.2",
