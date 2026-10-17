@@ -39,6 +39,7 @@
         }
       ],
       "expo-font",
+      "./plugins/withoutPushEntitlement",
       [
         "expo-notifications",
         {
@@ -54,7 +55,8 @@
             "com.google.android.googlequicksearchbox"
           ]
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {
