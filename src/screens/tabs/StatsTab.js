@@ -116,7 +116,7 @@ export default function StatsTab() {
         {lastWord ? (
           <View style={styles.lastWord}>
             <View style={styles.qBox}>
-              <Text style={styles.qText}>Ç</Text>
+              <Text style={styles.qText}>Q</Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.lastWordTitle}>{lastWord.answer.charAt(0) + lastWord.answer.slice(1).toLowerCase()}</Text>
