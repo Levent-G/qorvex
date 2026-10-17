@@ -9,7 +9,7 @@ import { colors, fonts } from '../theme';
 // Izgaralar gazete kupürü gibi sol üst köşeden kare olarak kırpılır.
 const FRAME = 2;
 
-function Frame({ size, children, bg = '#FFFFFF' }) {
+function Frame({ size, children, bg = colors.cell }) {
   return <View style={[styles.frame, { width: size, height: size, backgroundColor: bg }]}>{children}</View>;
 }
 
@@ -37,7 +37,7 @@ function WordSearchInner({ puzzle, s }) {
     );
   }
   return (
-    <View style={{ width: s, height: s, backgroundColor: '#FBF9F3' }}>
+    <View style={{ width: s, height: s, backgroundColor: colors.paperDark }}>
       <Svg width={s} height={s} style={StyleSheet.absoluteFill}>
         {mark}
       </Svg>
@@ -72,7 +72,7 @@ function BlockInner({ rows, s }) {
               <View
                 key={c}
                 style={{
-                  width: cell, height: cell, backgroundColor: ch === '#' ? colors.ink : '#FFFFFF',
+                  width: cell, height: cell, backgroundColor: ch === '#' ? colors.block : colors.cell,
                   borderRightWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.ink,
                 }}
               />
@@ -125,7 +125,7 @@ function LadderInner({ puzzle, s }) {
           return (
             <View key={i} style={{ flexDirection: 'row', gap: 2, marginBottom: i === rows - 1 ? 0 : 3 }}>
               {r.answer.split('').map((ch, c) => (
-                <View key={c} style={[styles.lpCell, { width: cell, height: cell, backgroundColor: fixed ? colors.paperDark : '#FFFFFF' }]}>
+                <View key={c} style={[styles.lpCell, { width: cell, height: cell, backgroundColor: fixed ? colors.paperDark : colors.cell }]}>
                   {fixed ? (
                     <Text allowFontScaling={false} style={[styles.letter, { fontSize: cell * 0.55, lineHeight: cell * 0.8 }]}>
                       {ch}
@@ -153,7 +153,7 @@ function TilesInner({ lines, s }) {
       {lines.map((l, i) => (
         <View key={i} style={{ flexDirection: 'row', gap: 2 }}>
           {l.split('').map((ch, j) => (
-            <View key={j} style={[styles.lpCell, { width: cell, height: cell, backgroundColor: '#FBF9F3' }]}>
+            <View key={j} style={[styles.lpCell, { width: cell, height: cell, backgroundColor: colors.paperDark }]}>
               <Text allowFontScaling={false} style={[styles.letter, { fontSize: cell * 0.55, lineHeight: cell * 0.8 }]}>
                 {ch}
               </Text>

@@ -5,14 +5,14 @@ import Svg, { Line, Circle } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import LearnModal from '../components/LearnModal';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { GameHeader } from '../components/GameShell';
+import { GameHeader, ShareButton } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { DIRS, readSelection, snapEnd } from '../engine/wordsearch';
 import {
-  getLevel, getWordSearchSession, getWordSearchDaily, markWordSearchSolved, markLearned, LEARN_LIMIT,
+  getLevel, getWordSearchSession, getWordSearchDaily, markWordSearchSolved, markLearned, LEARN_LIMIT, recordHint, recordHard,
 } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts, formatTime } from '../theme';
+import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
 
 function Timer({ session, running }) {
@@ -162,16 +162,20 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   const unfound = puzzle.words.filter((w) => !found[w.answer]);
   const hintFirst = () => {
     setMenu(false);
+    recordHint('letter', session);
     const w = unfound.find((x) => !hinted[x.answer]) || unfound[0];
     if (!w) return;
+    recordHard(w.answer, 'hint');
     setHinted((h) => ({ ...h, [w.answer]: true }));
     showToast(`İlk harf işaretlendi: ${puzzle.list === 'en' ? w.answer.toLowerCase() : w.clue}`);
   };
   const revealOne = () => {
     setMenu(false);
+    recordHint('word', session);
     const w = unfound[0];
     if (!w) return;
-    setFound((f) => ({ ...f, [w.answer]: { color: '#D3CFC5', revealed: true } }));
+    recordHard(w.answer, 'hint');
+    setFound((f) => ({ ...f, [w.answer]: { revealed: true } }));
   };
   const reset = () => {
     setMenu(false);
@@ -187,7 +191,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     const sw = size * 0.8;
     return (
       <React.Fragment key={key}>
-        <Line x1={x0} y1={y0} x2={x1} y2={y1} stroke={colors.ink} strokeWidth={sw} strokeLinecap="round" />
+        <Line x1={x0} y1={y0} x2={x1} y2={y1} stroke={ed.accent} strokeWidth={sw} strokeLinecap="round" />
         <Line x1={x0} y1={y0} x2={x1} y2={y1} stroke={fill} strokeWidth={sw - 3} strokeLinecap="round" strokeDasharray={dashed ? '1' : undefined} />
       </React.Fragment>
     );
@@ -199,13 +203,13 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     if (!f) continue;
     const [r1, c1] = endOf(w);
     // kendi bulduğun yeşil, ampulle açılan gri
-    marks.push(capsule(w.answer, w.r, w.c, r1, c1, f.revealed ? f.color : colors.okCell));
+    marks.push(capsule(w.answer, w.r, w.c, r1, c1, f.revealed ? ed.revealHi : colors.okCell));
   }
   const hintMarks = puzzle.words
     .filter((w) => hinted[w.answer] && !found[w.answer])
     .map((w) => {
       const [x, y] = center(w.r, w.c);
-      return <Circle key={`h${w.answer}`} cx={x} cy={y} r={size * 0.42} stroke={colors.wrong} strokeWidth={2.5} fill="none" />;
+      return <Circle key={`h${w.answer}`} cx={x} cy={y} r={size * 0.42} stroke={ed.orange} strokeWidth={2.5} fill="none" />;
     });
 
   const doneCount = puzzle.words.length - unfound.length;
@@ -216,7 +220,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         insetTop={insets.top}
         session={session}
         running={!solved}
-        subtitle={<>{kind === 'daily' ? 'Günün Kelime Avı' : `Kelime Avı · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {puzzle.no}</>}
+        subtitle={`${kind === 'daily' ? 'Günün Kelime Avı' : `Kelime Avı · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${puzzle.no}`}
+        badge={`${left}/${LEARN_LIMIT}`}
         onMenu={() => setMenu(true)}
       />
 
@@ -268,7 +273,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           const label = puzzle.list === 'en' ? w.answer.toLowerCase() : w.clue;
           return (
             <Pressable key={w.answer} style={styles.item} onPress={() => openLearn(w)} hitSlop={4}>
-              <View style={[styles.dot, f && { backgroundColor: f.revealed ? f.color : colors.okCell }]} />
+              <View style={[styles.dot, f && { backgroundColor: f.revealed ? ed.revealHi : colors.okCell }]} />
               <Text style={[styles.itemText, f && styles.itemDone]} numberOfLines={1}>
                 {label}
                 {puzzle.list === 'tr' && !f ? <Text style={styles.itemLen}> ({w.answer.length})</Text> : null}
@@ -286,8 +291,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         <Pressable style={styles.backdrop} onPress={() => setMenu(false)}>
           <View style={styles.menu}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <BulbIcon size={26} />
-              <Text style={styles.menuTitle}>İpuçları</Text>
+              <BulbIcon size={18} color={ed.accent} />
+              <Text style={styles.menuTitle}>İPUCU YARDIMI</Text>
             </View>
             <View style={styles.thinRule} />
             {[
@@ -295,7 +300,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
               ['Kelime aç', 'Bulunamayan bir kelimeyi göster', revealOne],
               ['Baştan başla', 'Tüm işaretleri temizle', reset],
             ].map(([t, d, fn]) => (
-              <Pressable key={t} onPress={fn} style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: colors.paperDark }]}>
+              <Pressable key={t} onPress={fn} style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: ed.accentSoft }]}>
                 <Text style={styles.menuItemTitle}>{t}</Text>
                 <Text style={styles.menuItemDesc}>{d}</Text>
               </Pressable>
@@ -312,15 +317,16 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       <Modal visible={showWin} transparent animationType="fade" onRequestClose={() => setShowWin(false)}>
         <View style={styles.backdrop}>
           <View style={styles.win}>
-            <Text style={styles.winKicker}>EXTRA! EXTRA!</Text>
-            <Text style={styles.winHead}>All Words Found</Text>
+            <Text style={styles.winKicker}>TEBRİKLER</Text>
+            <Text style={styles.winHead}>Hepsini Buldun</Text>
             <View style={styles.doubleRule} />
             <Text style={styles.winBody}>
               Tebrikler! {puzzle.words.length} kelimeyi {formatTime(session.seconds || 0)} sürede buldun.
             </Text>
+            <ShareButton info={{ title: `Kelime Avı · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${puzzle.no}`, seconds: session.seconds, words: puzzle.words.length, hints: session.hinted }} />
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
               <Pressable style={[styles.btn, styles.btnGhost]} onPress={() => setShowWin(false)}>
-                <Text style={[styles.btnText, { color: colors.ink }]}>Izgarayı gör</Text>
+                <Text style={[styles.btnText, { color: ed.text }]}>Izgarayı gör</Text>
               </Pressable>
               <Pressable style={styles.btn} onPress={kind === 'daily' ? onBack : onNext}>
                 <Text style={styles.btnText}>{kind === 'daily' ? 'Ana sayfa' : 'Sonraki →'}</Text>
@@ -365,14 +371,14 @@ export default function WordSearchScreen({ kind, levelId, onBack }) {
   if (!session) {
     return (
       <View style={[styles.root, styles.loading, { paddingTop: insets.top }]}>
-        <Text style={styles.winKicker}>STOP THE PRESSES</Text>
-        <Text style={styles.loadingHead}>Yeni baskı hazırlanıyor…</Text>
+        <Text style={styles.winKicker}>YENİ BASKI</Text>
+        <Text style={styles.loadingHead}>Bulmaca hazırlanıyor…</Text>
         {error ? (
           <Pressable style={[styles.btn, { marginTop: 12, flex: 0, paddingHorizontal: 20 }]} onPress={() => load(true)}>
             <Text style={styles.btnText}>Tekrar dene</Text>
           </Pressable>
         ) : (
-          <ActivityIndicator color={colors.ink} />
+          <ActivityIndicator color={ed.accent} />
         )}
       </View>
     );
@@ -390,61 +396,55 @@ export default function WordSearchScreen({ kind, levelId, onBack }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.paper },
+  root: { flex: 1, backgroundColor: ed.bg },
   loading: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, gap: 10 },
-  loadingHead: { fontFamily: fonts.masthead, fontSize: 34, lineHeight: 44, color: colors.ink, textAlign: 'center' },
+  loadingHead: { fontFamily: efonts.headlineBold, fontSize: 26, lineHeight: 32, color: ed.text, textAlign: 'center' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 50 },
   headerSide: { width: 96 },
   headerRight: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
   headerMid: { flex: 1, alignItems: 'center' },
   backRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  back: { fontFamily: fonts.serif, fontSize: 17, lineHeight: 22, color: colors.ink },
-  title: { fontFamily: fonts.sansBlack, fontSize: 18, letterSpacing: 3, color: colors.ink },
-  sub: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 16, color: colors.inkSoft },
-  timer: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.ink, fontVariant: ['tabular-nums'] },
+  back: { fontFamily: efonts.body, fontSize: 17, lineHeight: 22, color: ed.text },
+  title: { fontFamily: efonts.labelBold, fontSize: 18, letterSpacing: 3, color: ed.text },
+  sub: { fontFamily: efonts.headlineItalic, fontSize: 12, lineHeight: 16, color: ed.textSoft },
+  timer: { fontFamily: efonts.labelBold, fontSize: 15, color: ed.text, fontVariant: ['tabular-nums'] },
   bulb: {
-    width: 38, height: 38, borderRadius: 19, borderWidth: 1.5, borderColor: colors.ink,
-    alignItems: 'center', justifyContent: 'center', backgroundColor: '#FBF9F3',
+    width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: ed.border,
+    alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surface,
   },
-  doubleRule: { height: 5, borderTopWidth: 2, borderBottomWidth: 1, borderColor: colors.rule, marginHorizontal: 8 },
-  thinRule: { height: 1, backgroundColor: colors.rule, marginVertical: 6 },
+  doubleRule: { height: 1, backgroundColor: ed.border, marginVertical: 8, marginHorizontal: 8 },
+  thinRule: { height: 1, backgroundColor: ed.border, marginVertical: 8 },
   kickerRow: { paddingHorizontal: 12, paddingVertical: 6 },
-  kicker: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.2, color: colors.wrong, textAlign: 'center' },
+  kicker: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.2, color: ed.accent, textAlign: 'center' },
   gridWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  frame: { borderWidth: 2, borderColor: colors.ink, backgroundColor: '#FBF9F3' },
+  frame: { borderWidth: 1.5, borderColor: ed.frame, backgroundColor: ed.surface, borderRadius: 6, overflow: 'hidden' },
   row: { flexDirection: 'row' },
-  letter: { fontFamily: fonts.letter, color: colors.ink, textAlign: 'center', includeFontPadding: false },
-  listHead: {
-    flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginTop: 6, paddingTop: 6,
-    borderTopWidth: 2, borderColor: colors.ink, gap: 8,
-  },
-  listTitle: { flex: 1, fontFamily: fonts.serifBold, fontSize: 17, lineHeight: 23, color: colors.ink },
-  listCount: { fontFamily: fonts.sansBold, fontSize: 13, color: colors.ink },
-  learnTag: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, borderWidth: 1, borderColor: colors.ink,
-    paddingHorizontal: 5, paddingVertical: 2, backgroundColor: '#FBF9F3',
-  },
-  learnTagText: { fontFamily: fonts.sansBold, fontSize: 11, color: colors.ink },
+  letter: { fontFamily: efonts.labelBold, color: ed.text, textAlign: 'center', includeFontPadding: false },
+  listHead: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderColor: ed.border, gap: 8 },
+  listTitle: { flex: 1, fontFamily: efonts.headlineBold, fontSize: 17, lineHeight: 23, color: ed.text },
+  listCount: { fontFamily: efonts.labelBold, fontSize: 13, color: ed.text },
+  learnTag: { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft, paddingHorizontal: 7, paddingVertical: 3 },
+  learnTagText: { fontFamily: efonts.labelBold, fontSize: 11, color: ed.accentInk },
   list: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, paddingTop: 4, paddingBottom: 4 },
   item: { width: '33.33%', flexDirection: 'row', alignItems: 'center', paddingVertical: 2, paddingRight: 6, gap: 5 },
-  dot: { width: 9, height: 9, borderRadius: 5, borderWidth: 1, borderColor: colors.ink },
-  itemText: { flex: 1, fontFamily: fonts.serif, fontSize: 14, lineHeight: 19, color: colors.ink },
-  itemDone: { textDecorationLine: 'line-through', color: colors.muted },
-  itemLen: { fontFamily: fonts.sans, fontSize: 11, color: colors.muted },
-  itemEn: { fontFamily: fonts.serifItalic, fontSize: 13, color: colors.ink, textDecorationLine: 'none' },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,20,20,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  menu: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 16 },
-  menuTitle: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 30, color: colors.ink },
-  menuItem: { paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.ink },
-  menuItemTitle: { fontFamily: fonts.sansBold, fontSize: 16, color: colors.ink },
-  menuItemDesc: { fontFamily: fonts.serifItalic, fontSize: 13, lineHeight: 18, color: colors.muted },
-  menuNote: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: 10 },
-  win: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 20 },
-  winKicker: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 3, color: colors.wrong, textAlign: 'center' },
-  winHead: { fontFamily: fonts.masthead, fontSize: 38, lineHeight: 50, color: colors.ink, textAlign: 'center', marginBottom: 6 },
-  winBody: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 23, color: colors.ink, marginTop: 12, textAlign: 'center' },
-  btn: { flex: 1, backgroundColor: '#19B5C2', paddingVertical: 12, alignItems: 'center', borderRadius: 22 },
-  btnGhost: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.ink },
-  btnText: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.paper, letterSpacing: 0.5 },
-  nextFab: { position: 'absolute', left: 24, right: 24, backgroundColor: '#19B5C2', paddingVertical: 15, alignItems: 'center', borderRadius: 26 },
+  dot: { width: 9, height: 9, borderRadius: 5, borderWidth: 1, borderColor: ed.textMute },
+  itemText: { flex: 1, fontFamily: efonts.body, fontSize: 14, lineHeight: 19, color: ed.text },
+  itemDone: { textDecorationLine: 'line-through', color: ed.textSoft },
+  itemLen: { fontFamily: efonts.body, fontSize: 11, color: ed.textSoft },
+  itemEn: { fontFamily: efonts.headlineItalic, fontSize: 13, color: ed.text, textDecorationLine: 'none' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(20,27,38,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  menu: { width: '100%', maxWidth: 360, backgroundColor: ed.surface, borderRadius: 16, padding: 16 },
+  menuTitle: { fontFamily: efonts.labelBold, fontSize: 12, letterSpacing: 1.2, color: ed.accent },
+  menuItem: { paddingVertical: 10, paddingHorizontal: 6, borderRadius: 10 },
+  menuItemTitle: { fontFamily: efonts.bodyBold, fontSize: 15.5, color: ed.text },
+  menuItemDesc: { fontFamily: efonts.body, fontSize: 12.5, lineHeight: 17, color: ed.textSoft },
+  menuNote: { fontFamily: efonts.headlineItalic, fontSize: 12, lineHeight: 17, color: ed.textSoft, marginTop: 10 },
+  win: { width: '100%', maxWidth: 360, backgroundColor: ed.surface, borderRadius: 18, padding: 22 },
+  winKicker: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 2, color: ed.orange, textAlign: 'center' },
+  winHead: { fontFamily: efonts.headlineBold, fontSize: 30, lineHeight: 36, color: ed.text, textAlign: 'center', marginTop: 4 },
+  winBody: { fontFamily: efonts.body, fontSize: 15, lineHeight: 22, color: ed.textSoft, marginTop: 10, textAlign: 'center' },
+  btn: { flex: 1, backgroundColor: ed.primary, paddingVertical: 13, alignItems: 'center', borderRadius: 12 },
+  btnGhost: { backgroundColor: ed.surfaceAlt },
+  btnText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
+  nextFab: { position: 'absolute', left: 20, right: 20, backgroundColor: ed.primary, paddingVertical: 15, alignItems: 'center', borderRadius: 12 },
 });

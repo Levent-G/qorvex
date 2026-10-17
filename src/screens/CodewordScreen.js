@@ -7,15 +7,15 @@ import * as Haptics from 'expo-haptics';
 import PuzzleGrid from '../components/PuzzleGrid';
 import Keyboard from '../components/Keyboard';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { useGameSession, LoadingPage, GameHeader, HintMenu, useSolvedEffect, useLearnCard, shellStyles } from '../components/GameShell';
+import { useGameSession, LoadingPage, GameHeader, HintMenu, useSolvedEffect, useLearnCard, shellStyles, ShareButton } from '../components/GameShell';
 import { buildWordModel, cellsOf, cellKey } from '../engine/gridgames';
 import { wordStatus } from '../engine/model';
 import {
   initCodeword, displayLetter, isLockedCell, isSolved, typeLetter, deleteLetter, nextOpenInWord, revealNumber,
 } from '../engine/codewordBoard';
-import { codeword, getLevel } from '../engine/session';
+import { codeword, getLevel, recordHint } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts } from '../theme';
+import { colors, fonts, ed, efonts } from '../theme';
 
 function Board({ session, kind, levelId, onBack, onNext }) {
   const p = session.puzzle;
@@ -185,6 +185,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!solved}
         subtitle={`${kind === 'daily' ? 'Günün Şifreli Bulmacası' : `Şifreli Bulmaca · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
+        badge={`${learn.left}/${learn.limit}`}
         onMenu={() => setMenu(true)}
       />
       <View style={shellStyles.kickerRow}>
@@ -238,8 +239,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                       style={[
                         styles.hiddenBox,
                         { width: hBox, height: hBox + 8 },
-                        (solved || s.committed[n]) && { backgroundColor: colors.okCell },
-                        !s.committed[n] && typed[n] && { backgroundColor: '#FFFFFF' },
+                        (solved || s.committed[n]) && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
+                        !s.committed[n] && typed[n] && { backgroundColor: colors.cell },
                         n === selNum && { backgroundColor: colors.cellActive },
                       ]}
                     >
@@ -267,7 +268,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 style={[
                   styles.keyBox,
                   { width: boxW },
-                  s.committed[n] && { backgroundColor: colors.okCell },
+                  s.committed[n] && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
                   n === selNum && { backgroundColor: colors.cellActive },
                   !present.has(n) && { opacity: 0.3 },
                 ]}
@@ -291,6 +292,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           <Text style={styles.doneTr} numberOfLines={2}>
             {hidden.tr}
           </Text>
+          <ShareButton style={{ marginTop: 8 }} info={{ title: `Şifreli Bulmaca · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, words: p.words.length, hints: session.hinted, line: `🔐 ${hidden.single ? 'Gizli kelime' : 'Gizli cümle'} bulundu` }} />
         </View>
       ) : (
         <Keyboard onKey={onKey} onDelete={onDelete} keyHeight={keyH} />
@@ -301,7 +303,11 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         visible={menu}
         onClose={() => setMenu(false)}
         items={[
-          ['Harf aç', 'Seçili sayının harfini göster', () => selNum && setS(revealNumber(p, model, s, selNum))],
+          ['Harf aç', 'Seçili sayının harfini göster', () => {
+            if (!selNum) return;
+            recordHint('letter', session);
+            setS(revealNumber(p, model, s, selNum));
+          }],
           ['Kelimeyi temizle', 'Seçili kelimedeki doğrulanmamış harfleri sil', () => {
             if (!activeWord) return;
             const cells = { ...s.cells };
@@ -340,20 +346,20 @@ export default function CodewordScreen({ kind, levelId, onBack }) {
 
 const styles = StyleSheet.create({
   gridWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  keyTable: { paddingHorizontal: 8, marginBottom: 8, gap: 4 },
+  keyTable: { marginHorizontal: 10, marginBottom: 8, gap: 4, backgroundColor: ed.surface, borderRadius: 12, borderWidth: 1, borderColor: ed.border, padding: 6 },
   keyRow: { flexDirection: 'row', justifyContent: 'center', gap: 2 },
-  keyBox: { height: 32, borderWidth: 1, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FBF9F3' },
-  keyNum: { position: 'absolute', top: 1, left: 2, fontFamily: fonts.sansBold, fontSize: 7, color: colors.inkSoft },
-  keyLetter: { fontFamily: fonts.letter, fontSize: 15, color: colors.ink, marginTop: 6 },
-  hidden: { marginHorizontal: 8, marginBottom: 8, paddingHorizontal: 4, paddingVertical: 4, borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: colors.ink },
-  hiddenDone: { backgroundColor: '#EEF6EA' },
-  hiddenLabel: { fontFamily: fonts.sansBold, fontSize: 10, lineHeight: 14, letterSpacing: 1, color: colors.wrong, marginBottom: 4 },
-  hiddenRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 8, rowGap: 4 },
+  keyBox: { height: 32, borderRadius: 5, borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surfaceAlt },
+  keyNum: { position: 'absolute', top: 1, left: 3, fontFamily: efonts.labelBold, fontSize: 7, color: ed.textSoft },
+  keyLetter: { fontFamily: efonts.labelBold, fontSize: 15, color: ed.text, marginTop: 6 },
+  hidden: { marginHorizontal: 10, marginBottom: 8, paddingHorizontal: 8, paddingVertical: 8, backgroundColor: ed.surface, borderRadius: 12, borderWidth: 1, borderColor: ed.border },
+  hiddenDone: { backgroundColor: ed.goodSoft, borderColor: ed.goodLine },
+  hiddenLabel: { fontFamily: efonts.labelBold, fontSize: 10, lineHeight: 14, letterSpacing: 1.1, color: ed.accent, marginBottom: 6, textAlign: 'center' },
+  hiddenRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 8, rowGap: 5 },
   hiddenWord: { flexDirection: 'row', gap: 2, alignItems: 'flex-end' },
-  hiddenBox: { borderWidth: 1, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FBF9F3' },
-  doneCard: { marginHorizontal: 10, paddingHorizontal: 14, paddingTop: 10, alignItems: 'center', borderWidth: 2, borderColor: colors.ink, backgroundColor: '#FBF9F3' },
-  doneLabel: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.6, color: colors.good },
-  doneText: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 28, color: colors.ink, textAlign: 'center', marginTop: 4 },
-  doneTr: { fontFamily: fonts.serifItalic, fontSize: 15, lineHeight: 20, color: colors.inkSoft, textAlign: 'center', marginTop: 4 },
-  hiddenPunct: { fontFamily: fonts.letter, color: colors.ink, textAlign: 'center' },
+  hiddenBox: { borderRadius: 5, borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surfaceAlt },
+  doneCard: { marginHorizontal: 10, paddingHorizontal: 16, paddingTop: 12, alignItems: 'center', backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border },
+  doneLabel: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.6, color: ed.good },
+  doneText: { fontFamily: efonts.headlineBold, fontSize: 23, lineHeight: 29, color: ed.text, textAlign: 'center', marginTop: 4 },
+  doneTr: { fontFamily: efonts.headlineItalic, fontSize: 15, lineHeight: 20, color: ed.textSoft, textAlign: 'center', marginTop: 4 },
+  hiddenPunct: { fontFamily: efonts.labelBold, color: ed.text, textAlign: 'center' },
 });

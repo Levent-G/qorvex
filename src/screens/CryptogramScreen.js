@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Keyboard from '../components/Keyboard';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { useGameSession, LoadingPage, GameHeader, HintMenu, useSolvedEffect, useLearnCard, shellStyles } from '../components/GameShell';
+import { useGameSession, LoadingPage, GameHeader, HintMenu, useSolvedEffect, useLearnCard, shellStyles, ShareButton } from '../components/GameShell';
 import {
   makeCrypto, initCrypto, select, typeLetter, deleteLetter, reveal, isSolved, allFilled, reading, wordStatuses,
 } from '../engine/cryptoBoard';
-import { cryptogram, getLevel } from '../engine/session';
+import { cryptogram, getLevel, recordHint } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts } from '../theme';
+import { colors, fonts, ed, efonts } from '../theme';
 
 const STATUS_BG = { ok: colors.okCell, close: colors.closeCell, bad: colors.badCell };
 
@@ -87,6 +87,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!solved}
         subtitle={`${kind === 'daily' ? 'Günün Şifreli Cümlesi' : `Şifreli Cümle · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
+        badge={`${learn.left}/${learn.limit}`}
         onMenu={() => setMenu(true)}
       />
       <View style={shellStyles.kickerRow}>
@@ -115,7 +116,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 }
                 const g = st.guess[ch];
                 const status = statusAt(i);
-                let bg = '#FFFFFF';
+                let bg = colors.cell;
                 if (status) bg = STATUS_BG[status];
                 if (ch === selC) bg = colors.wordHighlight;
                 if (i === st.sel) bg = colors.cellActive;
@@ -150,10 +151,11 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           {solved ? (
             <Pressable onPress={() => learn.openLearn(p.word, p.wordClue)}>
               <Text style={styles.keyWord}>
-                Anahtar kelime: <Text style={{ fontFamily: fonts.serifBold }}>{p.word.toLowerCase()}</Text> — {p.wordClue} · kartını aç ›
+                Anahtar kelime: <Text style={{ fontFamily: efonts.headlineBold }}>{p.word.toLowerCase()}</Text> — {p.wordClue} · kartını aç ›
               </Text>
             </Pressable>
           ) : null}
+          {solved ? <ShareButton info={{ title: `Şifreli Cümle · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, hints: session.hinted, line: `🔐 ${c.letters.length} harflik şifre çözüldü` }} /> : null}
         </View>
       </ScrollView>
 
@@ -168,7 +170,10 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         visible={menu}
         onClose={() => setMenu(false)}
         items={[
-          ['Harf aç', 'Seçili şifreli harfin gerçek karşılığını göster', () => setSt((s) => reveal(c, s))],
+          ['Harf aç', 'Seçili şifreli harfin gerçek karşılığını göster', () => {
+            recordHint('letter', session);
+            setSt((s) => reveal(c, s));
+          }],
           ['Kelime kartı', `Cümlenin anahtar kelimesini öğren (kalan hak ${learn.left}/${learn.limit})`, () => learn.openLearn(p.word, p.wordClue)],
           ['Baştan başla', 'Verilenler hariç tüm harfleri sil', () => setSt(initCrypto(c, {}, {}))],
         ]}
@@ -200,18 +205,18 @@ export default function CryptogramScreen({ kind, levelId, onBack }) {
 }
 
 const styles = StyleSheet.create({
-  clueBox: { borderWidth: 1.5, borderColor: colors.ink, padding: 10, marginVertical: 8, backgroundColor: colors.paperDark },
-  label: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.6, color: colors.wrong },
-  clueText: { fontFamily: fonts.serifItalic, fontSize: 17, lineHeight: 24, color: colors.ink, marginTop: 2 },
+  clueBox: { backgroundColor: ed.surfaceAlt, borderRadius: 12, padding: 12, marginVertical: 8 },
+  label: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.6, color: ed.accent },
+  clueText: { fontFamily: efonts.headlineItalic, fontSize: 17, lineHeight: 24, color: ed.text, marginTop: 2 },
   sentence: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 12, columnGap: 14, marginTop: 10 },
   word: { flexDirection: 'row', gap: 3 },
-  tile: { borderWidth: 1.5, borderColor: colors.ink },
+  tile: { borderWidth: 1, borderColor: ed.border, borderRadius: 6, overflow: 'hidden', backgroundColor: ed.surface },
   top: { alignItems: 'center', justifyContent: 'center' },
-  bottom: { borderTopWidth: 1, borderColor: colors.ink, backgroundColor: colors.paperDark, alignItems: 'center', paddingVertical: 1 },
-  guess: { fontFamily: fonts.letter, color: colors.ink, includeFontPadding: false },
-  cipher: { fontFamily: fonts.sansBold, fontSize: 11, lineHeight: 14, color: colors.inkSoft },
-  punct: { fontFamily: fonts.letter, color: colors.ink, alignSelf: 'flex-start', textAlign: 'center' },
-  readBox: { borderWidth: 1.5, borderColor: colors.ink, padding: 10, marginTop: 18 },
-  readText: { fontFamily: fonts.serifBold, fontSize: 20, lineHeight: 28, letterSpacing: 1, color: colors.ink, marginTop: 4 },
-  keyWord: { fontFamily: fonts.serif, fontSize: 15, lineHeight: 21, color: colors.ink, marginTop: 8 },
+  bottom: { borderTopWidth: 1, borderColor: ed.border, backgroundColor: ed.surfaceAlt, alignItems: 'center', paddingVertical: 1 },
+  guess: { fontFamily: efonts.labelBold, color: ed.text, includeFontPadding: false },
+  cipher: { fontFamily: efonts.labelBold, fontSize: 11, lineHeight: 14, color: ed.textSoft },
+  punct: { fontFamily: efonts.labelBold, color: ed.text, alignSelf: 'flex-start', textAlign: 'center' },
+  readBox: { backgroundColor: ed.surface, borderRadius: 12, borderWidth: 1, borderColor: ed.border, padding: 12, marginTop: 18 },
+  readText: { fontFamily: efonts.headlineBold, fontSize: 20, lineHeight: 28, letterSpacing: 1, color: ed.text, marginTop: 4 },
+  keyWord: { fontFamily: efonts.body, fontSize: 15, lineHeight: 21, color: ed.text, marginTop: 8 },
 });

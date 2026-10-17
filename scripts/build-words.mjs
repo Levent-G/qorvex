@@ -88,6 +88,44 @@ for (const e of map.values()) {
   if (!clue) continue;
   words.push({ ...e, c: trCapitalize(clue) });
 }
+// Ek kelimeler (scripts/extra-words/*.json): Openjam (MIT) aday listesinden seçilip Türkçesi elle yazılanlar.
+// Kayıt: { a, l, p, c, m: [...], ex: [[en, tr]] } — davinci2'de zaten olan kelime atlanır.
+const EXTRA_DIR = path.resolve(__dirname, 'extra-words');
+let extraAdded = 0;
+if (fs.existsSync(EXTRA_DIR)) {
+  const have = new Set(words.map((w) => w.a));
+  const bad = [];
+  for (const f of fs.readdirSync(EXTRA_DIR).filter((x) => x.endsWith('.json')).sort()) {
+    for (const e of JSON.parse(fs.readFileSync(path.join(EXTRA_DIR, f), 'utf8'))) {
+      const why =
+        !/^[A-Z]{2,10}$/.test(e.a) ? 'kelime A-Z ve 2-10 harf olmalı'
+        : !(e.l >= 0 && e.l <= 5) ? 'seviye 0-5 olmalı'
+        : !e.c || e.c.length > 18 ? 'ipucu 1-18 karakter olmalı'
+        : lower(e.c) === lower(e.a) ? 'ipucu cevapla aynı'
+        : !Array.isArray(e.m) || !e.m.length ? 'anlam yok'
+        : !Array.isArray(e.ex) || !e.ex.length || e.ex.some((x) => !x[0] || !x[1]) ? 'örnek cümle eksik'
+        : null;
+      if (why) { bad.push(`${f} ${e.a}: ${why}`); continue; }
+      if (have.has(e.a)) continue; // ana listede var
+      have.add(e.a);
+      words.push({ a: e.a, l: e.l, m: e.m, ex: e.ex.slice(0, 3), p: e.p || '', cat: 'extra', c: e.c });
+      extraAdded++;
+    }
+  }
+  if (bad.length) {
+    console.error('HATALI EK KELİMELER:\n' + bad.join('\n'));
+    process.exit(1);
+  }
+}
+console.log(`${extraAdded} ek kelime eklendi`);
+// Okunuşlar (scripts/phonetics/openjam-ipa.json — Openjam, MIT): kelime kartında gösterilir
+const IPA_FILE = path.resolve(__dirname, 'phonetics/openjam-ipa.json');
+if (fs.existsSync(IPA_FILE)) {
+  const ipa = JSON.parse(fs.readFileSync(IPA_FILE, 'utf8'));
+  let n = 0;
+  for (const w of words) if (ipa[w.a]) { w.ipa = ipa[w.a]; n++; }
+  console.log(`${n} kelimeye okunuş eklendi`);
+}
 const missing = Object.keys(fixes).filter((a) => !map.has(a.toLowerCase()));
 if (missing.length) console.warn(`UYARI: listede olmayan düzeltmeler: ${missing.join(', ')}`);
 console.log(`${fixed} ipucu elle düzeltildi`);

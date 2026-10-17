@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "QORVEX",
+    "name": "ÇENGO",
     "slug": "qorvex",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "backgroundColor": "#0B1D33",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#18324D",
     "ios": {
       "bundleIdentifier": "com.qorvex.app",
       "supportsTablet": false,
@@ -19,7 +19,7 @@
     "android": {
       "package": "com.qorvex.app",
       "adaptiveIcon": {
-        "backgroundColor": "#0B1D33",
+        "backgroundColor": "#18324D",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -35,10 +35,26 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#0B1D33"
+          "backgroundColor": "#18324D"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#18324D"
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Telaffuz alıştırmasında söylediğin kelimeyi dinlemek için mikrofon kullanılır.",
+          "speechRecognitionPermission": "Söylediğin kelimenin doğru telaffuz edilip edilmediğini kontrol etmek için konuşma tanıma kullanılır.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ]
     ],
     "extra": {
       "eas": {

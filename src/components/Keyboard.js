@@ -1,15 +1,15 @@
 import React, { memo, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, fonts } from '../theme';
+import { ed, efonts } from '../theme';
 
 const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
 // Parmağın değdiği anda tepki veren tuş (Pressable'ın gecikmesi yok)
-function Key({ label, onDown, onUp, flex = 1, height }) {
+function Key({ label, onDown, onUp, flex = 1, height, del }) {
   const [down, setDown] = useState(false);
   return (
     <View
-      style={[styles.key, { height, flex }, down && { backgroundColor: colors.ink }]}
+      style={[styles.key, del && styles.delKey, { height, flex }, down && { backgroundColor: ed.primary }]}
       onTouchStart={() => {
         setDown(true);
         onDown();
@@ -23,14 +23,14 @@ function Key({ label, onDown, onUp, flex = 1, height }) {
         onUp && onUp();
       }}
     >
-      <Text allowFontScaling={false} style={[styles.keyText, flex > 1 && styles.wideText, down && { color: colors.paper }]}>
+      <Text allowFontScaling={false} style={[styles.keyText, del && styles.delText, down && { color: ed.onPrimary }]}>
         {label}
       </Text>
     </View>
   );
 }
 
-// Gazete stili ekran klavyesi. Silme tuşu basılı tutulunca seri siler.
+// Ekran klavyesi (gri panel, beyaz tuşlar). Silme tuşu basılı tutulunca seri siler.
 export default memo(function Keyboard({ onKey, onDelete, keyHeight = 44 }) {
   const timers = useRef({});
   const startDelete = () => {
@@ -52,7 +52,7 @@ export default memo(function Keyboard({ onKey, onDelete, keyHeight = 44 }) {
           {row.split('').map((ch) => (
             <Key key={ch} label={ch} height={keyHeight} onDown={() => onKey(ch)} />
           ))}
-          {i === 2 ? <Key label="⌫" flex={1.8} height={keyHeight} onDown={startDelete} onUp={stopDelete} /> : null}
+          {i === 2 ? <Key label="⌫" flex={1.8} height={keyHeight} onDown={startDelete} onUp={stopDelete} del /> : null}
         </View>
       ))}
     </View>
@@ -60,16 +60,16 @@ export default memo(function Keyboard({ onKey, onDelete, keyHeight = 44 }) {
 });
 
 const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: 4, gap: 6 },
+  wrap: { marginHorizontal: 8, padding: 6, gap: 6, backgroundColor: ed.surfaceDim, borderRadius: 14 },
   row: { flexDirection: 'row', gap: 5 },
   key: {
-    borderWidth: 1,
-    borderColor: colors.ink,
-    backgroundColor: '#FBF9F3',
+    backgroundColor: ed.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 2,
+    borderRadius: 8,
+    shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 1, shadowOffset: { width: 0, height: 1 },
   },
-  keyText: { fontFamily: fonts.sansBold, fontSize: 17, color: colors.ink },
-  wideText: { fontSize: 20 },
+  delKey: { backgroundColor: ed.dangerSoft },
+  keyText: { fontFamily: efonts.labelBold, fontSize: 17, color: ed.text },
+  delText: { fontSize: 19, color: ed.danger },
 });

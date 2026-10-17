@@ -8,6 +8,8 @@ import { WORDS } from './words';
 import { buildInputs as buildPoolInputs, recordAnswersTo } from './pool';
 import { findPhoto, photoCache } from '../services/pexels';
 import { photoBlock } from './picture';
+import { wordOfDay, isoWeek } from './practice';
+import { newlyEarned, badgeList, PUZZLE_GAMES } from './badges';
 import { getStore, persist } from '../storage';
 
 export const LEVELS = [
@@ -31,9 +33,9 @@ function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
 }
 
-async function makePuzzle(level, seed, withPrio) {
+async function makePuzzle(level, seed, withPrio, strict = true) {
   const store = getStore();
-  const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, true);
+  const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, strict);
   const puzzle = await generatePuzzle({
     // 5 bağımsız tur, en az boşluklusu seçilir
     w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn,
@@ -86,8 +88,8 @@ export function peekDaily() {
 }
 
 export function markSolved(kind, levelId) {
-  recordSolve(kind, levelId);
   const store = getStore();
+  recordSolve(kind, levelId, 'arrow', kind === 'level' ? store.levels[levelId]?.current : store.daily);
   if (kind === 'level') {
     const st = store.levels[levelId];
     if (st) st.solvedCount = (st.solvedCount || 0) + 1;
@@ -100,6 +102,7 @@ export function markLearned(answer) {
   const learn = getStore().learn;
   // zaten defterdeyse ilerlemesi sıfırlanmasın (yoksa kartı her açışta en sık tekrara döner)
   if (!learn.marked[answer]) learn.marked[answer] = { at: Date.now(), seen: 0, last: learn.counter };
+  recordHard(answer, 'card'); // kartını açmak: kelimeyi bilmiyordu
   persist();
 }
 
@@ -171,7 +174,7 @@ export function peekWordSearchDaily() {
 }
 
 export function markWordSearchSolved(kind, levelId) {
-  recordSolve(kind, levelId);
+  recordSolve(kind, levelId, 'ws', kind === 'level' ? wsStore().levels[levelId]?.current : wsStore().daily);
   if (kind === 'level') {
     const st = wsStore().levels[levelId];
     if (st) st.solvedCount = (st.solvedCount || 0) + 1;
@@ -246,7 +249,7 @@ export function peekLadderDaily() {
 }
 
 export function markLadderSolved(kind, levelId) {
-  recordSolve(kind, levelId);
+  recordSolve(kind, levelId, 'ladder', kind === 'level' ? ladderStore().levels[levelId]?.current : ladderStore().daily);
   if (kind === 'level') {
     const st = ladderStore().levels[levelId];
     if (st) st.solvedCount = (st.solvedCount || 0) + 1;
@@ -259,7 +262,7 @@ export function ladderLevelState(levelId) {
 }
 // ================= Yeni oyunlar: ortak oturum fabrikası =================
 // Her oyun: seviye başına tek aktif bulmaca + günün bulmacası + ortak kelime defteri.
-function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt, strict = false }) {
+function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt, strict = false, gameId = storeKey }) {
   const st = () => {
     const store = getStore();
     return store[storeKey] || (store[storeKey] = { levels: {}, daily: null });
@@ -300,7 +303,7 @@ function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt, st
       return d && d.date === todayKey() ? d : null;
     },
     markSolved(kind, levelId) {
-      recordSolve(kind, levelId);
+      recordSolve(kind, levelId, gameId, kind === 'level' ? st().levels[levelId]?.current : st().daily);
       if (kind === 'level') {
         const ls = st().levels[levelId];
         if (ls) ls.solvedCount = (ls.solvedCount || 0) + 1;
@@ -324,6 +327,7 @@ const gridSize = (levelId) => {
 const NOUNS = new Set(WORDS.filter((w) => w.p === 'noun').map((w) => w.a));
 // 'picture3': önceki biçimlerin kayıtları yeni ekranda açılmasın
 export const picture = makeGameStore('picture3', {
+  gameId: 'picture',
   strict: true,
   salt: 2246822519,
   make: async (levelId, seed, { entries, dict, prio }) => {
@@ -473,9 +477,24 @@ function profileStore() {
 const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 const isoDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-// Bir bulmaca çözüldüğünde: toplam, günlük seri ve seviye ilerlemesi
-export function recordSolve(kind, levelId) {
+// Bir bulmaca çözüldüğünde: toplam, günlük seri, seviye ilerlemesi ve oyun başına süre/ipucu
+export function recordSolve(kind, levelId, gameId, session) {
   const st = statsStore();
+  if (gameId) {
+    const games = st.games || (st.games = {});
+    const g = games[gameId] || (games[gameId] = { solved: 0, fastest: null, totalSec: 0, timed: 0, recent: [] });
+    g.solved++;
+    const sec = session && session.seconds;
+    if (sec > 0) {
+      g.fastest = g.fastest == null ? sec : Math.min(g.fastest, sec);
+      g.totalSec += sec;
+      g.timed++;
+      g.recent = [...(g.recent || []), sec].slice(-10);
+    }
+    // ipucusuz çözüm: hiç kare/harf açılmadıysa
+    const opened = session && session.revealed ? Object.keys(session.revealed).length : 0;
+    if (session && !opened && !session.hinted) st.clean = (st.clean || 0) + 1;
+  }
   const today = isoDay();
   st.total = (st.total || 0) + 1;
   st.byDay[today] = (st.byDay[today] || 0) + 1;
@@ -513,6 +532,60 @@ export function getPromotion() {
 export function clearPromotion() {
   delete profileStore().promoted;
   persist();
+}
+
+// İpucu kullanımı (Harf aç / Kelime aç). type: 'letter' | 'word'
+export function recordHint(type, session) {
+  if (session) session.hinted = true; // bu bulmaca ipucusuz sayılmasın
+  const st = statsStore();
+  const h = st.hints || (st.hints = { letter: 0, word: 0 });
+  h[type] = (h[type] || 0) + 1;
+  persist();
+}
+
+// İstatistikler sekmesi için ayrıntılı özet
+export function getDetailedStats() {
+  const st = statsStore();
+  const learn = getStore().learn;
+  const times = learn.times || {};
+  const seen = new Set([...Object.keys(times), ...Object.keys(learn.recent || {})]);
+  const encounters = Object.values(times).reduce((a, b) => a + b, 0);
+  const marked = Object.values(learn.marked || {});
+  const sumDays = (from, to) => {
+    let n = 0;
+    for (let i = from; i < to; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      n += st.byDay[isoDay(d)] || 0;
+    }
+    return n;
+  };
+  // ortalama süre: son 10 çözüm ile tüm zamanlar (tüm oyunlar)
+  let recentSum = 0, recentN = 0, allSum = 0, allN = 0;
+  for (const g of Object.values(st.games || {})) {
+    for (const x of g.recent || []) {
+      recentSum += x;
+      recentN++;
+    }
+    allSum += g.totalSec || 0;
+    allN += g.timed || 0;
+  }
+  return {
+    games: st.games || {},
+    hints: st.hints || { letter: 0, word: 0 },
+    clean: st.clean || 0,
+    total: st.total || 0,
+    seenWords: seen.size,
+    encounters,
+    notebook: marked.length,
+    learned: marked.filter((m) => (m.seen || 0) >= 3).length,
+    thisWeek: sumDays(0, 7),
+    lastWeek: sumDays(7, 14),
+    activeDays: Object.values(st.byDay || {}).filter((n) => n > 0).length,
+    avgRecent: recentN ? recentSum / recentN : null,
+    avgAll: allN ? allSum / allN : null,
+    levelSolved: st.levelSolved || {},
+  };
 }
 
 // Seri: dün ya da bugün çözülmediyse 0 görünür
@@ -553,4 +626,188 @@ export function notebookWords() {
 export function removeFromNotebook(answer) {
   delete getStore().learn.marked[answer];
   persist();
+}
+
+// ================= Zor kelimeler =================
+// Bir kelimede zorlanma işaretleri: harf/kelime açma (hint), yanlış/eksik tamamlama (miss),
+// kelime kartını açma (card), tekrar modunda yanlış (quiz). Tekrar modunda doğru bilmek (ok) puanı düşürür.
+const HARD_W = { hint: 2, miss: 2, card: 1, quiz: 3 };
+function hardStore() {
+  const learn = getStore().learn;
+  return learn.hard || (learn.hard = {});
+}
+export function recordHard(answer, kind) {
+  if (!answer || !HARD_W[kind]) return;
+  const h = hardStore();
+  const e = h[answer] || (h[answer] = { hint: 0, miss: 0, card: 0, quiz: 0, ok: 0, at: 0 });
+  e[kind] = (e[kind] || 0) + 1;
+  e.at = Date.now();
+  persist();
+}
+const hardScore = (e) => Object.entries(HARD_W).reduce((a, [k, w]) => a + (e[k] || 0) * w, 0) - (e.ok || 0) * 3;
+// Zor kelimeler: puanı en yüksekten (eşitlikte en yeni), en az 2 puanlılar
+export function hardWords() {
+  return Object.entries(hardStore())
+    .map(([answer, e]) => ({ answer, score: hardScore(e), ...e }))
+    .filter((x) => x.score >= 2)
+    .sort((a, b) => b.score - a.score || b.at - a.at);
+}
+
+// Tekrar modu sonucu: doğru bilinen defter kelimesi tekrar sayısında ilerler, yanlış bilinen geri düşer ve zorlara eklenir
+export function recordReview(answer, correct) {
+  const learn = getStore().learn;
+  const m = learn.marked[answer];
+  if (correct) {
+    if (m) {
+      m.seen = (m.seen || 0) + 1;
+      m.last = learn.counter;
+    }
+    const h = hardStore()[answer];
+    if (h) h.ok = (h.ok || 0) + 1;
+  } else {
+    if (m) m.seen = Math.max(0, (m.seen || 0) - 1);
+    recordHard(answer, 'quiz');
+  }
+  persist();
+}
+
+// ================= Alıştırma modları: tekrar turu, zamana karşı, telaffuz, günün kelimesi =================
+function extraStore() {
+  const store = getStore();
+  const x = store.extra || (store.extra = {});
+  x.review = x.review || { sessions: 0, perfect: 0 };
+  x.ta = x.ta || { best: 0, plays: 0 };
+  x.pron = x.pron || { ok: 0, tries: 0 };
+  x.wotd = x.wotd || { days: {} };
+  x.weekly = x.weekly || { done: {} };
+  return x;
+}
+export function getExtra() {
+  return extraStore();
+}
+
+export function recordReviewSession(score, total) {
+  const r = extraStore().review;
+  r.sessions++;
+  if (total > 0 && score === total) r.perfect++;
+  persist();
+}
+
+// Zamana karşı: rekor güncellenirse isRecord
+export function recordTimeAttack(score) {
+  const t = extraStore().ta;
+  t.plays++;
+  const isRecord = score > t.best;
+  if (isRecord) t.best = score;
+  persist();
+  return { best: t.best, isRecord };
+}
+
+export function recordPronunciation(answer, ok) {
+  const p = extraStore().pron;
+  p.tries++;
+  if (ok) p.ok++;
+  else recordHard(answer, 'miss');
+  persist();
+}
+
+// Günün kelimesi (profil seviyesinde, tarihe göre sabit). Görüldüğü gün kaydedilir (rozet için).
+export function getWordOfDay() {
+  const lv = getLevel(profileStore().level) || LEVELS[0];
+  const w = wordOfDay(WORDS, lv.mixed ? 3 : lv.idx, isoDay());
+  return w;
+}
+export function markWordOfDaySeen() {
+  const x = extraStore();
+  const day = isoDay();
+  if (!x.wotd.days[day]) {
+    x.wotd.days[day] = getWordOfDay().a;
+    persist();
+  }
+}
+export function addToNotebook(answer) {
+  const learn = getStore().learn;
+  if (!learn.marked[answer]) learn.marked[answer] = { at: Date.now(), seen: 0, last: learn.counter };
+  persist();
+}
+
+// ---- Haftalık Meydan Okuma: haftada bir, profil seviyesinin bir üstünden büyük çengel bulmaca ----
+export const weekly = {
+  label: 'Haftalık Meydan Okuma',
+  level() {
+    const cur = profileStore().level;
+    const i = LEVEL_ORDER.indexOf(cur);
+    return i < 0 || i >= LEVEL_ORDER.length - 1 ? 'MIX' : LEVEL_ORDER[i + 1];
+  },
+  async getDaily() {
+    const store = getStore();
+    const wk = isoWeek();
+    if (store.weekly && store.weekly.week === wk.key) return store.weekly;
+    await yieldFn();
+    const levelId = weekly.level();
+    const base = getLevel(levelId);
+    const seed = ('weekly' + wk.key + levelId).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 23);
+    // tekrar kuralı gevşek: haftada bir gelen büyük bulmaca dolu olsun (daha önce çıkmış kelime de gelebilir)
+    const puzzle = await makePuzzle({ ...base, w: 9, h: 11 }, seed, false, false);
+    recordAnswers(puzzle.clues.map((k) => k.answer));
+    puzzle.no = wk.no;
+    store.weekly = { ...newSession(puzzle), week: wk.key, levelId };
+    persist();
+    return store.weekly;
+  },
+  getSession() {
+    return weekly.getDaily();
+  },
+  peekDaily() {
+    const w = getStore().weekly;
+    return w && w.week === isoWeek().key ? w : null;
+  },
+  markSolved() {
+    const w = getStore().weekly;
+    recordSolve('daily', null, 'weekly', w);
+    extraStore().weekly.done[isoWeek().key] = true;
+    persist();
+  },
+};
+
+// ================= Rozetler =================
+export function badgeContext() {
+  const st = statsStore();
+  const d = getDetailedStats();
+  const x = extraStore();
+  const games = st.games || {};
+  return {
+    total: st.total || 0,
+    best: st.best || 0,
+    clean: st.clean || 0,
+    gameKinds: PUZZLE_GAMES.filter((g) => games[g]?.solved > 0).length,
+    arrowFastest: games.arrow?.fastest ?? null,
+    notebook: d.notebook,
+    learned: d.learned,
+    reviewSessions: x.review.sessions,
+    reviewPerfect: x.review.perfect,
+    taBest: x.ta.best,
+    pronOk: x.pron.ok,
+    wotdDays: Object.keys(x.wotd.days).length,
+    weeklyDone: Object.keys(x.weekly.done).length,
+    levelsDone: Object.keys(profileStore().completed || {}).length,
+  };
+}
+function earnedStore() {
+  const store = getStore();
+  return store.badges || (store.badges = {});
+}
+// Yeni kazanılan rozetleri kaydedip döndürür (kutlama için)
+export function checkBadges() {
+  const earned = earnedStore();
+  const fresh = newlyEarned(badgeContext(), earned);
+  if (fresh.length) {
+    const now = Date.now();
+    fresh.forEach((b) => (earned[b.id] = now));
+    persist();
+  }
+  return fresh;
+}
+export function getBadges() {
+  return badgeList(badgeContext(), earnedStore());
 }

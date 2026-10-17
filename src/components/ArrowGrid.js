@@ -37,6 +37,8 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
   const learned = [learned0, learned1];
   const two = texts.length === 2;
   const fs = Math.max(6, size * (two ? 0.2 : 0.22));
+  // seçili ipucunun ampulü için ayrılan yer: tek ipucunda üstte, çift ipucunda sağda (yazının üstüne binmesin)
+  const bulb = Math.max(9, size * (two ? 0.22 : 0.26));
   return (
     <View
       style={[
@@ -48,7 +50,12 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
       {texts.map((t, i) => (
         <View
           key={i}
-          style={[styles.clueSlot, two && i === 0 && styles.clueDivider, activeSlot === i && { backgroundColor: colors.clueCellActive }]}
+          style={[
+            styles.clueSlot,
+            two && i === 0 && styles.clueDivider,
+            activeSlot === i && { backgroundColor: colors.clueCellActive },
+            activeSlot === i && (two ? { paddingRight: bulb + 1 } : { paddingTop: bulb * 0.95 }),
+          ]}
         >
           {showText ? (
             <Text
@@ -59,7 +66,7 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
               style={[
                 styles.clueText,
                 { fontSize: fs, lineHeight: fs * 1.3 },
-                activeSlot === i && { color: '#FFFFFF' },
+                activeSlot === i && { color: colors.ink, fontFamily: fonts.clueBold },
                 learned[i] && styles.learnedText,
               ]}
             >
@@ -68,13 +75,36 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
           ) : null}
           {/* seçili ipucu: bir daha dokununca kelime kartı açılır */}
           {activeSlot === i ? (
-            <View style={[styles.cardHint, { width: Math.max(10, size * (two ? 0.26 : 0.32)), height: Math.max(10, size * (two ? 0.26 : 0.32)) }]}>
-              <BulbIcon size={Math.max(9, size * (two ? 0.24 : 0.3))} color="#FFFFFF" />
+            <View style={two ? [styles.cardHintSide, { width: bulb }] : [styles.cardHint, { width: bulb + 2, height: bulb }]}>
+              <BulbIcon size={bulb} color={colors.bulb} />
             </View>
           ) : null}
         </View>
       ))}
     </View>
+  );
+});
+
+// Kullanılmayan kareler: kağıt tonunda ince çapraz tarama (gazetedeki "boş alan" gibi; koyu delik gibi durmasın)
+const DeadHatch = memo(function DeadHatch({ puzzle, size }) {
+  const step = Math.max(5, size * 0.16);
+  const lines = [];
+  for (let r = 0; r < puzzle.h; r++)
+    for (let c = 0; c < puzzle.w; c++) {
+      if (puzzle.rows[r][c] !== '.') continue;
+      const x0 = c * size, y0 = r * size;
+      // x + y = k çizgilerinin kare içindeki parçaları (sol alttan sağ üste)
+      for (let k = step; k < size * 2; k += step) {
+        const a = k <= size ? [x0, y0 + k] : [x0 + k - size, y0 + size];
+        const b = k <= size ? [x0 + k, y0] : [x0 + size, y0 + k - size];
+        lines.push(`M${a[0]} ${a[1]}L${b[0]} ${b[1]}`);
+      }
+    }
+  if (!lines.length) return null;
+  return (
+    <Svg pointerEvents="none" width={puzzle.w * size} height={puzzle.h * size} style={StyleSheet.absoluteFill}>
+      <Path d={lines.join('')} stroke={colors.deadHatch} strokeWidth={1.2} />
+    </Svg>
   );
 });
 
@@ -225,6 +255,7 @@ export default function ArrowGrid({
           </View>
         </View>
       ) : null}
+      <DeadHatch puzzle={puzzle} size={size} />
       <Arrows puzzle={puzzle} size={size} />
       {responder ? <View style={StyleSheet.absoluteFill} {...responder} /> : null}
     </View>
@@ -232,16 +263,16 @@ export default function ArrowGrid({
 }
 
 const styles = StyleSheet.create({
-  frame: { borderWidth: BORDER, borderColor: colors.ink, backgroundColor: colors.cell },
+  frame: { borderWidth: BORDER, borderColor: colors.frame, backgroundColor: colors.cell, borderRadius: 4, overflow: 'hidden' },
   row: { flexDirection: 'row' },
   cardHint: { position: 'absolute', top: 0, right: 0, alignItems: 'center', justifyContent: 'center' },
+  cardHintSide: { position: 'absolute', top: 0, bottom: 0, right: 0, alignItems: 'center', justifyContent: 'center' },
   photo: { position: 'absolute', borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.paperDark, overflow: 'hidden' },
-  photoTag: { position: 'absolute', left: 0, bottom: 0, backgroundColor: colors.ink, paddingHorizontal: 4, paddingVertical: 1 },
+  photoTag: { position: 'absolute', left: 0, bottom: 0, backgroundColor: colors.block, paddingHorizontal: 4, paddingVertical: 1 },
   photoTagText: { fontFamily: fonts.sansBold, fontSize: 8, letterSpacing: 1, color: '#FFFFFF' },
-  cell: { borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  cell: { borderColor: colors.gridLine, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   clueCell: { backgroundColor: colors.clueCell },
-  // kullanılmayan kare: ipucu karesinden açık, kağıt tonunda (koyu boşluk gibi görünmesin)
-  deadCell: { backgroundColor: '#E2DDD0' },
+  deadCell: { backgroundColor: colors.deadCell },
   clueSlot: { flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 1.5 },
   clueDivider: { borderBottomWidth: StyleSheet.hairlineWidth * 2, borderBottomColor: colors.ink },
   clueText: { fontFamily: fonts.clue, color: colors.ink, textAlign: 'center', includeFontPadding: false },

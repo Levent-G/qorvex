@@ -4,21 +4,21 @@ import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TopHeader, TabBar } from '../components/TabChrome';
 import HomeTab from './tabs/HomeTab';
-import GamesTab from './tabs/GamesTab';
+import StatsTab from './tabs/StatsTab';
 import NotebookTab from './tabs/NotebookTab';
 import LevelsTab from './tabs/LevelsTab';
 import ProfileTab from './tabs/ProfileTab';
 import { getProfile } from '../engine/session';
-import { ui } from '../theme';
+import { ed } from '../theme';
 
-export default function MainTabs({ tab, onTab, onOpenLevels, onOpenDaily }) {
+export default function MainTabs({ tab, onTab, onOpenLevels, onOpenDaily, onOpenReview, onOpenRoute }) {
   const insets = useSafeAreaInsets();
   let body;
-  if (tab === 'games') body = <GamesTab onOpenLevels={onOpenLevels} />;
-  else if (tab === 'notebook') body = <NotebookTab />;
-  else if (tab === 'levels') body = <LevelsTab />;
+  if (tab === 'stats') body = <StatsTab />;
+  else if (tab === 'notebook') body = <NotebookTab onOpenReview={onOpenReview} />;
+  else if (tab === 'levels') body = <LevelsTab onPlay={() => onOpenLevels('arrow')} />;
   else if (tab === 'profile') body = <ProfileTab onTab={onTab} />;
-  else body = <HomeTab onOpenLevels={onOpenLevels} onOpenDaily={onOpenDaily} onTab={onTab} />;
+  else body = <HomeTab onOpenLevels={onOpenLevels} onOpenDaily={onOpenDaily} onTab={onTab} onOpenRoute={onOpenRoute} />;
   return (
     <View style={styles.root}>
       <TopHeader insetTop={insets.top} onTab={onTab} levelId={getProfile().level} />
@@ -29,5 +29,5 @@ export default function MainTabs({ tab, onTab, onOpenLevels, onOpenDaily }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: ui.bg },
+  root: { flex: 1, backgroundColor: ed.bg },
 });

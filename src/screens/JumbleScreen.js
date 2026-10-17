@@ -6,9 +6,9 @@ import * as Haptics from 'expo-haptics';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
 import { BookIcon } from '../components/Icons';
 import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedEffect, useLearnCard, shellStyles } from '../components/GameShell';
-import { jumble, getLevel } from '../engine/session';
+import { jumble, getLevel, recordHint, recordHard } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts, formatTime } from '../theme';
+import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
 function Board({ session, kind, levelId, onBack, onNext }) {
   const p = session.puzzle;
@@ -85,6 +85,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   const revealLetter = () => {
     const it = focusItem;
     if (isOk(it)) return;
+    recordHard(it.answer, 'hint');
     const cur = slots[it.id].slice();
     // ilk yanlış/boş kutuya doğru harfi koy
     const j = cur.findIndex((t, k) => t == null || it.tiles[t] !== it.answer[k]);
@@ -177,6 +178,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!solved}
         subtitle={`${kind === 'daily' ? 'Günün Karışık Harfleri' : `Karışık Harfler · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
+        badge={`${learn.left}/${learn.limit}`}
         onMenu={() => setMenu(true)}
       />
       <View style={shellStyles.kickerRow}>
@@ -193,7 +195,10 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         visible={menu}
         onClose={() => setMenu(false)}
         items={[
-          ['Harf aç', 'Son dokunduğun kelimeye bir doğru harf koy', revealLetter],
+          ['Harf aç', 'Son dokunduğun kelimeye bir doğru harf koy', () => {
+            recordHint('letter', session);
+            revealLetter();
+          }],
           ['Kelimeyi temizle', 'Son dokunduğun kelimenin harflerini geri al', () => {
             if (!isOk(focusItem)) setSlots({ ...slots, [focusItem.id]: Array(focusItem.answer.length).fill(null) });
           }],
@@ -208,12 +213,13 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       {learn.modal}
       <WinModal
         visible={showWin}
-        head="Unjumbled!"
+        head="Harfler Düzeldi"
         body={`Tebrikler! Bonus kelime: ${p.bonus.answer.toLowerCase()} (${p.bonus.clue}). Süre: ${formatTime(session.seconds || 0)}.`}
         daily={kind === 'daily'}
         onClose={() => setShowWin(false)}
         onNext={onNext}
         onHome={onBack}
+        share={{ title: `Karışık Harfler · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, words: p.words.length + 1, hints: session.hinted, line: `🎁 Bonus: ${p.bonus.answer.toLowerCase()}` }}
       />
       {solved && !showWin && kind !== 'daily' ? (
         <Pressable style={[shellStyles.nextFab, { bottom: insets.bottom + BACK_BAR_HEIGHT + 16 }]} onPress={onNext}>
@@ -240,19 +246,19 @@ export default function JumbleScreen({ kind, levelId, onBack }) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderBottomWidth: 1, borderColor: colors.ink, paddingVertical: 12, gap: 8 },
-  cardFocus: { backgroundColor: '#FBF9F3' },
-  bonusCard: { borderWidth: 2, borderColor: colors.ink, padding: 10, marginTop: 14, backgroundColor: colors.paperDark },
+  card: { backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border, padding: 12, marginTop: 10, gap: 8 },
+  cardFocus: { borderColor: ed.accent, borderWidth: 1.5 },
+  bonusCard: { backgroundColor: ed.accentSoft, borderColor: ed.accentLine, marginTop: 14 },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardNo: { fontFamily: fonts.sansBlack, fontSize: 13, letterSpacing: 1, color: colors.wrong, minWidth: 22 },
-  clue: { flex: 1, fontFamily: fonts.serifBold, fontSize: 18, lineHeight: 24, color: colors.ink },
-  len: { fontFamily: fonts.sans, fontSize: 12, color: colors.muted },
-  bookBtn: { borderWidth: 1, borderColor: colors.ink, padding: 4, backgroundColor: '#FBF9F3' },
-  bonusNote: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 16, color: colors.muted },
+  cardNo: { fontFamily: efonts.labelBold, fontSize: 12, letterSpacing: 1, color: ed.accent, minWidth: 22 },
+  clue: { flex: 1, fontFamily: efonts.headlineBold, fontSize: 18, lineHeight: 24, color: ed.text },
+  len: { fontFamily: efonts.body, fontSize: 12, color: ed.textSoft },
+  bookBtn: { borderWidth: 1, borderColor: ed.border, padding: 4, backgroundColor: ed.surface, borderRadius: 8 },
+  bonusNote: { fontFamily: efonts.headlineItalic, fontSize: 12, lineHeight: 16, color: ed.textSoft },
   tiles: { flexDirection: 'row', gap: 6, flexWrap: 'nowrap' },
-  tile: { borderWidth: 1.5, borderColor: colors.ink, backgroundColor: '#FBF9F3', alignItems: 'center', justifyContent: 'center' },
+  tile: { borderWidth: 1, borderColor: ed.border, backgroundColor: ed.surface, alignItems: 'center', justifyContent: 'center', borderRadius: 7 },
   tileUsed: { opacity: 0.25 },
   tileLocked: { backgroundColor: colors.clueCell },
-  tileText: { fontFamily: fonts.letter, color: colors.ink, includeFontPadding: false },
-  slot: { borderWidth: 1.5, borderColor: colors.ink, backgroundColor: colors.cell, alignItems: 'center', justifyContent: 'center' },
+  tileText: { fontFamily: efonts.labelBold, color: ed.text, includeFontPadding: false },
+  slot: { borderWidth: 1, borderColor: ed.border, backgroundColor: colors.cell, alignItems: 'center', justifyContent: 'center', borderRadius: 7 },
 });

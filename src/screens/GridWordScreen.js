@@ -1,6 +1,6 @@
 // Kare Bulmaca, Resimli Bulmaca ve Sarmal Bulmaca ekranı (aynı yazma/silme mantığı: board reducer).
 // Resimli Bulmaca: kare bulmaca + fotoğraf ipuçları (fotoğrafı olmayan kelimenin ipucu Türkçe yazı).
-import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Modal, Image, Linking, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -12,9 +12,9 @@ import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedE
 import { buildWordModel, cellsOf, cellKey } from '../engine/gridgames';
 import { wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
-import { crossword, spiral, picture, getLevel } from '../engine/session';
+import { crossword, spiral, picture, getLevel, recordHint, recordHard } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts, formatTime } from '../theme';
+import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
 // Sarmal yolunda, ardışık olmayan komşulara kalın duvar
 function spiralWalls(path) {
@@ -49,7 +49,10 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
   const { width, height } = useWindowDimensions();
   const prep = useMemo(() => prepare(variant, p), [variant, p]);
   const { model } = prep;
-  const firstWord = (variant === 'picture' && model.order.find((i) => p.words[i] && p.words[i].photo)) ?? model.order[0];
+  // resimli türde fotoğraflı ilk kelime; diğerlerinde sıradaki ilk kelime
+  // (dikkat: `false ?? x` false döner — bu yüzden koşul ayrı)
+  const photoFirst = variant === 'picture' ? model.order.find((i) => p.words[i] && p.words[i].photo) : undefined;
+  const firstWord = photoFirst ?? model.order[0];
   const [s, dispatch] = useReducer(reducer, null, () =>
     selectWordState(
       { model, entries: session.entries || {}, revealed: session.revealed || {}, solved: !!session.solved, active: firstWord, sel: null },
@@ -81,6 +84,15 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
   }, [s.entries, model]);
 
   const activeKeys = useMemo(() => new Set(model.words[s.active].keys), [s.active, model]);
+  // yanlış/eksik tamamlanan kelime: bulmaca başına bir kez zor sayılır
+  const missed = useRef(new Set());
+  useEffect(() => {
+    const v = statuses[s.active];
+    if ((v === 'bad' || v === 'close') && !missed.current.has(s.active)) {
+      missed.current.add(s.active);
+      recordHard(model.words[s.active].answer, 'miss');
+    }
+  }, [statuses, s.active]);
   const onTap = useCallback((r, c) => dispatch({ type: 'tapCell', r, c }), []);
   const onKey = useCallback((ch) => {
     dispatch({ type: 'type', ch });
@@ -119,6 +131,7 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!s.solved}
         subtitle={`${kind === 'daily' ? 'Günün ' + title + 'sı' : `${title} · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
+        badge={`${learn.left}/${learn.limit}`}
         onMenu={() => setMenu(true)}
       />
       <View style={styles.gridWrap}>
@@ -180,7 +193,7 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
           </Pressable>
         ) : null}
         <Pressable style={{ flex: 1 }} onPress={() => (wPhoto && !wTrOpen ? setZoom(w) : learn.openLearn(w.answer, w.text))}>
-          <Text style={[shellStyles.clueMeta, learn.toast && { color: colors.wrong }]} numberOfLines={1}>
+          <Text style={[shellStyles.clueMeta, learn.toast && { color: ed.orange }]} numberOfLines={1}>
             {learn.toast || `${dirLabel} (${w.answer.length})`}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -209,8 +222,16 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
         items={[
           ['İpucu listesi', isPic ? 'Tüm resimleri numaralarıyla gör' : 'Tüm ipuçlarını numaralarıyla gör', () => setList(true)],
           ...(wPhoto ? [['Türkçesini göster', 'Seçili resmin Türkçe karşılığı', () => setShowTr({ ...showTr, [w.index]: true })]] : []),
-          ['Harf aç', 'Seçili kareyi göster', () => dispatch({ type: 'revealLetter' })],
-          ['Kelime aç', 'Seçili kelimeyi göster', () => dispatch({ type: 'revealWord' })],
+          ['Harf aç', 'Seçili kareyi göster', () => {
+            recordHint('letter', session);
+            recordHard(w.answer, 'hint');
+            dispatch({ type: 'revealLetter' });
+          }],
+          ['Kelime aç', 'Seçili kelimeyi göster', () => {
+            recordHint('word', session);
+            recordHard(w.answer, 'hint');
+            dispatch({ type: 'revealWord' });
+          }],
           ['Kelimeyi temizle', 'Seçili kelimedeki harfleri sil', () => dispatch({ type: 'clearWord' })],
           ['Kelime kartı', `Seçili kelimeyi öğren (kalan hak ${learn.left}/${learn.limit})`, () => learn.openLearn(w.answer, w.text)],
           ['Baştan başla', 'Tüm kareleri temizle', () => dispatch({ type: 'reset' })],
@@ -281,12 +302,13 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
       {learn.modal}
       <WinModal
         visible={showWin}
-        head="Puzzle Solved"
+        head="Bulmaca Çözüldü"
         body={`Tebrikler! ${model.words.length} kelimeyi ${formatTime(session.seconds || 0)} sürede çözdün.`}
         daily={kind === 'daily'}
         onClose={() => setShowWin(false)}
         onNext={onNext}
         onHome={onBack}
+        share={{ title: `${title} · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, words: model.words.length, hints: session.hinted }}
       />
       {s.solved && !showWin && kind !== 'daily' ? (
         <Pressable style={[shellStyles.nextFab, { bottom: insets.bottom + BACK_BAR_HEIGHT + 16 }]} onPress={onNext}>
@@ -317,27 +339,27 @@ export default function GridWordScreen({ variant, kind, levelId, onBack }) {
 
 const styles = StyleSheet.create({
   gridWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 6 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,20,20,0.45)', justifyContent: 'center', padding: 20 },
-  listCard: { maxHeight: '85%', backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink },
-  listHead: { fontFamily: fonts.serifBold, fontSize: 20, lineHeight: 28, color: colors.ink },
-  listRule: { height: 2, backgroundColor: colors.ink, marginBottom: 6 },
+  backdrop: { flex: 1, backgroundColor: 'rgba(20,27,38,0.45)', justifyContent: 'center', padding: 20 },
+  listCard: { maxHeight: '85%', backgroundColor: ed.surface, borderRadius: 16, overflow: 'hidden' },
+  listHead: { fontFamily: efonts.headlineBold, fontSize: 20, lineHeight: 28, color: ed.text },
+  listRule: { height: 1, backgroundColor: ed.border, marginBottom: 6 },
   listItem: { paddingVertical: 5 },
-  listText: { fontFamily: fonts.serif, fontSize: 15, lineHeight: 21, color: colors.ink },
-  listNum: { fontFamily: fonts.sansBold, fontSize: 13 },
-  listLen: { fontFamily: fonts.sans, fontSize: 12, color: colors.muted },
-  listDone: { textDecorationLine: 'line-through', color: colors.muted },
+  listText: { fontFamily: efonts.body, fontSize: 15, lineHeight: 21, color: ed.text },
+  listNum: { fontFamily: efonts.labelBold, fontSize: 13 },
+  listLen: { fontFamily: efonts.body, fontSize: 12, color: ed.textSoft },
+  listDone: { textDecorationLine: 'line-through', color: ed.textSoft },
   listPicRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   strip: { paddingHorizontal: 8, gap: 6, alignItems: 'center' },
-  stripItem: { width: 56, height: 56, borderWidth: 1.5, borderColor: colors.ink, backgroundColor: colors.paperDark },
-  stripActive: { borderWidth: 3, borderColor: colors.cellActive },
+  stripItem: { width: 56, height: 56, borderWidth: 1, borderColor: ed.border, backgroundColor: ed.surfaceAlt, borderRadius: 8 },
+  stripActive: { borderWidth: 2.5, borderColor: ed.accent },
   stripImg: { width: '100%', height: '100%' },
-  stripTag: { position: 'absolute', left: 0, top: 0, backgroundColor: colors.ink, paddingHorizontal: 3 },
-  stripTagText: { fontFamily: fonts.sansBold, fontSize: 10, lineHeight: 13, color: '#FFFFFF' },
-  listPic: { width: 54, height: 54, borderWidth: 1.5, borderColor: colors.ink },
-  thumb: { borderWidth: 1.5, borderColor: colors.ink, marginRight: 8, overflow: 'hidden', backgroundColor: colors.paperDark },
-  picHint: { fontFamily: fonts.serifItalic, fontSize: 15, color: colors.inkSoft },
-  zoomCard: { backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, overflow: 'hidden' },
-  zoomMeta: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 1.2, color: colors.wrong },
-  zoomTr: { fontFamily: fonts.serifBold, fontSize: 18, lineHeight: 24, color: colors.ink, marginTop: 4 },
-  zoomCredit: { fontFamily: fonts.sans, fontSize: 11, color: colors.muted, marginTop: 6 },
+  stripTag: { position: 'absolute', left: 0, top: 0, backgroundColor: ed.primary, paddingHorizontal: 4, borderBottomRightRadius: 6 },
+  stripTagText: { fontFamily: efonts.labelBold, fontSize: 10, lineHeight: 13, color: '#FFFFFF' },
+  listPic: { width: 54, height: 54, borderWidth: 1, borderColor: ed.border, borderRadius: 8 },
+  thumb: { borderWidth: 1, borderColor: ed.border, marginRight: 8, overflow: 'hidden', backgroundColor: ed.surfaceAlt, borderRadius: 8 },
+  picHint: { fontFamily: efonts.headlineItalic, fontSize: 15, color: ed.textSoft },
+  zoomCard: { backgroundColor: ed.surface, borderRadius: 16, overflow: 'hidden' },
+  zoomMeta: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 1.2, color: ed.accent },
+  zoomTr: { fontFamily: efonts.headlineBold, fontSize: 18, lineHeight: 24, color: ed.text, marginTop: 4 },
+  zoomCredit: { fontFamily: efonts.body, fontSize: 11, color: ed.textSoft, marginTop: 6 },
 });

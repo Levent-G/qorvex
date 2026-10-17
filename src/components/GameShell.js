@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import LearnModal from './LearnModal';
 import { BulbIcon } from './Icons';
+import { ClockIcon, ShareIcon } from './UiIcons';
+import { shareResult } from '../share';
 import { markLearned, LEARN_LIMIT } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts, formatTime, ui } from '../theme';
+import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
 // Oturumu yükle / üret
 export function useGameSession(store, kind, levelId) {
@@ -35,17 +37,17 @@ export function LoadingPage({ error, onRetry }) {
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.root, styles.loading, { paddingTop: insets.top }]}>
-      <Text style={styles.kickerRed}>STOP THE PRESSES</Text>
-      <Text style={styles.loadingHead}>Yeni baskı hazırlanıyor…</Text>
+      <Text style={styles.kicker}>YENİ BASKI</Text>
+      <Text style={styles.loadingHead}>Bulmaca hazırlanıyor…</Text>
       {error ? (
         <>
           <Text style={styles.body}>{error}</Text>
-          <Pressable style={[styles.btn, { flex: 0, paddingHorizontal: 20, marginTop: 12 }]} onPress={onRetry}>
+          <Pressable style={[styles.btn, { flex: 0, paddingHorizontal: 22, marginTop: 12 }]} onPress={onRetry}>
             <Text style={styles.btnText}>Tekrar dene</Text>
           </Pressable>
         </>
       ) : (
-        <ActivityIndicator color={colors.ink} />
+        <ActivityIndicator color={ed.accent} />
       )}
     </View>
   );
@@ -70,53 +72,65 @@ function Timer({ session, running }) {
   return <Text style={styles.timer}>{formatTime(sec)}</Text>;
 }
 
-export function GameHeader({ session, running, subtitle, onMenu, insetTop = 0 }) {
+// Üst bar: süre hapı · oyun adı (serif italik) + seviye/no · ampul hapı (ipuçları menüsü)
+export function GameHeader({ session, running, subtitle, onMenu, insetTop = 0, badge }) {
+  const parts = typeof subtitle === 'string' ? subtitle.split(' · ') : null;
+  const title = parts ? parts[0] : 'ÇENGO';
+  const rest = parts ? parts.slice(1).join(' · ') : subtitle;
   return (
-    <>
-      <View style={[styles.header, { paddingTop: insetTop, height: 54 + insetTop }]}>
-        <View style={styles.side}>
+    <View style={[styles.header, { paddingTop: insetTop + 6 }]}>
+      <View style={styles.side}>
+        <View style={styles.timerPill}>
+          <ClockIcon size={14} color={ed.text} />
           <Timer session={session} running={running} />
         </View>
-        <View style={styles.mid}>
-          <Text style={styles.title}>QORVEX</Text>
-          <Text style={styles.sub} numberOfLines={1}>
-            {subtitle}
-          </Text>
-        </View>
-        <View style={[styles.side, { alignItems: 'flex-end' }]}>
-          <Pressable onPress={onMenu} hitSlop={14} style={styles.bulb}>
-            <BulbIcon size={24} color={ui.bg} />
-          </Pressable>
-        </View>
       </View>
-      <View style={styles.headerLine} />
-    </>
+      <View style={styles.mid}>
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={styles.sub} numberOfLines={1}>
+          {rest}
+        </Text>
+      </View>
+      <View style={[styles.side, { alignItems: 'flex-end' }]}>
+        <Pressable onPress={onMenu} hitSlop={10} style={styles.bulbPill}>
+          <BulbIcon size={17} color="#FFFFFF" />
+          {badge ? <Text style={styles.bulbText}>{badge}</Text> : null}
+          <Text style={styles.bulbChev}>▾</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
+// İpuçları menüsü: sağ üstten açılan kart (son öğe "Baştan başla" kırmızı)
 export function HintMenu({ visible, onClose, items, note }) {
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <View style={styles.menu}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <BulbIcon size={26} />
-            <Text style={styles.menuTitle}>İpuçları</Text>
+      <Pressable style={styles.menuBackdrop} onPress={onClose}>
+        <View style={[styles.menu, { marginTop: insets.top + 54 }]}>
+          <View style={styles.menuHead}>
+            <BulbIcon size={16} color={ed.accent} />
+            <Text style={styles.menuTitle}>İPUCU YARDIMI</Text>
           </View>
-          <View style={styles.thinRule} />
-          {items.map(([t, d, fn]) => (
-            <Pressable
-              key={t}
-              onPress={() => {
-                onClose();
-                fn();
-              }}
-              style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: colors.paperDark }]}
-            >
-              <Text style={styles.menuItemTitle}>{t}</Text>
-              <Text style={styles.menuItemDesc}>{d}</Text>
-            </Pressable>
-          ))}
+          {items.map(([t, d, fn], i) => {
+            const danger = /Baştan/.test(t);
+            return (
+              <Pressable
+                key={t}
+                onPress={() => {
+                  onClose();
+                  fn();
+                }}
+                style={({ pressed }) => [styles.menuItem, danger && i > 0 && styles.menuDivider, pressed && { backgroundColor: ed.accentSoft }]}
+              >
+                <Text style={[styles.menuItemTitle, danger && { color: ed.danger }]}>{t}</Text>
+                <Text style={styles.menuItemDesc}>{d}</Text>
+              </Pressable>
+            );
+          })}
           {note ? <Text style={styles.menuNote}>{note}</Text> : null}
         </View>
       </Pressable>
@@ -124,18 +138,18 @@ export function HintMenu({ visible, onClose, items, note }) {
   );
 }
 
-export function WinModal({ visible, head, body, daily, onClose, onNext, onHome }) {
+export function WinModal({ visible, head, body, daily, onClose, onNext, onHome, share }) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={styles.win}>
-          <Text style={styles.kickerRed}>EXTRA! EXTRA!</Text>
+          <Text style={styles.kickerOrange}>TEBRİKLER</Text>
           <Text style={styles.winHead}>{head}</Text>
-          <View style={styles.doubleRule} />
           <Text style={styles.body}>{body}</Text>
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+          {share ? <ShareButton info={share} /> : null}
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
             <Pressable style={[styles.btn, styles.btnGhost]} onPress={onClose}>
-              <Text style={[styles.btnText, { color: colors.ink }]}>Bulmacayı gör</Text>
+              <Text style={[styles.btnText, { color: ed.text }]}>Bulmacayı gör</Text>
             </Pressable>
             <Pressable style={styles.btn} onPress={daily ? onHome : onNext}>
               <Text style={styles.btnText}>{daily ? 'Ana sayfa' : 'Sonraki →'}</Text>
@@ -144,6 +158,16 @@ export function WinModal({ visible, head, body, daily, onClose, onNext, onHome }
         </View>
       </View>
     </Modal>
+  );
+}
+
+// "Sonucu paylaş" (kazanma kartlarında ortak)
+export function ShareButton({ info, style }) {
+  return (
+    <Pressable style={({ pressed }) => [styles.shareBtn, pressed && { opacity: 0.8 }, style]} onPress={() => shareResult(info)}>
+      <ShareIcon size={16} color={ed.accentInk} />
+      <Text style={styles.shareText}>Sonucu paylaş</Text>
+    </Pressable>
   );
 }
 
@@ -193,52 +217,62 @@ export function useLearnCard(session) {
 }
 
 export const shellStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.paper },
-  nextFab: { position: 'absolute', left: 24, right: 24, backgroundColor: ui.teal, paddingVertical: 15, alignItems: 'center', borderRadius: 26 },
-  nextFabText: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.paper, letterSpacing: 0.5 },
+  root: { flex: 1, backgroundColor: ed.bg },
+  nextFab: { position: 'absolute', left: 20, right: 20, backgroundColor: ed.primary, paddingVertical: 15, alignItems: 'center', borderRadius: 12 },
+  nextFabText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary, letterSpacing: 0.2 },
   kickerRow: { paddingHorizontal: 12, paddingVertical: 6 },
-  kicker: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.1, color: colors.wrong, textAlign: 'center' },
+  kicker: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.1, color: ed.accent, textAlign: 'center' },
   clueBar: {
-    flexDirection: 'row', alignItems: 'center', marginHorizontal: 6, marginBottom: 8, minHeight: 56,
-    borderTopWidth: 2, borderBottomWidth: 2, borderColor: colors.ink, backgroundColor: colors.paperDark,
+    flexDirection: 'row', alignItems: 'center', marginHorizontal: 10, marginBottom: 8, minHeight: 56,
+    borderRadius: 12, borderWidth: 1, borderColor: ed.border, backgroundColor: ed.surface,
   },
   clueNav: { width: 36, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
-  clueMeta: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.1, color: colors.inkSoft },
-  clueText: { flex: 1, fontFamily: fonts.serifBold, fontSize: 20, lineHeight: 27, color: colors.ink },
+  clueMeta: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.1, color: ed.accent },
+  clueText: { flex: 1, fontFamily: efonts.headlineBold, fontSize: 21, lineHeight: 27, color: ed.text },
   learnTag: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, borderWidth: 1, borderColor: colors.ink,
-    paddingHorizontal: 5, paddingVertical: 2, marginLeft: 6, backgroundColor: '#FBF9F3',
+    flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft,
+    paddingHorizontal: 7, paddingVertical: 3, marginLeft: 6,
   },
-  learnTagText: { fontFamily: fonts.sansBold, fontSize: 11, color: colors.ink },
-  progress: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 16, color: colors.muted, marginTop: 3, textAlign: 'center' },
+  learnTagText: { fontFamily: efonts.labelBold, fontSize: 11, color: ed.accentInk },
+  progress: { fontFamily: efonts.body, fontSize: 12, lineHeight: 16, color: ed.textSoft, marginTop: 4, textAlign: 'center' },
 });
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.paper },
-  loading: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, gap: 10, backgroundColor: ui.bg },
-  loadingHead: { fontFamily: fonts.sansBlack, fontSize: 24, lineHeight: 32, color: ui.white, textAlign: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, backgroundColor: ui.bg },
-  headerLine: { height: 3, backgroundColor: ui.teal },
-  side: { width: 96 },
+  root: { flex: 1, backgroundColor: ed.bg },
+  loading: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, gap: 10 },
+  loadingHead: { fontFamily: efonts.headlineBold, fontSize: 26, lineHeight: 32, color: ed.text, textAlign: 'center' },
+  kicker: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 2, color: ed.accent, textAlign: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 8, backgroundColor: ed.bg, borderBottomWidth: 1, borderColor: ed.border },
+  side: { width: 92 },
   mid: { flex: 1, alignItems: 'center' },
-  title: { fontFamily: fonts.sansBlack, fontSize: 19, letterSpacing: 3.5, color: ui.white },
-  sub: { fontFamily: fonts.sansMedium, fontSize: 11.5, lineHeight: 15, color: ui.tealSoft },
-  timer: { fontFamily: fonts.sansBold, fontSize: 15, color: ui.white, fontVariant: ['tabular-nums'] },
-  bulb: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: ui.teal },
-  doubleRule: { height: 5, borderTopWidth: 2, borderBottomWidth: 1, borderColor: colors.rule, marginHorizontal: 8 },
-  thinRule: { height: 1, backgroundColor: colors.rule, marginVertical: 6 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,20,20,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  menu: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 16 },
-  menuTitle: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 30, color: colors.ink },
-  menuItem: { paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.ink },
-  menuItemTitle: { fontFamily: fonts.sansBold, fontSize: 16, color: colors.ink },
-  menuItemDesc: { fontFamily: fonts.serifItalic, fontSize: 13, lineHeight: 18, color: colors.muted },
-  menuNote: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: 10 },
-  win: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 20 },
-  kickerRed: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 3, color: colors.wrong, textAlign: 'center' },
-  winHead: { fontFamily: fonts.masthead, fontSize: 38, lineHeight: 50, color: colors.ink, textAlign: 'center', marginBottom: 6 },
-  body: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 23, color: colors.ink, marginTop: 12, textAlign: 'center' },
-  btn: { flex: 1, backgroundColor: ui.teal, paddingVertical: 12, alignItems: 'center', borderRadius: 22 },
-  btnGhost: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: ui.creamInk },
-  btnText: { fontFamily: fonts.sansBold, fontSize: 15, color: ui.white, letterSpacing: 0.3 },
+  title: { fontFamily: efonts.headlineItalic, fontSize: 20, lineHeight: 25, color: ed.text },
+  sub: { fontFamily: efonts.label, fontSize: 11, lineHeight: 14, color: ed.textSoft },
+  timerPill: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', backgroundColor: ed.surfaceAlt, borderRadius: 16, paddingHorizontal: 10, height: 32 },
+  timer: { fontFamily: efonts.labelBold, fontSize: 14, color: ed.text, fontVariant: ['tabular-nums'] },
+  bulbPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: ed.accentStrong, borderRadius: 16, paddingHorizontal: 11, height: 32 },
+  bulbText: { fontFamily: efonts.labelBold, fontSize: 13, color: ed.onPrimary },
+  bulbChev: { fontFamily: efonts.labelBold, fontSize: 10, color: ed.accentLine },
+  backdrop: { flex: 1, backgroundColor: 'rgba(20,27,38,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  menuBackdrop: { flex: 1, backgroundColor: 'rgba(20,27,38,0.18)', alignItems: 'flex-end', paddingHorizontal: 12 },
+  menu: {
+    width: 290, backgroundColor: ed.surface, borderRadius: 14, paddingVertical: 8, borderWidth: 1, borderColor: ed.border,
+    shadowColor: '#18324D', shadowOpacity: 0.16, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 8,
+  },
+  menuHead: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderBottomWidth: 1, borderColor: ed.border },
+  menuTitle: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 1.2, color: ed.accent },
+  menuItem: { paddingHorizontal: 14, paddingVertical: 10, marginHorizontal: 6, borderRadius: 10 },
+  menuDivider: { borderTopWidth: 1, borderColor: ed.border, borderRadius: 0, marginTop: 4 },
+  menuItemTitle: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.text },
+  menuItemDesc: { fontFamily: efonts.body, fontSize: 12, lineHeight: 16, color: ed.textSoft, marginTop: 1 },
+  menuNote: { fontFamily: efonts.body, fontSize: 11.5, lineHeight: 16, color: ed.textSoft, paddingHorizontal: 14, paddingTop: 8 },
+  win: { width: '100%', maxWidth: 360, backgroundColor: ed.surface, borderRadius: 18, padding: 22 },
+  kickerOrange: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 2, color: ed.orange, textAlign: 'center' },
+  winHead: { fontFamily: efonts.headlineBold, fontSize: 30, lineHeight: 36, color: ed.text, textAlign: 'center', marginTop: 4 },
+  body: { fontFamily: efonts.body, fontSize: 15, lineHeight: 22, color: ed.textSoft, marginTop: 10, textAlign: 'center' },
+  btn: { flex: 1, backgroundColor: ed.primary, paddingVertical: 13, alignItems: 'center', borderRadius: 12 },
+  btnGhost: { backgroundColor: ed.surfaceAlt },
+  btnText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
+  shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, alignSelf: 'center', marginTop: 14, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 20, backgroundColor: ed.accentSoft },
+  shareText: { fontFamily: efonts.bodyBold, fontSize: 14, color: ed.accentInk },
+
 });

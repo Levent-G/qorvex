@@ -11,6 +11,11 @@ import { freshnessPenalty } from './freshness';
 export const REVIEW_GAPS = [6, 12, 24, 48, 80];
 export const PRIO_MAX = 2; // bir bulmacada en fazla bu kadar defter kelimesi öne çıkar
 export const MIN_FRESH = 120; // taze kelime bunun altına düşünce en eski görülenler geri döner
+// 2 harfliler (yalnızca 27 tane) ızgarayı dolduran yapıştırıcıdır; hiç dönmezlerse bulmacalar seyrekleşir.
+// Hepsi birden dönüp 3-4 bulmacada bitmesin diye zamana yayılır: her bulmacaya en uzun süredir
+// gelmeyenlerden en fazla TWO_LETTER_MAX tane girer; bir kez gelen en az TWO_LETTER_COOLDOWN oyun dinlenir.
+export const TWO_LETTER_COOLDOWN = 4;
+export const TWO_LETTER_MAX = 27;
 
 export function isDue(m, counter) {
   const gap = counter - (m.last ?? m.at ?? 0);
@@ -61,6 +66,15 @@ export function buildInputs(words, level, learn, withPrio, strict = false) {
   const inLevel = (w) => !(w.l > level.idx && w.a.length > 2);
   // defterden yalnızca bu bulmacanın tekrar kelimeleri (en fazla PRIO_MAX) girer; diğerleri vakti gelse de bekler
   const prio = prioOf(learn, new Set(words.filter(inLevel).map((w) => w.a)), withPrio);
+  // bu bulmacaya girebilecek 2 harfliler: hiç gelmemişler önce, sonra en uzun süredir dinlenenler
+  const rest = (a) => learn.counter - (learn.recent[a] ?? -1e9);
+  const twoAllowed = new Set(
+    words
+      .filter((w) => w.a.length <= 2 && rest(w.a) >= TWO_LETTER_COOLDOWN)
+      .sort((x, y) => rest(y.a) - rest(x.a))
+      .slice(0, TWO_LETTER_MAX)
+      .map((w) => w.a),
+  );
   for (const w of words) {
     if (!inLevel(w)) continue;
     let bonus = 0;
@@ -68,9 +82,10 @@ export function buildInputs(words, level, learn, withPrio, strict = false) {
     const seen = !!times[w.a] || learn.recent[w.a] != null;
     const due = !!prio && prio.has(w.a);
     const e = { a: w.a, c: w.c, bonus };
-    // 2 harfliler dahil: bir kez gelen (defterde tekrar vakti olmayan) kelime bir daha gelmez.
-    // 2 harfliler bitince bulmacada hiç 2 harfli olmaz (geri dönüşe de girmez).
-    if (seen && !due) {
+    // 2 harfliler yalnızca bu bulmacanın payındakiler (twoAllowed); 3+ harfli bir kez gelen kelime bir daha gelmez
+    if (w.a.length <= 2) {
+      if (!twoAllowed.has(w.a)) continue;
+    } else if (seen && !due) {
       seenPool.push(e);
       continue;
     }

@@ -92,10 +92,136 @@ export function TrophyIcon({ size = 20, color = ui.gold }) {
     </Svg>
   );
 }
+// --- "Editorial" tasarım ikonları ---
+export function GridIcon({ size = 24, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Rect x="4" y="4" width="6.5" height="6.5" rx="1.5" fill="none" stroke={color} strokeWidth={1.8} />
+      <Rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" fill="none" stroke={color} strokeWidth={1.8} />
+      <Rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" fill="none" stroke={color} strokeWidth={1.8} />
+      <Rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" fill="none" stroke={color} strokeWidth={1.8} />
+    </Svg>
+  );
+}
+export function ChartIcon({ size = 24, color = ui.muted, filled }) {
+  return (
+    <Svg {...base(size)}>
+      <Rect x="4" y="12" width="3.6" height="8" rx="1" fill={filled ? color : 'none'} stroke={color} strokeWidth={1.8} />
+      <Rect x="10.2" y="6" width="3.6" height="14" rx="1" fill={filled ? color : 'none'} stroke={color} strokeWidth={1.8} />
+      <Rect x="16.4" y="9" width="3.6" height="11" rx="1" fill={filled ? color : 'none'} stroke={color} strokeWidth={1.8} />
+    </Svg>
+  );
+}
+export function ClockIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Circle cx="12" cy="13" r="7.5" fill="none" stroke={color} strokeWidth={1.9} />
+      <Path d="M12 9v4.3l2.8 1.8M9.5 3h5" stroke={color} strokeWidth={1.9} fill="none" strokeLinecap="round" />
+    </Svg>
+  );
+}
+export function BoltIcon({ size = 14, color = ui.teal }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M13.5 2.5 5 13.5h6l-1.5 8 8.5-11h-6z" fill={color} />
+    </Svg>
+  );
+}
+export function BadgeCheckIcon({ size = 18, color = ui.teal }) {
+  return (
+    <Svg {...base(size)}>
+      <Circle cx="12" cy="12" r="8.5" fill="none" stroke={color} strokeWidth={1.9} />
+      <Path d="M8.3 12.3l2.5 2.5 5-5.3" stroke={color} strokeWidth={2.1} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+export function BookmarkIcon({ size = 18, color = ui.muted, filled }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M7 3.5h10a1 1 0 0 1 1 1v16l-6-4-6 4v-16a1 1 0 0 1 1-1z" fill={filled ? color : 'none'} stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
+    </Svg>
+  );
+}
+export function LockIcon({ size = 16, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke={color} strokeWidth={1.8} />
+      <Path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke={color} strokeWidth={1.8} fill="none" />
+    </Svg>
+  );
+}
+export function PlayIcon({ size = 14, color = '#FFFFFF' }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M8 5.5v13l10-6.5z" fill={color} />
+    </Svg>
+  );
+}
+export function CloseCircleIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Circle cx="12" cy="12" r="8.5" fill="none" stroke={color} strokeWidth={1.8} />
+      <Path d="M9 9l6 6M15 9l-6 6" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    </Svg>
+  );
+}
+export function TrendIcon({ size = 14, color = ui.teal }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M3 17l6-6 4 4 7-7M15 8h5v5" stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
 export function CheckIcon({ size = 16, color = ui.teal }) {
   return (
     <Svg {...base(size)}>
       <Path d="M5 12.5l4.5 4.5L19 7.5" stroke={color} strokeWidth={2.6} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+export function ShareIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M12 3.5v11M7.5 8 12 3.5 16.5 8" stroke={color} strokeWidth={1.9} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M5 12.5v6a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-6" stroke={color} strokeWidth={1.9} fill="none" strokeLinecap="round" />
+    </Svg>
+  );
+}
+export function BellIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z" stroke={color} strokeWidth={1.8} fill="none" strokeLinejoin="round" />
+      <Path d="M10 20.5a2.2 2.2 0 0 0 4 0" stroke={color} strokeWidth={1.8} fill="none" strokeLinecap="round" />
+    </Svg>
+  );
+}
+export function MoonIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" stroke={color} strokeWidth={1.8} fill="none" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+export function TextSizeIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Path d="M3 19 8 6l5 13M4.8 14.5h6.4M14 19l3.5-8.5L21 19M15.1 16.3h4.8" stroke={color} strokeWidth={1.8} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}export function MicIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Rect x="9" y="3" width="6" height="11" rx="3" stroke={color} strokeWidth={1.9} fill="none" />
+      <Path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" stroke={color} strokeWidth={1.9} fill="none" strokeLinecap="round" />
+    </Svg>
+  );
+}
+export function SunIcon({ size = 18, color = ui.muted }) {
+  return (
+    <Svg {...base(size)}>
+      <Circle cx="12" cy="12" r="4" stroke={color} strokeWidth={1.9} fill="none" />
+      <Path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke={color} strokeWidth={1.9} strokeLinecap="round" />
     </Svg>
   );
 }

@@ -5,12 +5,12 @@ import * as Haptics from 'expo-haptics';
 import Keyboard from '../components/Keyboard';
 import LearnModal from '../components/LearnModal';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { GameHeader } from '../components/GameShell';
+import { GameHeader, ShareButton } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { reducer, initState, rowStatus, fillableRows, key } from '../engine/ladderBoard';
-import { getLevel, getLadderSession, getLadderDaily, markLadderSolved, markLearned, LEARN_LIMIT } from '../engine/session';
+import { getLevel, getLadderSession, getLadderDaily, markLadderSolved, markLearned, LEARN_LIMIT, recordHint, recordHard } from '../engine/session';
 import { persist } from '../storage';
-import { colors, fonts, formatTime } from '../theme';
+import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
 const STATUS_BG = { ok: colors.okCell, close: colors.closeCell, bad: colors.badCell };
 
@@ -149,7 +149,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
               numberOfLines={2}
               adjustsFontSizeToFit
               minimumFontScale={0.7}
-              style={[styles.clueText, selectedRow && { color: '#FFFFFF' }]}
+              style={[styles.clueText, selectedRow && { color: colors.ink }]}
             >
               {rung.clue}
             </Text>
@@ -203,7 +203,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         insetTop={insets.top}
         session={session}
         running={!s.solved}
-        subtitle={<>{kind === 'daily' ? 'Günün Merdiveni' : `Kelime Merdiveni · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. {p.no}</>}
+        subtitle={`${kind === 'daily' ? 'Günün Merdiveni' : `Kelime Merdiveni · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
+        badge={`${left}/${LEARN_LIMIT}`}
         onMenu={() => setMenu(true)}
       />
 
@@ -248,18 +249,26 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         <Pressable style={styles.backdrop} onPress={() => setMenu(false)}>
           <View style={styles.menu}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <BulbIcon size={26} />
-              <Text style={styles.menuTitle}>İpuçları</Text>
+              <BulbIcon size={18} color={ed.accent} />
+              <Text style={styles.menuTitle}>İPUCU YARDIMI</Text>
             </View>
             <View style={styles.thinRule} />
             {[
-              ['Harf aç', 'Seçili kareyi göster', act('revealLetter')],
-              ['Basamağı aç', 'Seçili basamaktaki kelimeyi göster', act('revealRow')],
+              ['Harf aç', 'Seçili kareyi göster', () => {
+                recordHint('letter', session);
+                recordHard(p.rungs[s.sel.row]?.answer, 'hint');
+                act('revealLetter')();
+              }],
+              ['Basamağı aç', 'Seçili basamaktaki kelimeyi göster', () => {
+                recordHint('word', session);
+                recordHard(p.rungs[s.sel.row]?.answer, 'hint');
+                act('revealRow')();
+              }],
               ['Basamağı temizle', 'Seçili basamaktaki harfleri sil', act('clearRow')],
               ['Kelime kartı', `Seçili basamağı öğren (kalan hak ${left}/${LEARN_LIMIT})`, () => { setMenu(false); openLearn(s.sel.row); }],
               ['Baştan başla', 'Tüm basamakları temizle', act('reset')],
             ].map(([t, d, fn]) => (
-              <Pressable key={t} onPress={fn} style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: colors.paperDark }]}>
+              <Pressable key={t} onPress={fn} style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: ed.accentSoft }]}>
                 <Text style={styles.menuItemTitle}>{t}</Text>
                 <Text style={styles.menuItemDesc}>{d}</Text>
               </Pressable>
@@ -275,15 +284,16 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       <Modal visible={showWin} transparent animationType="fade" onRequestClose={() => setShowWin(false)}>
         <View style={styles.backdrop}>
           <View style={styles.win}>
-            <Text style={styles.winKicker}>EXTRA! EXTRA!</Text>
-            <Text style={styles.winHead}>Ladder Climbed</Text>
+            <Text style={styles.winKicker}>TEBRİKLER</Text>
+            <Text style={styles.winHead}>Merdiven Tamam</Text>
             <View style={styles.doubleRule} />
             <Text style={styles.winBody}>
               Tebrikler! {p.rungs[0].answer.toLowerCase()} kelimesinden {p.rungs[last].answer.toLowerCase()} kelimesine {p.steps} adımda, {formatTime(session.seconds || 0)} sürede çıktın.
             </Text>
+            <ShareButton info={{ title: `Kelime Merdiveni · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, hints: session.hinted, line: `🪜 ${p.rungs[0].answer} → ${p.rungs[last].answer} · ${p.steps} adım` }} />
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
               <Pressable style={[styles.btn, styles.btnGhost]} onPress={() => setShowWin(false)}>
-                <Text style={[styles.btnText, { color: colors.ink }]}>Merdiveni gör</Text>
+                <Text style={[styles.btnText, { color: ed.text }]}>Merdiveni gör</Text>
               </Pressable>
               <Pressable style={styles.btn} onPress={kind === 'daily' ? onBack : onNext}>
                 <Text style={styles.btnText}>{kind === 'daily' ? 'Ana sayfa' : 'Sonraki →'}</Text>
@@ -325,14 +335,14 @@ export default function LadderScreen({ kind, levelId, onBack }) {
   if (!session) {
     return (
       <View style={[styles.root, styles.loading, { paddingTop: insets.top }]}>
-        <Text style={styles.winKicker}>STOP THE PRESSES</Text>
-        <Text style={styles.loadingHead}>Yeni baskı hazırlanıyor…</Text>
+        <Text style={styles.winKicker}>YENİ BASKI</Text>
+        <Text style={styles.loadingHead}>Bulmaca hazırlanıyor…</Text>
         {error ? (
           <Pressable style={[styles.btn, { marginTop: 12, flex: 0, paddingHorizontal: 20 }]} onPress={() => load(true)}>
             <Text style={styles.btnText}>Tekrar dene</Text>
           </Pressable>
         ) : (
-          <ActivityIndicator color={colors.ink} />
+          <ActivityIndicator color={ed.accent} />
         )}
       </View>
     );
@@ -350,68 +360,62 @@ export default function LadderScreen({ kind, levelId, onBack }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.paper },
+  root: { flex: 1, backgroundColor: ed.bg },
   loading: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 30, gap: 10 },
-  loadingHead: { fontFamily: fonts.masthead, fontSize: 34, lineHeight: 44, color: colors.ink, textAlign: 'center' },
+  loadingHead: { fontFamily: efonts.headlineBold, fontSize: 26, lineHeight: 32, color: ed.text, textAlign: 'center' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 50 },
   headerSide: { width: 96 },
   headerRight: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 },
   headerMid: { flex: 1, alignItems: 'center' },
   backRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  back: { fontFamily: fonts.serif, fontSize: 17, lineHeight: 22, color: colors.ink },
-  title: { fontFamily: fonts.sansBlack, fontSize: 18, letterSpacing: 3, color: colors.ink },
-  sub: { fontFamily: fonts.serifItalic, fontSize: 12, lineHeight: 16, color: colors.inkSoft },
-  timer: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.ink, fontVariant: ['tabular-nums'] },
+  back: { fontFamily: efonts.body, fontSize: 17, lineHeight: 22, color: ed.text },
+  title: { fontFamily: efonts.labelBold, fontSize: 18, letterSpacing: 3, color: ed.text },
+  sub: { fontFamily: efonts.headlineItalic, fontSize: 12, lineHeight: 16, color: ed.textSoft },
+  timer: { fontFamily: efonts.labelBold, fontSize: 15, color: ed.text, fontVariant: ['tabular-nums'] },
   bulb: {
-    width: 38, height: 38, borderRadius: 19, borderWidth: 1.5, borderColor: colors.ink,
-    alignItems: 'center', justifyContent: 'center', backgroundColor: '#FBF9F3',
+    width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: ed.border,
+    alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surface,
   },
-  doubleRule: { height: 5, borderTopWidth: 2, borderBottomWidth: 1, borderColor: colors.rule, marginHorizontal: 8 },
-  thinRule: { height: 1, backgroundColor: colors.rule, marginVertical: 6 },
+  doubleRule: { height: 1, backgroundColor: ed.border, marginVertical: 8, marginHorizontal: 8 },
+  thinRule: { height: 1, backgroundColor: ed.border, marginVertical: 8 },
   kickerRow: { paddingHorizontal: 12, paddingVertical: 6 },
-  kicker: { fontFamily: fonts.sansBold, fontSize: 10, letterSpacing: 1.1, color: colors.wrong, textAlign: 'center' },
+  kicker: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.1, color: ed.accent, textAlign: 'center' },
   ladderWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
   rowWrap: { flexDirection: 'row', alignItems: 'center' },
   clueBox: {
-    backgroundColor: colors.clueCell, borderWidth: 1.5, borderColor: colors.ink, marginRight: 16,
+    backgroundColor: colors.clueCell, borderWidth: 1, borderColor: ed.border, marginRight: 16,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4,
   },
-  clueFixed: { backgroundColor: colors.ink },
-  fixedLabel: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 1.5, color: colors.paper },
-  clueText: { fontFamily: fonts.clueBold, fontSize: 15, lineHeight: 19, color: colors.ink, textAlign: 'center' },
+  clueFixed: { backgroundColor: ed.primary },
+  fixedLabel: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 1.5, color: ed.bg },
+  clueText: { fontFamily: efonts.bodySemi, fontSize: 15, lineHeight: 19, color: ed.text, textAlign: 'center' },
   cellsRow: { flexDirection: 'row', gap: 4 },
-  cell: { borderWidth: 1.5, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
-  letter: { fontFamily: fonts.letter, color: colors.ink, textAlign: 'center', includeFontPadding: false },
-  ghost: { color: '#C9C4B8' },
+  cell: { borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },
+  letter: { fontFamily: efonts.labelBold, color: ed.text, textAlign: 'center', includeFontPadding: false },
+  ghost: { color: ed.textMute },
   hintArrow: {
     position: 'absolute', top: 0, width: 0, height: 0,
     borderLeftWidth: 6, borderRightWidth: 6, borderTopWidth: 8,
-    borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: colors.wrong,
+    borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: ed.accent,
   },
-  rail: { position: 'absolute', top: -6, bottom: -6, width: 5, backgroundColor: colors.ink },
-  infoRow: {
-    flexDirection: 'row', alignItems: 'center', marginHorizontal: 6, marginBottom: 8, minHeight: 44,
-    borderTopWidth: 2, borderBottomWidth: 2, borderColor: colors.ink, backgroundColor: colors.paperDark, gap: 6,
-  },
+  rail: { position: 'absolute', top: -6, bottom: -6, width: 4, borderRadius: 2, backgroundColor: ed.primary },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 10, marginBottom: 8, minHeight: 44, borderRadius: 12, borderWidth: 1, borderColor: ed.border, backgroundColor: ed.surface, gap: 6 },
   navBtn: { width: 34, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' },
-  info: { flex: 1, fontFamily: fonts.serifItalic, fontSize: 12.5, lineHeight: 17, color: colors.inkSoft },
-  learnTag: {
-    flexDirection: 'row', alignItems: 'center', gap: 3, borderWidth: 1, borderColor: colors.ink,
-    paddingHorizontal: 5, paddingVertical: 2, backgroundColor: '#FBF9F3',
-  },
-  learnTagText: { fontFamily: fonts.sansBold, fontSize: 11, color: colors.ink },
-  backdrop: { flex: 1, backgroundColor: 'rgba(20,20,20,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  menu: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 16 },
-  menuTitle: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 30, color: colors.ink },
-  menuItem: { paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.ink },
-  menuItemTitle: { fontFamily: fonts.sansBold, fontSize: 16, color: colors.ink },
-  menuItemDesc: { fontFamily: fonts.serifItalic, fontSize: 13, lineHeight: 18, color: colors.muted },
-  win: { width: '100%', maxWidth: 360, backgroundColor: colors.paper, borderWidth: 2, borderColor: colors.ink, padding: 20 },
-  winKicker: { fontFamily: fonts.sansBold, fontSize: 11, letterSpacing: 3, color: colors.wrong, textAlign: 'center' },
-  winHead: { fontFamily: fonts.masthead, fontSize: 38, lineHeight: 50, color: colors.ink, textAlign: 'center', marginBottom: 6 },
-  winBody: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 23, color: colors.ink, marginTop: 12, textAlign: 'center' },
-  btn: { flex: 1, backgroundColor: '#19B5C2', paddingVertical: 12, alignItems: 'center', borderRadius: 22 },
-  btnGhost: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.ink },
-  btnText: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.paper, letterSpacing: 0.5 },
-  nextFab: { position: 'absolute', left: 24, right: 24, backgroundColor: '#19B5C2', paddingVertical: 15, alignItems: 'center', borderRadius: 26 },
+  info: { flex: 1, fontFamily: efonts.headlineItalic, fontSize: 12.5, lineHeight: 17, color: ed.textSoft },
+  learnTag: { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft, paddingHorizontal: 7, paddingVertical: 3 },
+  learnTagText: { fontFamily: efonts.labelBold, fontSize: 11, color: ed.accentInk },
+  backdrop: { flex: 1, backgroundColor: 'rgba(20,27,38,0.45)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  menu: { width: '100%', maxWidth: 360, backgroundColor: ed.surface, borderRadius: 16, padding: 16 },
+  menuTitle: { fontFamily: efonts.labelBold, fontSize: 12, letterSpacing: 1.2, color: ed.accent },
+  menuItem: { paddingVertical: 10, paddingHorizontal: 6, borderRadius: 10 },
+  menuItemTitle: { fontFamily: efonts.bodyBold, fontSize: 15.5, color: ed.text },
+  menuItemDesc: { fontFamily: efonts.body, fontSize: 12.5, lineHeight: 17, color: ed.textSoft },
+  win: { width: '100%', maxWidth: 360, backgroundColor: ed.surface, borderRadius: 18, padding: 22 },
+  winKicker: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 2, color: ed.orange, textAlign: 'center' },
+  winHead: { fontFamily: efonts.headlineBold, fontSize: 30, lineHeight: 36, color: ed.text, textAlign: 'center', marginTop: 4 },
+  winBody: { fontFamily: efonts.body, fontSize: 15, lineHeight: 22, color: ed.textSoft, marginTop: 10, textAlign: 'center' },
+  btn: { flex: 1, backgroundColor: ed.primary, paddingVertical: 13, alignItems: 'center', borderRadius: 12 },
+  btnGhost: { backgroundColor: ed.surfaceAlt },
+  btnText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
+  nextFab: { position: 'absolute', left: 20, right: 20, backgroundColor: ed.primary, paddingVertical: 15, alignItems: 'center', borderRadius: 12 },
 });

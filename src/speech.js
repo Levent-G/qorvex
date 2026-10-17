@@ -23,3 +23,8 @@ export async function speakWord(text, rate = 0.9) {
 export function stopSpeaking() {
   Speech.stop();
 }
+
+// Başka bir modül (ses tanıma) ses oturumunu değiştirdiyse sonraki okumada yeniden ayarla
+export function resetAudio() {
+  audioReady = null;
+}

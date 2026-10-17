@@ -7,7 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { Resvg } from '@resvg/resvg-js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const RAW = path.resolve(__dirname, '../store/screenshots/raw');
+// İsteğe bağlı sürüm klasörü: node scripts/resize-screenshots.mjs v1.1  →  store/screenshots/v1.1/raw → store/screenshots/v1.1/<boyut>
+const SET = process.argv[2] || '';
+const BASE = path.resolve(__dirname, '../store/screenshots', SET);
+const RAW = path.join(BASE, 'raw');
 // Apple'ın kabul ettiği iPhone ekran görüntüsü boyutları (dikey)
 const SIZES = [
   { dir: '6.1-inch-1179x2556', W: 1179, H: 2556 },
@@ -52,7 +55,7 @@ function rgbPng(px, w, h) {
 const files = fs.readdirSync(RAW).filter((f) => /\.(png|jpe?g)$/i.test(f)).sort();
 if (!files.length) console.log(`Görüntü bulunamadı. Ekran görüntülerini şuraya koy: ${RAW}`);
 for (const { dir, W, H } of SIZES) {
-  const OUT = path.resolve(__dirname, '../store/screenshots', dir);
+  const OUT = path.join(BASE, dir);
   fs.mkdirSync(OUT, { recursive: true });
   files.forEach((f, n) => {
     const buf = fs.readFileSync(path.join(RAW, f));

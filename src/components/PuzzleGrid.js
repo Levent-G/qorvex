@@ -1,18 +1,18 @@
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, fonts } from '../theme';
+import { colors, fonts, ed, efonts } from '../theme';
 
 const BORDER = 2;
 const STATUS_BG = { ok: colors.okCell, close: colors.closeCell, bad: colors.badCell };
 
 const Cell = memo(function Cell({ size, block, letter, label, status, revealed, given, highlight, same, active, lastCol, lastRow }) {
   if (block) {
-    return <View style={{ width: size, height: size, backgroundColor: colors.ink }} />;
+    return <View style={{ width: size, height: size, backgroundColor: colors.block }} />;
   }
   let bg = colors.cell;
   if (highlight) bg = colors.wordHighlight;
-  // aynı sayılı kareler (Şifreli Bulmaca): belirgin lila, sarı "yakın" rengiyle karışmasın
-  if (same) bg = '#D9CCEB';
+  // aynı sayılı kareler (Şifreli Bulmaca): açık turuncu; mavi kelime vurgusu ve sarı "yakın" ile karışmasın
+  if (same) bg = colors.sameCell;
   if (status) bg = STATUS_BG[status];
   if (active) bg = colors.cellActive;
   return (
@@ -119,9 +119,9 @@ export default function PuzzleGrid({
 }
 
 const styles = StyleSheet.create({
-  frame: { borderWidth: BORDER, borderColor: colors.ink, backgroundColor: colors.cell },
-  cell: { borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  label: { position: 'absolute', top: 1, left: 2, fontFamily: fonts.sansBold, color: colors.ink },
-  letter: { fontFamily: fonts.letter, color: colors.ink, textAlign: 'center', includeFontPadding: false },
-  bar: { position: 'absolute', backgroundColor: colors.ink },
+  frame: { borderWidth: BORDER, borderColor: colors.frame, backgroundColor: colors.cell, borderRadius: 4, overflow: 'hidden' },
+  cell: { borderColor: colors.gridLine, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  label: { position: 'absolute', top: 1, left: 2, fontFamily: efonts.labelBold, color: ed.textSoft },
+  letter: { fontFamily: efonts.labelBold, color: ed.text, textAlign: 'center', includeFontPadding: false },
+  bar: { position: 'absolute', backgroundColor: colors.block },
 });

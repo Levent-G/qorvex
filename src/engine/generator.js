@@ -229,7 +229,7 @@ function buildIndex(entries) {
 
 function greedy(g, idx, ctx, maxIter) {
   const w = g.w, h = g.h;
-  for (let iter = 0; iter < maxIter; iter++) {
+  for (let iter = 0; iter < 40; iter++) {
     let best = null, bestE = null;
     for (let r = 0; r < h; r++)
       for (let c = 0; c < w; c++) {
@@ -353,17 +353,45 @@ function improve(g, idx, ctx, deadline) {
     if (ws.length < 4) break;
     const k = ctx.rand() < 0.55 ? 1 : ctx.rand() < 0.7 ? 2 : 3;
     const remove = new Set();
-    // komşu kelimeleri birlikte sök (aynı bölge)
-    const first = ws[Math.floor(ctx.rand() * ws.length)];
-    remove.add(first);
-    for (let q = 1; q < k; q++) {
+    // Çoğu turda bir boş kareyi hedefle: ona en yakın kelimeleri sök, bölgeyi yeniden doldur.
+    // Kalan turlarda rastgele bir kelimenin çevresi (genel çeşitlilik).
+    let tr = -1, tc = -1;
+    if (ctx.rand() < 0.75) {
+      const blanks = [];
+      for (let i = 0; i < cur.t.length; i++) if (cur.t[i] === E || (cur.t[i] === B && !cur.clues[i].length)) blanks.push(i);
+      if (blanks.length) {
+        const bi = blanks[Math.floor(ctx.rand() * blanks.length)];
+        tr = Math.floor(bi / cur.w);
+        tc = bi % cur.w;
+      }
+    }
+    // kelimenin (r,c) karesine uzaklığı: kelime parçasındaki en yakın hücre
+    const distTo = (x, r, c) => {
+      const n = x.entry.a.length;
+      const er = x.dir === 'A' ? x.r : x.r + n - 1, ec = x.dir === 'A' ? x.c + n - 1 : x.c;
+      const dr = r < x.r ? x.r - r : r > er ? r - er : 0;
+      const dc = c < x.c ? x.c - c : c > ec ? c - ec : 0;
+      return dr + dc;
+    };
+    let ar, ac;
+    if (tr >= 0) {
+      ar = tr;
+      ac = tc;
+    } else {
+      const first = ws[Math.floor(ctx.rand() * ws.length)];
+      remove.add(first);
+      ar = first.r;
+      ac = first.c;
+    }
+    while (remove.size < k) {
       let bestW = null, bestD = 1e9;
       for (const x of ws) {
         if (remove.has(x)) continue;
-        const d = Math.abs(x.r - first.r) + Math.abs(x.c - first.c) + ctx.rand() * 3;
+        const d = distTo(x, ar, ac) + ctx.rand() * 2;
         if (d < bestD) { bestD = d; bestW = x; }
       }
-      if (bestW) remove.add(bestW);
+      if (!bestW) break;
+      remove.add(bestW);
     }
     if ([...remove].some((x) => ctx.prio && ctx.prio.has(x.entry.a)) && ctx.rand() < 0.8) continue;
     const ng = rebuild(cur.w, cur.h, ws.filter((x) => !remove.has(x)), ctx.blocks);

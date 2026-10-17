@@ -162,7 +162,7 @@ const TAGLINES = {
   ladder: 'Tek harf değiştir, tırman.',
   jumble: 'Karışık harfleri düzelt.',
   cryptogram: 'Şifreli cümleyi oku.',
-  picture: 'İpuçları fotoğraf, cevaplar İngilizce.'
+  picture: 'Ortadaki resimdeki nesneyi bul.'
 };
 GAMES.forEach((g) => (g.tagline = TAGLINES[g.id] || ''));
 

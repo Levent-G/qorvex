@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs><radialGradient id="g" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#26496E"/><stop offset="1" stop-color="#18324D"/></radialGradient></defs><rect width="1024" height="1024" fill="url(#g)"/><path fill="#F4EFE2" d="M717.908266300838 255.73424451557577 A276 287.04 0 1 0 717.908266300838 624.7457554844243 L629.1844545578773 591.1287165190355 A176.64000000000001 209.76000000000002 0 1 1 629.1844545578773 289.3512834809645 Z"/>
+    <path d="M515.6800000000001 699.6800000000001 V845.04 H686.8000000000001" fill="none" stroke="#19B5C2" stroke-width="53.36" stroke-linejoin="miter"/>
+    <polygon points="677.6,775.12 677.6,914.96 795.36,845.04" fill="#19B5C2"/>
+    <rect x="408.96000000000004" y="355.6" width="169.28" height="169.28" fill="#F4EFE2"/>
+    <rect x="408.96000000000004" y="355.6" width="84.64" height="84.64" fill="#19B5C2"/>
+    <path d="M493.6 355.6 V524.88 M408.96000000000004 440.24 H578.24" stroke="#18324D" stroke-width="6.44"/>
+    <rect x="408.96000000000004" y="355.6" width="169.28" height="169.28" fill="none" stroke="#18324D" stroke-width="11.96"/>
+    <polygon points="493.6,382.28000000000003 493.6,413.56 517.0600000000001,397.92" fill="#18324D"/>
+    <polygon points="435.64,440.24 466.92,440.24 451.28000000000003,463.7" fill="#18324D"/></svg>

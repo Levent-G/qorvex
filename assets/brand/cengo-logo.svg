@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="560" viewBox="0 0 1720 560"><rect width="1720" height="560" fill="#18324D"/>
+  <path fill="#F4EFE2" d="M366.3829331265606 135.15413820445588 A156 162.24 0 1 0 366.3829331265606 343.7258617955441 L316.2346917066263 324.7249267281505 A99.84 118.56 0 1 1 316.2346917066263 154.15507327184952 Z"/>
+    <path d="M252.07999999999998 386.08000000000004 V468.24 H348.8" fill="none" stroke="#19B5C2" stroke-width="30.16" stroke-linejoin="miter"/>
+    <polygon points="343.6,428.72 343.6,507.76 410.15999999999997,468.24" fill="#19B5C2"/>
+    <rect x="191.76" y="191.6" width="95.68" height="95.68" fill="#F4EFE2"/>
+    <rect x="191.76" y="191.6" width="47.84" height="47.84" fill="#19B5C2"/>
+    <path d="M239.6 191.6 V287.28 M191.76 239.44 H287.44" stroke="#18324D" stroke-width="3.64"/>
+    <rect x="191.76" y="191.6" width="95.68" height="95.68" fill="none" stroke="#18324D" stroke-width="6.76"/>
+    <polygon points="239.6,206.68 239.6,224.35999999999999 252.85999999999999,215.51999999999998" fill="#18324D"/>
+    <polygon points="206.84,239.44 224.51999999999998,239.44 215.68,252.7" fill="#18324D"/>
+  <text x="496" y="300" textLength="1144" lengthAdjust="spacing" font-family="Libre Franklin" font-weight="900" font-size="230" fill="#F4EFE2">ÇENGO</text>
+  <rect x="500" y="388" width="1140" height="8" rx="4" fill="#19B5C2"/>
+  <text x="502" y="470" font-family="Libre Franklin" font-weight="700" font-size="44" letter-spacing="14" fill="#19B5C2">BUL · ÇÖZ · ÖĞREN</text>
+</svg>
