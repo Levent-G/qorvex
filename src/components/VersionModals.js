@@ -8,7 +8,7 @@ import { ed, efonts } from '../theme';
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
   '1.2.0': [
-    ['🎨', 'Yepyeni tasarım ve yeni adımız: ÇENGO', 'Daha ferah, okunaklı bir görünüm. Kelime kartı artık alttan açılıyor ve kelimeyi sesli okuyor.'],
+    ['🎨', 'Yepyeni tasarım', 'Daha ferah, okunaklı bir görünüm. Kelime kartı artık alttan açılıyor ve kelimeyi sesli okuyor.'],
     ['🃏', 'Kelime tekrar modu', 'Defterini 10 soruda tekrar et: Türkçe→İngilizce, İngilizce→Türkçe, dinle-seç, yaz ve cümlede boşluk doldur.'],
     ['🔥', 'Zor kelimeler', 'İpucu aldığın ya da yanlış yazdığın kelimeler ayrı bir listede birikir, onları özel olarak çalışırsın.'],
     ['☀️', 'Günün kelimesi', 'Her gün ana sayfada okunuşu ve örnek cümlesiyle yeni bir kelime.'],
@@ -29,7 +29,7 @@ export function WhatsNewModal({ version, onClose }) {
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <View style={[styles.page, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 12 }]}>
         <Text style={styles.kicker}>SÜRÜM {version} · YENİLİKLER</Text>
-        <Text style={styles.title}>ÇENGO'da neler yeni?</Text>
+        <Text style={styles.title}>QORVEX'te neler yeni?</Text>
         <Text style={styles.sub}>Güncellediğin için teşekkürler! İşte bu sürümde seni bekleyenler:</Text>
         <ScrollView style={{ flex: 1, marginTop: 14 }} contentContainerStyle={{ gap: 10, paddingBottom: 12 }} showsVerticalScrollIndicator={false}>
           {items.map(([emoji, head, body]) => (
@@ -61,7 +61,7 @@ export function UpdateModal({ info, onLater }) {
           <Text style={styles.kickerC}>YENİ SÜRÜM {info.version}</Text>
           <Text style={styles.boxTitle}>Güncelleme hazır</Text>
           <Text style={styles.boxBody} numberOfLines={6}>
-            {info.notes ? info.notes.trim() : 'ÇENGO’nun yeni sürümü App Store’da. Yeni özellikler ve iyileştirmeler için güncelle.'}
+            {info.notes ? info.notes.trim() : 'QORVEX’in yeni sürümü App Store’da. Yeni özellikler ve iyileştirmeler için güncelle.'}
           </Text>
           <Pressable
             style={styles.btn}

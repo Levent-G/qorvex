@@ -11,14 +11,14 @@ export function resultText({ title, seconds, words, hints, line }) {
   const streak = getStore().stats?.streak || 0;
   const clean = !hints;
   const rows = [
-    `ÇENGO 🧩 ${title}`,
+    `QORVEX 🧩 ${title}`,
     [seconds > 0 && `⏱ ${formatTime(seconds)}`, words && `📝 ${words} kelime`, clean ? '✨ ipucusuz' : `💡 ${typeof hints === 'number' ? hints + ' ipucu' : 'ipuculu'}`]
       .filter(Boolean)
       .join('  '),
     line,
     streak > 1 ? `🔥 ${streak} günlük seri` : null,
     '',
-    'Sen de İngilizce kelimeleri bulmacayla öğren #ÇENGO',
+    'Sen de İngilizce kelimeleri bulmacayla öğren #QORVEX',
   ];
   return rows.filter((r) => r != null).join('\n');
 }

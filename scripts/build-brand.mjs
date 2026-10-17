@@ -1,4 +1,4 @@
-// ÇENGO marka varlıklarını üretir: uygulama ikonu, Android adaptive ikon, splash, favicon, yatay logo.
+// QORVEX marka varlıklarını üretir: uygulama ikonu, Android adaptive ikon, splash, favicon, yatay logo.
 // Kullanım: node scripts/build-brand.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,7 +20,7 @@ const FONTS = [
   'node_modules/@expo-google-fonts/old-standard-tt/400Regular_Italic/OldStandardTT_400Regular_Italic.ttf',
 ].map((f) => path.join(ROOT, f));
 
-// "Editorial" teması: lacivert zemin (uygulamanın ana rengi), krem Ç, turkuaz çengel ok ve ipucu karesi
+// "Editorial" teması: uygulamanın ana laciverti zemin, krem Q halkası, turkuaz ok ve ipucu karesi
 const NAVY = '#18324D';
 const NAVY_HI = '#26496E';
 const CREAM = '#F4EFE2';
@@ -29,39 +29,36 @@ const INK = '#18324D';
 const PAPER = NAVY; // ikon zemini
 
 /**
- * Ç işareti: sağa açık kalın "C" halkası; içinde ipucu kareli 2x2 bulmaca ızgarası;
- * Ç'nin çengeli, aşağı inip sağa kıvrılan çengel bulmaca oku (↳).
+ * Q işareti: gazete serifi kontrastında (yanlar kalın, üst/alt ince) halka,
+ * kuyruğu çengel bulmaca oku (↳), içinde gri ipucu kareli 2x2 bulmaca ızgarası.
  * (cx, cy) işaretin görsel merkezi, s ölçek (1 = 1024'lük ikonda tam boy)
  */
 function qMark({ cx = 512, cy = 512, s = 1, ring: ringC = CREAM, tailC = TEAL, ink = INK, clue = TEAL, cell = CREAM, mono = false }) {
-  // çengel dahil tüm işaret ortalansın
-  const ox = cx - 6 * s, oy = cy - 78 * s;
+  // Halka merkezini, kuyruk dahil tüm işaret ortalanacak şekilde kaydır
+  const ox = cx - 22 * s, oy = cy - 88 * s;
   const X = (v) => ox + v * s, Y = (v) => oy + v * s;
-  // C halkası: dış ve iç elips yayı, sağda açıklık
-  const Ro = { x: 300, y: 312 }, Ri = { x: 192, y: 228 };
-  const th = (40 * Math.PI) / 180, ti = (46 * Math.PI) / 180;
-  const p = (r, t, sign) => [X(r.x * Math.cos(t)), Y(sign * r.y * Math.sin(t))];
-  const [o1x, o1y] = p(Ro, th, -1), [o2x, o2y] = p(Ro, th, 1);
-  const [i1x, i1y] = p(Ri, ti, -1), [i2x, i2y] = p(Ri, ti, 1);
-  const ring = `<path fill="${ringC}" d="M${o1x} ${o1y} A${Ro.x * s} ${Ro.y * s} 0 1 0 ${o2x} ${o2y} L${i2x} ${i2y} A${Ri.x * s} ${Ri.y * s} 0 1 1 ${i1x} ${i1y} Z"/>`;
+  const R = { orx: 300, ory: 318, irx: 194, iry: 262 };
+  const ring = `<path fill-rule="evenodd" fill="${ringC}" d="
+    M${X(-R.orx)} ${Y(0)} A${R.orx * s} ${R.ory * s} 0 1 0 ${X(R.orx)} ${Y(0)} A${R.orx * s} ${R.ory * s} 0 1 0 ${X(-R.orx)} ${Y(0)} Z
+    M${X(-R.irx)} ${Y(0)} A${R.irx * s} ${R.iry * s} 0 1 0 ${X(R.irx)} ${Y(0)} A${R.irx * s} ${R.iry * s} 0 1 0 ${X(-R.irx)} ${Y(0)} Z"/>`;
 
-  // Çengel: halkanın altından inip sağa kırılan kalın ok
-  const sw = 58;
+  // Kuyruk: halkanın altından inen ve sağa kırılan kalın ok
+  const sw = 60;
   const tail = `
-    <path d="M${X(10)} ${Y(Ro.y - 30)} V${Y(Ro.y + 128)} H${X(196)}" fill="none" stroke="${tailC}" stroke-width="${sw * s}" stroke-linejoin="miter"/>
-    <polygon points="${X(186)},${Y(Ro.y + 52)} ${X(186)},${Y(Ro.y + 204)} ${X(314)},${Y(Ro.y + 128)}" fill="${tailC}"/>`;
+    <path d="M${X(34)} ${Y(278)} V${Y(430)} H${X(232)}" fill="none" stroke="${tailC}" stroke-width="${sw * s}" stroke-linejoin="miter"/>
+    <polygon points="${X(222)},${Y(352)} ${X(222)},${Y(508)} ${X(352)},${Y(430)}" fill="${tailC}"/>`;
 
-  // Izgara: halkanın iç boşluğunda, ipucu karesi + oklar
-  const g = 92, half = g;
-  const gx = -g - 14, gy = -g;
-  const inner = 7, outer = 13, ar = 17;
+  // Izgara: halkanın iç boşluğunda, uygulamadaki ipucu karesi + oklar
+  const g = 108, half = g; // hücre
+  const gx = -g, gy = -g - 4;
+  const inner = 7, outer = 14, a = 19;
   const grid = `
     <rect x="${X(gx)}" y="${Y(gy)}" width="${2 * g * s}" height="${2 * g * s}" fill="${mono ? 'none' : cell}"/>
     <rect x="${X(gx)}" y="${Y(gy)}" width="${g * s}" height="${g * s}" fill="${mono ? ink : clue}"/>
     <path d="M${X(gx + g)} ${Y(gy)} V${Y(gy + 2 * g)} M${X(gx)} ${Y(gy + g)} H${X(gx + 2 * g)}" stroke="${ink}" stroke-width="${inner * s}"/>
     <rect x="${X(gx)}" y="${Y(gy)}" width="${2 * g * s}" height="${2 * g * s}" fill="none" stroke="${ink}" stroke-width="${outer * s}"/>
-    <polygon points="${X(gx + g)},${Y(gy + half / 2 - ar)} ${X(gx + g)},${Y(gy + half / 2 + ar)} ${X(gx + g + ar * 1.5)},${Y(gy + half / 2)}" fill="${ink}"/>
-    <polygon points="${X(gx + half / 2 - ar)},${Y(gy + g)} ${X(gx + half / 2 + ar)},${Y(gy + g)} ${X(gx + half / 2)},${Y(gy + g + ar * 1.5)}" fill="${ink}"/>`;
+    <polygon points="${X(gx + g)},${Y(gy + half / 2 - a)} ${X(gx + g)},${Y(gy + half / 2 + a)} ${X(gx + g + a * 1.5)},${Y(gy + half / 2)}" fill="${ink}"/>
+    <polygon points="${X(gx + half / 2 - a)},${Y(gy + g)} ${X(gx + half / 2 + a)},${Y(gy + g)} ${X(gx + half / 2)},${Y(gy + g + a * 1.5)}" fill="${ink}"/>`;
   return ring + tail + grid;
 }
 const svg = (w, h, body, bg) =>
@@ -133,7 +130,7 @@ function writePng(file, svgText, width, { rgb = false } = {}) {
 const iconBody = qMark({ cx: 512, cy: 512, s: 0.92 });
 const glow = `<defs><radialGradient id="g" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="${NAVY_HI}"/><stop offset="1" stop-color="${NAVY}"/></radialGradient></defs><rect width="1024" height="1024" fill="url(#g)"/>`;
 const iconSvg = svg(1024, 1024, glow + iconBody);
-fs.writeFileSync(path.join(BRAND, 'cengo-icon.svg'), iconSvg);
+fs.writeFileSync(path.join(BRAND, 'qorvex-icon.svg'), iconSvg);
 writePng(path.join(ASSETS, 'icon.png'), iconSvg, 1024, { rgb: true });
 
 // 2) Android adaptive: ön plan (saydam, güvenli alan ~%66) + arka plan (kağıt) + monokrom
@@ -150,12 +147,12 @@ writePng(path.join(ASSETS, 'favicon.png'), iconSvg, 48);
 // 4) Yatay logo (mağaza görselleri, web, sosyal medya)
 const word = `
   ${qMark({ cx: 250, cy: 280, s: 0.52 })}
-  <text x="496" y="300" textLength="1144" lengthAdjust="spacing" font-family="Libre Franklin" font-weight="900" font-size="230" fill="${CREAM}">ÇENGO</text>
-  <rect x="500" y="388" width="1140" height="8" rx="4" fill="${TEAL}"/>
-  <text x="502" y="470" font-family="Libre Franklin" font-weight="700" font-size="44" letter-spacing="14" fill="${TEAL}">BUL · ÇÖZ · ÖĞREN</text>
+  <text x="496" y="300" textLength="1144" lengthAdjust="spacing" font-family="Libre Franklin" font-weight="900" font-size="220" fill="${CREAM}">QORVEX</text>
+  <rect x="500" y="352" width="1140" height="8" rx="4" fill="${TEAL}"/>
+  <text x="502" y="440" font-family="Libre Franklin" font-weight="700" font-size="44" letter-spacing="14" fill="${TEAL}">BUL · ÇÖZ · ÖĞREN</text>
 `;const wordSvg = svg(1720, 560, word, NAVY);
-fs.writeFileSync(path.join(BRAND, 'cengo-logo.svg'), wordSvg);
-writePng(path.join(BRAND, 'cengo-logo.png'), wordSvg, 1720);
+fs.writeFileSync(path.join(BRAND, 'qorvex-logo.svg'), wordSvg);
+writePng(path.join(BRAND, 'qorvex-logo.png'), wordSvg, 1720);
 
 // 5) Kontrol sayfası: yuvarlatılmış köşeli ikon farklı boyutlarda (okunabilirlik testi)
 const sizes = [512, 180, 120, 60, 40];

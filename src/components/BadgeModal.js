@@ -38,7 +38,7 @@ export default function BadgeModal({ badges, onClose }) {
               ))}
             </View>
           )}
-          <ShareButton info={{ title: 'Yeni rozet', seconds: 0, hints: false, line: badges.map((b) => `${b.emoji} ${b.title}`).join('\n') }} />
+          <ShareButton info={{ kicker: one ? 'YENİ ROZET' : `${badges.length} YENİ ROZET`, title: badges.map((b) => `${b.emoji} ${b.title}`).join('\n'), seconds: 0, hints: false, line: one ? badges[0].desc : null }} />
           <Pressable style={styles.btn} onPress={onClose}>
             <Text style={styles.btnText}>Harika!</Text>
           </Pressable>

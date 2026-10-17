@@ -60,7 +60,7 @@ export default function PronounceScreen({ onBack }) {
     stopSpeaking();
     const granted = await requestMicPermission().catch(() => false);
     if (!granted) {
-      setHeard('Mikrofon izni gerekli · Ayarlar > ÇENGO');
+      setHeard('Mikrofon izni gerekli · Ayarlar > QORVEX');
       return;
     }
     setHeard('');

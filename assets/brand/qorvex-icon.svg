@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs><radialGradient id="g" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#26496E"/><stop offset="1" stop-color="#18324D"/></radialGradient></defs><rect width="1024" height="1024" fill="url(#g)"/><path fill-rule="evenodd" fill="#F4EFE2" d="
+    M215.76 431.03999999999996 A276 292.56 0 1 0 767.76 431.03999999999996 A276 292.56 0 1 0 215.76 431.03999999999996 Z
+    M313.28 431.03999999999996 A178.48000000000002 241.04000000000002 0 1 0 670.24 431.03999999999996 A178.48000000000002 241.04000000000002 0 1 0 313.28 431.03999999999996 Z"/>
+    <path d="M523.04 686.8 V826.64 H705.2" fill="none" stroke="#19B5C2" stroke-width="55.2" stroke-linejoin="miter"/>
+    <polygon points="696,754.88 696,898.4 815.6,826.64" fill="#19B5C2"/>
+    <rect x="392.4" y="327.99999999999994" width="198.72" height="198.72" fill="#F4EFE2"/>
+    <rect x="392.4" y="327.99999999999994" width="99.36" height="99.36" fill="#19B5C2"/>
+    <path d="M491.76 327.99999999999994 V526.72 M392.4 427.35999999999996 H591.12" stroke="#18324D" stroke-width="6.44"/>
+    <rect x="392.4" y="327.99999999999994" width="198.72" height="198.72" fill="none" stroke="#18324D" stroke-width="12.88"/>
+    <polygon points="491.76,360.19999999999993 491.76,395.15999999999997 517.98,377.67999999999995" fill="#18324D"/>
+    <polygon points="424.6,427.35999999999996 459.56,427.35999999999996 442.08,453.58" fill="#18324D"/></svg>

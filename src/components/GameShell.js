@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import LearnModal from './LearnModal';
 import { BulbIcon } from './Icons';
 import { ClockIcon, ShareIcon } from './UiIcons';
-import { shareResult } from '../share';
+import ShareSheet from './ShareSheet';
 import { markLearned, LEARN_LIMIT } from '../engine/session';
 import { persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
@@ -75,7 +75,7 @@ function Timer({ session, running }) {
 // Üst bar: süre hapı · oyun adı (serif italik) + seviye/no · ampul hapı (ipuçları menüsü)
 export function GameHeader({ session, running, subtitle, onMenu, insetTop = 0, badge }) {
   const parts = typeof subtitle === 'string' ? subtitle.split(' · ') : null;
-  const title = parts ? parts[0] : 'ÇENGO';
+  const title = parts ? parts[0] : 'QORVEX';
   const rest = parts ? parts.slice(1).join(' · ') : subtitle;
   return (
     <View style={[styles.header, { paddingTop: insetTop + 6 }]}>
@@ -163,11 +163,15 @@ export function WinModal({ visible, head, body, daily, onClose, onNext, onHome, 
 
 // "Sonucu paylaş" (kazanma kartlarında ortak)
 export function ShareButton({ info, style }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Pressable style={({ pressed }) => [styles.shareBtn, pressed && { opacity: 0.8 }, style]} onPress={() => shareResult(info)}>
-      <ShareIcon size={16} color={ed.accentInk} />
-      <Text style={styles.shareText}>Sonucu paylaş</Text>
-    </Pressable>
+    <>
+      <Pressable style={({ pressed }) => [styles.shareBtn, pressed && { opacity: 0.8 }, style]} onPress={() => setOpen(true)}>
+        <ShareIcon size={16} color={ed.accentInk} />
+        <Text style={styles.shareText}>Sonucu paylaş</Text>
+      </Pressable>
+      {open ? <ShareSheet info={info} onClose={() => setOpen(false)} /> : null}
+    </>
   );
 }
 

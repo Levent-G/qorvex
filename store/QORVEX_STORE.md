@@ -1,4 +1,4 @@
-# ÇENGO — App Store Connect metinleri (sürüm 1.2)
+# QORVEX — App Store Connect metinleri (sürüm 1.2)
 
 Paket kimliği değişmez: `com.qorvex.app`. Mevcut kullanıcılar uygulamayı güncellemeyle yeni adıyla görür; puan ve yorumlar korunur.
 
@@ -6,9 +6,9 @@ Paket kimliği değişmez: `com.qorvex.app`. Mevcut kullanıcılar uygulamayı g
 
 | Alan | Metin |
 |---|---|
-| Ad (en fazla 30) | ÇENGO |
+| Ad (en fazla 30) | QORVEX |
 | Alt başlık (en fazla 30) | İngilizce Kelime Bulmacaları |
-| Anahtar kelimeler (en fazla 100) | cengo,çengel,bulmaca,ingilizce,kelime,kare bulmaca,sözlük,kelime avı,yds,ielts |
+| Anahtar kelimeler (en fazla 100) | qorvex,çengel,bulmaca,ingilizce,kelime,kare bulmaca,sözlük,kelime avı,yds,ielts |
 
 **Tanıtım metni (en fazla 170)**
 
@@ -19,7 +19,7 @@ Paket kimliği değişmez: `com.qorvex.app`. Mevcut kullanıcılar uygulamayı g
 **Açıklama**
 
 ```
-ÇENGO, gazete bulmacalarının keyfini İngilizce kelime öğrenmeyle birleştirir. İpuçları Türkçe, cevaplar İngilizce: bulmaca çözerken kelime dağarcığın kendiliğinden büyür.
+QORVEX, gazete bulmacalarının keyfini İngilizce kelime öğrenmeyle birleştirir. İpuçları Türkçe, cevaplar İngilizce: bulmaca çözerken kelime dağarcığın kendiliğinden büyür.
 
 9 GAZETE OYUNU
 • Çengel Bulmaca: Türk gazetelerinin klasik oklu bulmacası
@@ -45,14 +45,13 @@ Günlük seri, haftalık ritim, en hızlı süreler, öğrenilen kelimeler ve ip
 **Bu sürümdeki yenilikler**
 
 ```
-QORVEX artık ÇENGO!
-• Yeni ad ve yeni logo
-• Baştan yenilenen tasarım: açık ve okunaklı arayüz, yeni yazı tipleri
-• Yeni İstatistik sekmesi: en hızlı süreler, kelime gelişimi, ipucu kullanımı
-• Ana sayfada 9 oyunun hepsi tek bakışta
-• Kelime kartı alttan açılır ve kelimeyi kendiliğinden sesli okur
-• Çengel bulmacada daha az boş kare, her kelime en az bir harfiyle kesişir
-• Öğrenmediğin kelimeler tekrar gelmez; defterdeki kelimeler doğru zamanda döner
+• Yepyeni tasarım: açık ve okunaklı arayüz, yeni yazı tipleri
+• Kelime tekrar modu: 5 soru türü (seç, dinle, yaz, boşluk doldur)
+• Zor kelimeler listesi ve günün kelimesi
+• Haftalık meydan okuma, zamana karşı ve telaffuz alıştırması
+• 23 rozet, günlük hatırlatma, sonucunu görsel olarak paylaşma
+• Koyu mod ve büyük yazı seçeneği
+• Yeni İstatistik sekmesi ve okunuşlu (IPA) kelime kartları
 • Birçok düzeltme
 ```
 
@@ -60,9 +59,9 @@ QORVEX artık ÇENGO!
 
 | Field | Text |
 |---|---|
-| Name (max 30) | ÇENGO |
+| Name (max 30) | QORVEX |
 | Subtitle (max 30) | English Word Puzzles |
-| Keywords (max 100) | cengo,arrowword,crossword,english,vocabulary,word,puzzle,turkish,learn,word search |
+| Keywords (max 100) | qorvex,arrowword,crossword,english,vocabulary,word,puzzle,turkish,learn,word search |
 
 **Promotional text (max 170)**
 
@@ -73,7 +72,7 @@ Turkish clues, English answers! Learn English vocabulary with newspaper puzzles:
 **Description**
 
 ```
-ÇENGO brings the joy of newspaper puzzles to learning English vocabulary. Clues are in Turkish, answers are in English, so your vocabulary grows while you solve.
+QORVEX brings the joy of newspaper puzzles to learning English vocabulary. Clues are in Turkish, answers are in English, so your vocabulary grows while you solve.
 
 9 NEWSPAPER GAMES
 • Arrowword: the classic arrow-clue puzzle of Turkish newspapers
@@ -99,18 +98,17 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 **What's New in This Version**
 
 ```
-QORVEX is now ÇENGO!
-• New name and new logo
 • Fully redesigned: a lighter, more readable interface with new fonts
-• New Stats tab: fastest times, vocabulary growth, hint usage
-• All 9 games at a glance on the home screen
-• The word card slides up from the bottom and reads the word aloud
-• Fewer blank cells in the arrowword; every word crosses at least one other word
-• Words you didn't save no longer repeat; notebook words return at the right time
+• Word review mode with 5 question types (choose, listen, type, fill the gap)
+• Hard words list and word of the day
+• Weekly challenge, time attack and pronunciation practice
+• 23 badges, daily reminders, share your result as an image
+• Dark mode and larger text option
+• New Stats tab and word cards with IPA pronunciation
 • Many fixes
 ```
 
 ## Not
 
 - Ekran görüntüleri yeni tasarımla yeniden çekilmeli; `node scripts/resize-screenshots.mjs v1.2` ile boyutlanır.
-- Gizlilik sayfasının adresi `qorvex.expo.app` olarak kalabilir; sayfa içeriğinde ad ÇENGO olarak güncellendi (yeniden yayımlamak gerekir).
+- Gizlilik sayfasının adresi `qorvex.expo.app` olarak kalabilir; sayfa içeriğinde ad QORVEX.

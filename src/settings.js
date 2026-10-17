@@ -9,7 +9,6 @@ export const TEXT_SCALES = [
   { k: 1.3, label: 'Çok büyük' },
 ];
 export const THEMES = [
-  { id: 'system', label: 'Sistem' },
   { id: 'light', label: 'Açık' },
   { id: 'dark', label: 'Koyu' },
 ];
@@ -17,8 +16,8 @@ export const THEMES = [
 export function getSettings() {
   const s = getStore();
   const st = s.settings || (s.settings = {});
-  // varsayılan açık tema; kullanıcı kendisi seçmediyse (eski kayıtta 'system' olsa da) açık kalsın
-  if (!st.theme || (st.theme === 'system' && !st.themePicked)) st.theme = 'light';
+  // telefonun ayarı ne olursa olsun uygulama açık temada; koyu yalnızca kullanıcı seçerse ('Sistem' seçeneği kaldırıldı)
+  if (st.theme !== 'dark') st.theme = 'light';
   if (!st.textScale) st.textScale = 1;
   if (!st.reminder) st.reminder = { on: false, hour: 20, minute: 0 };
   return st;

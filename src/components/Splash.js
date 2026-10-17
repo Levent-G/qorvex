@@ -1,10 +1,10 @@
-// Uygulama açılış ekranı: lacivert zemin üstünde ÇENGO logosu (iOS açılış ekranıyla aynı renk, kesintisiz geçiş).
+// Uygulama açılış ekranı: lacivert zemin üstünde QORVEX logosu (iOS açılış ekranıyla aynı renk, kesintisiz geçiş).
 // Logo görsel olduğu için yazı tipleri yüklenmeden de görünür.
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, StyleSheet, useWindowDimensions } from 'react-native';
 
 const NAVY = '#18324D'; // app.json splash backgroundColor ile aynı
-const LOGO = require('../../assets/brand/cengo-logo.png'); // 1720 x 560
+const LOGO = require('../../assets/brand/qorvex-logo.png'); // 1720 x 560
 
 export default function Splash() {
   const { width } = useWindowDimensions();

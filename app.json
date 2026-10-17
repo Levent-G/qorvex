@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ÇENGO",
+    "name": "QORVEX",
     "slug": "qorvex",
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "backgroundColor": "#18324D",
     "ios": {
       "bundleIdentifier": "com.qorvex.app",

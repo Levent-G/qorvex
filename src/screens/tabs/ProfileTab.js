@@ -55,7 +55,7 @@ function SettingsCard() {
     if (on) {
       const ok = await requestReminderPermission().catch(() => false);
       if (!ok) {
-        Alert.alert('Bildirim izni kapalı', 'Hatırlatma için Ayarlar > ÇENGO > Bildirimler bölümünden izin ver.', [
+        Alert.alert('Bildirim izni kapalı', 'Hatırlatma için Ayarlar > QORVEX > Bildirimler bölümünden izin ver.', [
           { text: 'Vazgeç', style: 'cancel' },
           { text: 'Ayarlar', onPress: () => Linking.openSettings() },
         ]);
@@ -92,7 +92,7 @@ function SettingsCard() {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.setTitle}>Görünüm</Text>
-          <Text style={styles.setSub}>Açık, koyu ya da telefonun ayarı</Text>
+          <Text style={styles.setSub}>Açık ya da koyu tema</Text>
         </View>
         <Segmented options={THEMES.map((t) => ({ value: t.id, label: t.label }))} value={st.theme} onChange={setTheme} />
       </View>
@@ -148,7 +148,7 @@ export default function ProfileTab({ onTab }) {
       {/* Kimlik */}
       <View style={styles.hero}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarQ}>Ç</Text>
+          <Text style={styles.avatarQ}>Q</Text>
           <View style={styles.avatarBadge}>
             <TrophyIcon size={10} color={ed.onPrimary} />
           </View>
@@ -264,12 +264,12 @@ export default function ProfileTab({ onTab }) {
         <SetRow
           icon={<BadgeCheckIcon size={17} color={ed.primary} />}
           title="Hakkında & Gizlilik"
-          sub="ÇENGO v1.2 · Reklamsız"
+          sub="QORVEX v1.2 · Reklamsız"
           onPress={() => Linking.openURL('https://qorvex.expo.app/privacy')}
           last
         />
       </View>
-      <Text style={styles.footer}>ÇENGO · BUL · ÇÖZ · ÖĞREN</Text>
+      <Text style={styles.footer}>QORVEX · BUL · ÇÖZ · ÖĞREN</Text>
     </ScrollView>
   );
 }

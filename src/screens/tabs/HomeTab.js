@@ -65,21 +65,33 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
 
   return (
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      {/* Durum kutucukları */}
-      <View style={styles.chips}>
-        <Pressable style={styles.chip} onPress={() => onTab('stats')}>
-          <FlameIcon size={18} color={ed.orange} />
-          <Text style={styles.chipLabel}>Günlük Seri</Text>
-          <Text style={styles.chipValue}>{stats.streak} Gün</Text>
-        </Pressable>
-        <Pressable style={styles.chip} onPress={() => onTab('levels')}>
-          <Ring value={levelDone / LEVEL_GOAL} />
-          <Text style={styles.chipLabel}>Bulmaca</Text>
-          <Text style={styles.chipValue}>
-            {levelDone}/{LEVEL_GOAL}
-          </Text>
-        </Pressable>
-      </View>
+      {/* Günün Gazete Bulmacası */}
+      <Pressable style={[styles.daily, { marginTop: 0 }]} onPress={() => onOpenDaily('arrow')}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <Text style={styles.dailyKicker}>
+              {today.getDate()} {MONTHS_TR[today.getMonth()].toLocaleUpperCase('tr-TR')} {today.getFullYear()} · ÇENGEL
+            </Text>
+            <Text style={styles.dailyTitle}>Günün Gazete Bulmacası</Text>
+            <Text style={styles.dailyText}>
+              {daily?.solved ? 'Bugünkü bulmacayı çözdün. Yarın yenisi gelecek!' : 'İpuçları Türkçe, cevaplar İngilizce. Yeni kelimeler keşfet.'}
+            </Text>
+          </View>
+          <View style={styles.dailyPreview}>
+            <GamePreview game={featured} session={daily} size={86} />
+          </View>
+        </View>
+        <View style={styles.dailyFoot}>
+          <View style={styles.levelTag}>
+            <BadgeCheckIcon size={12} color={ed.accentInk} />
+            <Text style={styles.levelTagText}>KARIŞIK</Text>
+          </View>
+          <View style={styles.cta}>
+            <Text style={styles.ctaText}>{daily?.solved ? 'Tekrar Bak' : featured.started(daily) ? 'Devam Et' : 'Hemen Çöz'}</Text>
+            <ArrowRight size={15} color={ed.onPrimary} />
+          </View>
+        </View>
+      </Pressable>
 
       {/* Seviye bandı: atlama tebriği ya da mevcut durum */}
       {promo ? (
@@ -112,46 +124,8 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
         </Pressable>
       )}
 
-      {/* Günün Gazete Bulmacası */}
-      <Pressable style={styles.daily} onPress={() => onOpenDaily('arrow')}>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1, paddingRight: 8 }}>
-            <Text style={styles.dailyKicker}>
-              {today.getDate()} {MONTHS_TR[today.getMonth()].toLocaleUpperCase('tr-TR')} {today.getFullYear()} · ÇENGEL
-            </Text>
-            <Text style={styles.dailyTitle}>Günün Gazete Bulmacası</Text>
-            <Text style={styles.dailyText}>
-              {daily?.solved ? 'Bugünkü bulmacayı çözdün. Yarın yenisi gelecek!' : 'İpuçları Türkçe, cevaplar İngilizce. Yeni kelimeler keşfet.'}
-            </Text>
-          </View>
-          <View style={styles.dailyPreview}>
-            <GamePreview game={featured} session={daily} size={86} />
-          </View>
-        </View>
-        <View style={styles.dailyFoot}>
-          <View style={styles.levelTag}>
-            <BadgeCheckIcon size={12} color={ed.accentInk} />
-            <Text style={styles.levelTagText}>KARIŞIK</Text>
-          </View>
-          <View style={styles.cta}>
-            <Text style={styles.ctaText}>{daily?.solved ? 'Tekrar Bak' : featured.started(daily) ? 'Devam Et' : 'Hemen Çöz'}</Text>
-            <ArrowRight size={15} color={ed.onPrimary} />
-          </View>
-        </View>
-      </Pressable>
-
-      {/* Günün kelimesi */}
-      <WordOfDayCard />
-
-      {/* Haftalık meydan okuma */}
-      <WeeklyCard onOpen={() => onOpenRoute({ name: 'weekly' })} />
-
-      {/* Alıştırmalar */}
-      <SectionTitle title="Alıştırmalar" sub="Kısa turlarla kelimeleri pekiştir" />
-      <PracticeTiles width={tileW} onOpen={onOpenRoute} />
-
       {/* Oyunlar: hepsi ekranda */}
-      <SectionTitle title="9 Gazete Oyunu" sub="Zihnini çalıştır, kelime dağarcığını genişlet" />
+      <SectionTitle title="Oyunlar" sub="9 bulmaca · hepsi İngilizce kelime öğretir" style={{ marginTop: 14 }} />
       <View style={styles.grid}>
         {HOME_GAMES.map(([id, name, sub]) => (
           <Pressable key={id} onPress={() => onOpenLevels(id)} style={({ pressed }) => [styles.tile, { width: tileW }, pressed && { backgroundColor: ed.surfaceAlt }]}>
@@ -160,16 +134,42 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
                 <Text style={styles.popularText}>Popüler</Text>
               </View>
             ) : null}
-            <GameGlyph id={id} size={44} />
+            <GameGlyph id={id} size={40} />
             <Text style={styles.tileName} numberOfLines={1}>
               {name}
             </Text>
-            <Text style={styles.tileSub} numberOfLines={2}>
+            <Text style={styles.tileSub} numberOfLines={1}>
               {sub}
             </Text>
           </Pressable>
         ))}
       </View>
+
+      {/* Durum kutucukları */}
+      <View style={styles.chips}>
+        <Pressable style={styles.chip} onPress={() => onTab('stats')}>
+          <FlameIcon size={18} color={ed.orange} />
+          <Text style={styles.chipLabel}>Günlük Seri</Text>
+          <Text style={styles.chipValue}>{stats.streak} Gün</Text>
+        </Pressable>
+        <Pressable style={styles.chip} onPress={() => onTab('levels')}>
+          <Ring value={levelDone / LEVEL_GOAL} />
+          <Text style={styles.chipLabel}>Bulmaca</Text>
+          <Text style={styles.chipValue}>
+            {levelDone}/{LEVEL_GOAL}
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Haftalık meydan okuma */}
+      <WeeklyCard onOpen={() => onOpenRoute({ name: 'weekly' })} />
+
+      {/* Günün kelimesi */}
+      <WordOfDayCard />
+
+      {/* Alıştırmalar */}
+      <SectionTitle title="Alıştırmalar" sub="Kısa turlarla kelimeleri pekiştir" />
+      <PracticeTiles width={tileW} onOpen={onOpenRoute} />
 
       {/* Kelime Defterim */}
       <Pressable style={styles.note} onPress={() => onTab('notebook')}>
@@ -192,7 +192,7 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
 const card = { backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border };
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 16, paddingBottom: 24, paddingTop: 12 },
-  chips: { flexDirection: 'row', gap: 10 },
+  chips: { flexDirection: 'row', gap: 10, marginTop: 14 },
   chip: { ...card, flex: 1, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 12, paddingVertical: 11 },
   chipLabel: { flex: 1, fontFamily: efonts.bodyMedium, fontSize: 13, color: ed.textSoft },
   chipValue: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.text },
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   cta: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: ed.accentStrong, borderRadius: 22, paddingHorizontal: 20, paddingVertical: 11 },
   ctaText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  tile: { ...card, alignItems: 'center', paddingVertical: 14, paddingHorizontal: 6, gap: 5 },
+  tile: { ...card, alignItems: 'center', paddingVertical: 12, paddingHorizontal: 6, gap: 4 },
   popular: { position: 'absolute', top: -7, right: 10, backgroundColor: ed.orange, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, zIndex: 2 },
   popularText: { fontFamily: efonts.labelBold, fontSize: 9.5, color: ed.onPrimary },
   tileName: { fontFamily: efonts.bodyBold, fontSize: 13.5, color: ed.text, marginTop: 4 },

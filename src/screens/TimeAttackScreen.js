@@ -165,7 +165,7 @@ export default function TimeAttackScreen({ onBack }) {
             <Text style={styles.kickerOrange}>{result?.isRecord ? 'YENİ REKOR!' : 'SÜRE DOLDU'}</Text>
             <Text style={styles.final}>{score}</Text>
             <Text style={styles.heroText}>doğru cevap · rekorun {result?.best ?? best}</Text>
-            <ShareButton info={{ title: 'Zamana Karşı', seconds: 0, hints: false, line: `⚡ 60 saniyede ${score} doğru${result?.isRecord ? ' · yeni rekor!' : ''}` }} />
+            <ShareButton info={{ kicker: result?.isRecord ? 'ZAMANA KARŞI · YENİ REKOR' : 'ZAMANA KARŞI', title: `60 saniyede ${score} doğru`, seconds: 0, hints: false, line: `⚡ Rekorum: ${result?.best ?? best} doğru · Sen kaç yaparsın?` }} />
           </View>
           {missed.length ? (
             <>

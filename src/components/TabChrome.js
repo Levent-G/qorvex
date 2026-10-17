@@ -1,4 +1,4 @@
-// Sekmeli kabuk: üst başlık (profil, ÇENGO, seviye) ve alt sekme çubuğu — "Editorial Intellect" tasarımı
+// Sekmeli kabuk: üst başlık (profil, QORVEX, seviye) ve alt sekme çubuğu — "Editorial Intellect" tasarımı
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { HomeIcon, ChartIcon, BookOpenIcon, GridIcon, PersonIcon, ChevronRight, BadgeCheckIcon } from './UiIcons';
@@ -21,7 +21,7 @@ export function TopHeader({ insetTop, onTab, levelId }) {
         </View>
       </Pressable>
       <View style={styles.logo}>
-        <Text style={styles.logoText}>ÇENGO</Text>
+        <Text style={styles.logoText}>QORVEX</Text>
         <Text style={styles.logoSub}>BUL · ÇÖZ · ÖĞREN</Text>
       </View>
       <Pressable onPress={() => onTab('levels')} hitSlop={10} style={[styles.side, { alignItems: 'flex-end' }]}>
