@@ -174,7 +174,11 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   }, [hidden, hTokens, width]);
   const hiddenH = hidden ? 22 + 2 * (hBox + 10) : 72;
   const reserved = insets.top + insets.bottom + 56 + 26 + hiddenH + keyH * 3 + 12 + BACK_BAR_HEIGHT + 8;
-  const size = Math.floor(Math.min((width - 16) / p.w, (height - reserved) / p.h));
+  // ızgaraya kalan gerçek alan ölçülür (başlık, şerit, klavye ne kadar yer kaplarsa kaplasın sığar)
+  const [box, setBox] = useState(null);
+  const size = box
+    ? Math.max(12, Math.floor(Math.min((box.w - 12) / p.w, (box.h - 6) / p.h)))
+    : Math.floor(Math.min((width - 16) / p.w, (height - reserved) / p.h));
   const boxW = Math.floor((width - 16 - 12 * 2) / 13);
   const solvedNums = [...present].filter((n) => s.committed[n]).length;
 
@@ -193,7 +197,13 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           {learn.toast || 'CODEWORD · DOĞRU KELİMENİN HARFLERİ AYNI SAYILI HER KAREYE İŞLENİR'}
         </Text>
       </View>
-      <View style={styles.gridWrap}>
+      <View
+        style={styles.gridWrap}
+        onLayout={(e) => {
+          const { width: w, height: h } = e.nativeEvent.layout;
+          if (!box || Math.abs(box.w - w) > 1 || Math.abs(box.h - h) > 1) setBox({ w, h });
+        }}
+      >
         <PuzzleGrid
           w={p.w}
           h={p.h}
@@ -213,7 +223,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       {hidden ? (
         // Gizli cümle: her harfin sayısı altta; sayılar çözüldükçe cümle ortaya çıkar
         <View style={[styles.hidden, solved && styles.hiddenDone]}>
-          <Text style={[styles.hiddenLabel, solved && { color: colors.good }]} numberOfLines={2}>
+          <Text style={[styles.hiddenLabel, solved && { color: colors.good }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             {solved
               ? `${hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'} ÇÖZÜLDÜ ✓`
               : `${hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'} · SAYILARI ÇÖZDÜKÇE ORTAYA ÇIKAR`}
@@ -284,7 +294,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
 
       {solved && hidden ? (
         // Bulmaca bitti: klavye yerine gizli cümle büyük ve okunaklı
-        <View style={[styles.doneCard, { height: keyH * 3 + 12 }]}>
+        <View style={[styles.doneCard, { minHeight: keyH * 3 + 12 }]}>
           <Text style={styles.doneLabel}>{hidden.single ? 'GİZLİ KELİME' : 'GİZLİ CÜMLE'}</Text>
           <Text style={styles.doneText} numberOfLines={2} adjustsFontSizeToFit>
             {hidden.text}
@@ -345,7 +355,7 @@ export default function CodewordScreen({ kind, levelId, onBack }) {
 }
 
 const styles = StyleSheet.create({
-  gridWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  gridWrap: { flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   keyTable: { marginHorizontal: 10, marginBottom: 8, gap: 4, backgroundColor: ed.surface, borderRadius: 12, borderWidth: 1, borderColor: ed.border, padding: 6 },
   keyRow: { flexDirection: 'row', justifyContent: 'center', gap: 2 },
   keyBox: { height: 32, borderRadius: 5, borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surfaceAlt },
@@ -357,7 +367,7 @@ const styles = StyleSheet.create({
   hiddenRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 8, rowGap: 5 },
   hiddenWord: { flexDirection: 'row', gap: 2, alignItems: 'flex-end' },
   hiddenBox: { borderRadius: 5, borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', backgroundColor: ed.surfaceAlt },
-  doneCard: { marginHorizontal: 10, paddingHorizontal: 16, paddingTop: 12, alignItems: 'center', backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border },
+  doneCard: { marginHorizontal: 10, marginBottom: 6, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 10, alignItems: 'center', backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border },
   doneLabel: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.6, color: ed.good },
   doneText: { fontFamily: efonts.headlineBold, fontSize: 23, lineHeight: 29, color: ed.text, textAlign: 'center', marginTop: 4 },
   doneTr: { fontFamily: efonts.headlineItalic, fontSize: 15, lineHeight: 20, color: ed.textSoft, textAlign: 'center', marginTop: 4 },

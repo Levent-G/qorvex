@@ -476,6 +476,20 @@ function attempt(w, h, entries, ctx) {
   return g;
 }
 
+export const CLUE_SLOT_ORDER = { D: 0, RD: 1, R: 2, DR: 3 };
+
+// Eski kayıtlı bulmacalarda da aynı sıra olsun (yerinde düzeltir; ok, dokunma ve seçim slot'tan okunur)
+export function normalizeClueSlots(p) {
+  if (!p || !Array.isArray(p.clues)) return p;
+  const byCell = {};
+  for (const k of p.clues) (byCell[`${k.r},${k.c}`] = byCell[`${k.r},${k.c}`] || []).push(k);
+  for (const list of Object.values(byCell)) {
+    if (list.length < 2) continue;
+    list.sort((a, b) => CLUE_SLOT_ORDER[a.arrow] - CLUE_SLOT_ORDER[b.arrow]).forEach((k, i) => (k.slot = i));
+  }
+  return p;
+}
+
 function serialize(g) {
   const w = g.w;
   const rows = [];
@@ -487,7 +501,8 @@ function serialize(g) {
     }
     rows.push(s);
   }
-  const order = { R: 0, RD: 1, DR: 2, D: 3 };
+  // aşağı giden kelimenin ipucu üst yarıda, sağa giden alt yarıda
+  const order = CLUE_SLOT_ORDER;
   const byAnswer = new Map(g.words.map((x) => [x.entry.a, x]));
   const clues = [];
   for (let i = 0; i < g.t.length; i++) {

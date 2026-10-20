@@ -1,5 +1,8 @@
 // Bulmaca için yardımcı yapı: kelimeler, hücre -> kelime eşlemesi, çözüm
+import { normalizeClueSlots } from './generator';
+
 export function buildModel(p) {
+  normalizeClueSlots(p); // çift ipucunda üst: aşağı, alt: sağa
   const words = p.clues.map((k, i) => {
     const [dr, dc] = k.dir === 'A' ? [0, 1] : [1, 0];
     const cells = [];

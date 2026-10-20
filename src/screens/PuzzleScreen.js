@@ -6,7 +6,7 @@ import ArrowGrid from '../components/ArrowGrid';
 import Keyboard from '../components/Keyboard';
 import LearnModal from '../components/LearnModal';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { GameHeader, HintMenu, WinModal, LoadingPage, shellStyles } from '../components/GameShell';
+import { GameHeader, HintMenu, WinModal, LoadingPage, shellStyles, CardHintPill } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { buildModel, wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
@@ -236,12 +236,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             <Text style={styles.clueText} numberOfLines={1} adjustsFontSizeToFit>
               {photo && w.answer === photo.answer ? 'Resimdeki nesne ne?' : w.text}
             </Text>
-            <View style={styles.learnTag}>
-              <BulbIcon size={15} />
-              <Text style={styles.learnTagText}>
-                {left}/{LEARN_LIMIT}
-              </Text>
-            </View>
+            <CardHintPill />
           </View>
         </Pressable>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={styles.clueNav}>
@@ -393,7 +388,7 @@ const styles = StyleSheet.create({
   clueNavText: { fontFamily: fonts.serifBold, fontSize: 30, color: colors.ink, marginTop: -4 },
   clueMeta: { fontFamily: efonts.labelBold, fontSize: 10, letterSpacing: 1.1, color: ed.accent },
   clueRow: { flexDirection: 'row', alignItems: 'center' },
-  clueText: { flex: 1, fontFamily: efonts.headlineBold, fontSize: 21, lineHeight: 27, color: ed.text },
+  clueText: { flexShrink: 1, fontFamily: efonts.headlineBold, fontSize: 21, lineHeight: 27, color: ed.text },
   learnTag: {
     flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft,
     paddingHorizontal: 7, paddingVertical: 3, marginLeft: 6,

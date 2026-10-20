@@ -161,6 +161,16 @@ export function WinModal({ visible, head, body, daily, onClose, onNext, onHome, 
   );
 }
 
+// İpucu çubuğunda, ipucu metninin hemen yanında: basınca kelime kartı açılır (çubuğun tamamı da basılabilir)
+export function CardHintPill() {
+  return (
+    <View style={styles.cardPill}>
+      <BulbIcon size={14} />
+      <Text style={styles.cardPillText}>Kelime kartını gör</Text>
+    </View>
+  );
+}
+
 // "Sonucu paylaş" (kazanma kartlarında ortak)
 export function ShareButton({ info, style }) {
   const [open, setOpen] = useState(false);
@@ -276,6 +286,8 @@ const styles = StyleSheet.create({
   btn: { flex: 1, backgroundColor: ed.primary, paddingVertical: 13, alignItems: 'center', borderRadius: 12 },
   btnGhost: { backgroundColor: ed.surfaceAlt },
   btnText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
+  cardPill: { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft, paddingLeft: 5, paddingRight: 7, paddingVertical: 3, marginLeft: 8 },
+  cardPillText: { fontFamily: efonts.labelBold, fontSize: 10, color: ed.accentInk },
   shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, alignSelf: 'center', marginTop: 14, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 20, backgroundColor: ed.accentSoft },
   shareText: { fontFamily: efonts.bodyBold, fontSize: 14, color: ed.accentInk },
 

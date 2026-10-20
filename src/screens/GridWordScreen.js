@@ -8,7 +8,7 @@ import PuzzleGrid from '../components/PuzzleGrid';
 import Keyboard from '../components/Keyboard';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
 import { BookIcon, ChevronIcon } from '../components/Icons';
-import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedEffect, useLearnCard, shellStyles } from '../components/GameShell';
+import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedEffect, useLearnCard, shellStyles, CardHintPill } from '../components/GameShell';
 import { buildWordModel, cellsOf, cellKey } from '../engine/gridgames';
 import { wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
@@ -200,12 +200,7 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
             <Text style={[shellStyles.clueText, !wTrOpen && styles.picHint]} numberOfLines={wPhoto ? 2 : 1} adjustsFontSizeToFit>
               {wTrOpen ? w.text : 'Resimdeki nesne · büyütmek için dokun'}
             </Text>
-            <View style={shellStyles.learnTag}>
-              <BookIcon size={14} />
-              <Text style={shellStyles.learnTagText}>
-                {learn.left}/{learn.limit}
-              </Text>
-            </View>
+            <CardHintPill />
           </View>
         </Pressable>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={shellStyles.clueNav}>

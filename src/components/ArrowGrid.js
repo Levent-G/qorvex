@@ -1,7 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import Svg, { Path, Polygon } from 'react-native-svg';
-import { BulbIcon } from './Icons';
 import { colors, fonts } from '../theme';
 
 const BORDER = 2;
@@ -37,8 +36,6 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
   const learned = [learned0, learned1];
   const two = texts.length === 2;
   const fs = Math.max(6, size * (two ? 0.2 : 0.22));
-  // seçili ipucunun ampulü için ayrılan yer: tek ipucunda üstte, çift ipucunda sağda (yazının üstüne binmesin)
-  const bulb = Math.max(9, size * (two ? 0.22 : 0.26));
   return (
     <View
       style={[
@@ -54,7 +51,6 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
             styles.clueSlot,
             two && i === 0 && styles.clueDivider,
             activeSlot === i && { backgroundColor: colors.clueCellActive },
-            activeSlot === i && (two ? { paddingRight: bulb + 1 } : { paddingTop: bulb * 0.95 }),
           ]}
         >
           {showText ? (
@@ -72,12 +68,6 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
             >
               {t}
             </Text>
-          ) : null}
-          {/* seçili ipucu: bir daha dokununca kelime kartı açılır */}
-          {activeSlot === i ? (
-            <View style={two ? [styles.cardHintSide, { width: bulb }] : [styles.cardHint, { width: bulb + 2, height: bulb }]}>
-              <BulbIcon size={bulb} color={colors.bulb} />
-            </View>
           ) : null}
         </View>
       ))}
