@@ -7,6 +7,15 @@ import { ed, efonts } from '../theme';
 
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
+  '1.3.0': [
+    ['🧩', 'Daha dolu bulmacalar', 'Çengel bulmacalarda boş kareler yarı yarıya azaldı.'],
+    ['🔒', 'Doğru kelime kilitlenir', 'Bildiğin kelime artık yanlışlıkla silinmez; imleç de üzerinde durmaz, boş karelere gider.'],
+    ['💡', 'Kelime kartı düğmesi', 'Kartı açmak için ipucunun yanındaki "Kelime kartını gör" düğmesine bas.'],
+    ['➡️', 'Daha anlaşılır ipuçları', 'İki ipuçlu karelerde her ipucu, okunun çıktığı kenarın yanında durur.'],
+    ['📈', 'Seviye karışımı', 'Kendi seviyenin kelimeleri ağırlıkta, önceki seviyelerden görmediğin kelimeler de azar azar gelir.'],
+    ['🔐', 'Şifreli Bulmaca', 'Ekrana tam sığar; doğru yazdığın harf alttaki şeritte hemen mavi olur.'],
+    ['🎨', 'Ana sayfa', 'Oyunlar en üstte, her oyunda Popüler, Kolay, Zor gibi etiketler var.'],
+  ],
   '1.2.0': [
     ['🎨', 'Yepyeni tasarım', 'Daha ferah, okunaklı bir görünüm. Kelime kartı artık alttan açılıyor ve kelimeyi sesli okuyor.'],
     ['🃏', 'Kelime tekrar modu', 'Defterini 10 soruda tekrar et: Türkçe→İngilizce, İngilizce→Türkçe, dinle-seç, yaz ve cümlede boşluk doldur.'],

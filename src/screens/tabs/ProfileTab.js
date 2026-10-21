@@ -5,6 +5,7 @@ import { FlameIcon, TrophyIcon, BookOpenIcon, ChevronRight, CheckIcon, BadgeChec
 import { getSettings, setTheme, setTextScale, setReminder, THEMES, TEXT_SCALES } from '../../settings';
 import { requestReminderPermission, rescheduleReminders } from '../../reminders';
 import BadgeShelf from '../../components/BadgeShelf';
+import { currentVersion } from '../../appVersion';
 import { getStats, getProfile, notebookWords, getLevel } from '../../engine/session';
 import { GAMES, gameTotals } from '../../games';
 import { ed, efonts } from '../../theme';
@@ -264,7 +265,7 @@ export default function ProfileTab({ onTab }) {
         <SetRow
           icon={<BadgeCheckIcon size={17} color={ed.primary} />}
           title="Hakkında & Gizlilik"
-          sub="QORVEX v1.2 · Reklamsız"
+          sub={`QORVEX v${currentVersion()} · Reklamsız`}
           onPress={() => Linking.openURL('https://qorvex.expo.app/privacy')}
           last
         />

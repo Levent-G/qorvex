@@ -1,4 +1,4 @@
-# QORVEX — App Store Connect metinleri (sürüm 1.2)
+# QORVEX — App Store Connect metinleri (sürüm 1.3)
 
 Paket kimliği değişmez: `com.qorvex.app`. Mevcut kullanıcılar uygulamayı güncellemeyle yeni adıyla görür; puan ve yorumlar korunur.
 
@@ -112,3 +112,32 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 
 - Ekran görüntüleri yeni tasarımla yeniden çekilmeli; `node scripts/resize-screenshots.mjs v1.2` ile boyutlanır.
 - Gizlilik sayfasının adresi `qorvex.expo.app` olarak kalabilir; sayfa içeriğinde ad QORVEX.
+
+
+## Sürüm 1.3 — "Bu sürümdeki yenilikler"
+
+**Türkçe**
+
+```
+• Çengel bulmacalarda boş kareler yarı yarıya azaldı
+• Doğru bildiğin kelime kilitlenir, yanlışlıkla silinmez
+• Kelime kartı için ipucunun yanında "Kelime kartını gör" düğmesi
+• İki ipuçlu karelerde ipuçları okun yönüne göre daha anlaşılır
+• Kendi seviyen ağırlıkta, önceki seviyelerden yeni kelimeler de gelir
+• Şifreli Bulmaca ekrana tam sığar, doğru harf hemen işaretlenir
+• Ana sayfada oyunlar en üstte, oyunlara etiketler eklendi
+• Birçok düzeltme
+```
+
+**English**
+
+```
+• Arrowword puzzles now have about half as many blank cells
+• Correct words are locked and can't be deleted by accident
+• New "See word card" button next to the clue
+• Two-clue cells are clearer: each clue sits next to its arrow
+• Your level comes first, with new words from earlier levels mixed in
+• Codeword fits the screen and marks correct letters right away
+• Home: games at the top, with tags on every game
+• Many fixes
+```
