@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import Keyboard from '../components/Keyboard';
 import LearnModal from '../components/LearnModal';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { GameHeader, ShareButton } from '../components/GameShell';
+import { GameHeader, ShareButton, CardHintPill } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { reducer, initState, rowStatus, fillableRows, key } from '../engine/ladderBoard';
 import { getLevel, getLadderSession, getLadderDaily, markLadderSolved, markLearned, LEARN_LIMIT, recordHint, recordHard } from '../engine/session';
@@ -98,10 +98,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     setLearn({ answer: r.answer, clue: r.clue });
   };
 
-  // İpucu kutusuna dokunma: ilk dokunuş basamağı seçer, seçiliyse kelime kartını açar
+  // İpucu kutusuna dokunma yalnızca basamağı seçer (kelime kartı "Kelime kartını gör" düğmesiyle açılır)
   const onClue = (row) => {
-    if (row === 0 || row === last || row === s.sel.row) openLearn(row);
-    else dispatch({ type: 'selectRow', row });
+    if (row !== 0 && row !== last && row !== s.sel.row) dispatch({ type: 'selectRow', row });
   };
 
   const onKey = useCallback((ch) => {
@@ -229,14 +228,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           <ChevronIcon dir="left" size={20} />
         </Pressable>
         <Text style={styles.info}>
-          {solvedRows}/{fillableRows(p).length} basamak · ipucuna iki kez dokun: kelime kartı
+          {solvedRows}/{fillableRows(p).length} basamak
         </Text>
-        <View style={styles.learnTag}>
-          <BookIcon size={13} />
-          <Text style={styles.learnTagText}>
-            {left}/{LEARN_LIMIT}
-          </Text>
-        </View>
+        <CardHintPill onPress={() => openLearn(s.sel.row)} />
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={10} style={styles.navBtn}>
           <ChevronIcon dir="right" size={20} />
         </Pressable>

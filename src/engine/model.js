@@ -2,7 +2,7 @@
 import { normalizeClueSlots } from './generator';
 
 export function buildModel(p) {
-  normalizeClueSlots(p); // çift ipucunda üst: aşağı, alt: sağa
+  normalizeClueSlots(p); // çift ipucunda: sağa çıkan üstte, aşağı çıkan altta (ok metnin yanında)
   const words = p.clues.map((k, i) => {
     const [dr, dc] = k.dir === 'A' ? [0, 1] : [1, 0];
     const cells = [];

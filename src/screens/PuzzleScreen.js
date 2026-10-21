@@ -153,16 +153,15 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
         const list = model.clueCells[`${r},${c}`] || [];
         const idx = list[slot] ?? list[0] ?? list[1];
         if (idx == null) return;
-        // İlk dokunuş kelimeyi seçer; zaten seçiliyse kelime kartını açar
-        if (idx === activeRef.current) openLearn(idx);
-        else dispatch({ type: 'selectWord', idx });
+        // ipucu karesi kelimeyi seçer (kelime kartı yalnızca çubuktaki "Kelime kartını gör" düğmesiyle açılır)
+        if (idx !== activeRef.current) dispatch({ type: 'selectWord', idx });
       } else if (ch === '@') {
         setZoom(true);
       } else if (ch !== '.') {
         dispatch({ type: 'tapCell', r, c });
       }
     },
-    [puzzle, model, openLearn],
+    [puzzle, model],
   );
 
   const onKey = useCallback((ch) => {
@@ -214,7 +213,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
         </Text>
       </View>
 
-      {/* İpucu çubuğu: Türkçe kelimeye basınca kelime kartı açılır */}
+      {/* İpucu çubuğu: kelime kartı "Kelime kartını gör" düğmesiyle açılır */}
       <View style={styles.clueBar}>
         <Pressable onPress={() => dispatch({ type: 'step', delta: -1 })} hitSlop={8} style={styles.clueNav}>
           <ChevronIcon dir="left" size={20} color={ed.textSoft} />
@@ -224,7 +223,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             <Image source={{ uri: photo.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
           </Pressable>
         ) : null}
-        <Pressable style={{ flex: 1 }} onPress={() => openLearn(s.active)}>
+        <View style={{ flex: 1 }}>
           <Text style={[styles.clueMeta, toast && { color: colors.wrong }]} numberOfLines={1}>
             {toast ||
               `${w.dir === 'A' ? 'ACROSS · YATAY' : 'DOWN · DİKEY'} ${ARROW_LABEL[w.arrow]} (${w.answer.length})${
@@ -236,9 +235,9 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             <Text style={styles.clueText} numberOfLines={1} adjustsFontSizeToFit>
               {photo && w.answer === photo.answer ? 'Resimdeki nesne ne?' : w.text}
             </Text>
-            <CardHintPill />
+            <CardHintPill onPress={() => openLearn(s.active)} />
           </View>
-        </Pressable>
+        </View>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={styles.clueNav}>
           <ChevronIcon dir="right" size={20} color={ed.textSoft} />
         </Pressable>

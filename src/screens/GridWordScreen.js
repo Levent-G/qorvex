@@ -192,15 +192,15 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
             <Image source={{ uri: wPhoto.url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
           </Pressable>
         ) : null}
-        <Pressable style={{ flex: 1 }} onPress={() => (wPhoto && !wTrOpen ? setZoom(w) : learn.openLearn(w.answer, w.text))}>
+        <Pressable style={{ flex: 1 }} disabled={!(wPhoto && !wTrOpen)} onPress={() => setZoom(w)}>
           <Text style={[shellStyles.clueMeta, learn.toast && { color: ed.orange }]} numberOfLines={1}>
             {learn.toast || `${dirLabel} (${w.answer.length})`}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={[shellStyles.clueText, !wTrOpen && styles.picHint]} numberOfLines={wPhoto ? 2 : 1} adjustsFontSizeToFit>
+            <Text style={[shellStyles.clueText, { flex: 0, flexShrink: 1 }, !wTrOpen && styles.picHint]} numberOfLines={wPhoto ? 2 : 1} adjustsFontSizeToFit>
               {wTrOpen ? w.text : 'Resimdeki nesne · büyütmek için dokun'}
             </Text>
-            <CardHintPill />
+            {wTrOpen ? <CardHintPill onPress={() => learn.openLearn(w.answer, w.text)} /> : null}
           </View>
         </Pressable>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={shellStyles.clueNav}>

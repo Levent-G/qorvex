@@ -445,10 +445,12 @@ function stats(g) {
   return { letters, blanks, words: g.words.length, fresh, lowCross, zeroCross };
 }
 
+// boş kare cezası (generatePuzzle içinde opts.blankWeight ile ayarlanır)
+let BLANK_W = 8;
 function scoreOf(s, pc) {
   // fresh: kelimelerin tazelik toplamı (yakın zamanda/sık gelenler eksi) — iyileştirme aynı kelimeleri geri getirmesin
   // lowCross: yeterince kesişmeyen kelimeler (az ipuçlu) cezalandırılır
-  return s.letters * 2 - s.blanks * 8 + s.words * 1.5 + pc * 8 + (s.fresh || 0) * 0.6 - (s.lowCross || 0) * 9 - (s.zeroCross || 0) * 40;
+  return s.letters * 2 - s.blanks * BLANK_W + s.words * 1.5 + pc * 8 + (s.fresh || 0) * 0.6 - (s.lowCross || 0) * 9 - (s.zeroCross || 0) * 40;
 }
 
 function attempt(w, h, entries, ctx) {
@@ -476,7 +478,9 @@ function attempt(w, h, entries, ctx) {
   return g;
 }
 
-export const CLUE_SLOT_ORDER = { D: 0, RD: 1, R: 2, DR: 3 };
+// Çift ipuçlu karede her ipucu okunun çıktığı kenarın yanında: sağ kenardan çıkanlar (R, RD) üst yarıda,
+// alt kenardan çıkanlar (DR, D) alt yarıda. Böylece ok metnin hemen yanında, yön karışmaz.
+export const CLUE_SLOT_ORDER = { R: 0, RD: 1, DR: 2, D: 3 };
 
 // Eski kayıtlı bulmacalarda da aynı sıra olsun (yerinde düzeltir; ok, dokunma ve seçim slot'tan okunur)
 export function normalizeClueSlots(p) {
@@ -501,7 +505,6 @@ function serialize(g) {
     }
     rows.push(s);
   }
-  // aşağı giden kelimenin ipucu üst yarıda, sağa giden alt yarıda
   const order = CLUE_SLOT_ORDER;
   const byAnswer = new Map(g.words.map((x) => [x.entry.a, x]));
   const clues = [];
@@ -513,6 +516,7 @@ function serialize(g) {
       clues.push({
         r: Math.floor(i / w), c: i % w, slot, of: list.length, arrow: k.arrow,
         text: wd.entry.c, answer: k.a, sr: wd.r, sc: wd.c, dir: wd.dir,
+        ...(wd.entry.filler ? { filler: true } : null),
       });
     });
   }
@@ -521,11 +525,13 @@ function serialize(g) {
 
 /**
  * Bulmaca üretir (zaman bütçeli, arada UI'a nefes aldırır).
- * opts: { w, h, entries: [{a, c, bonus?}], dict: Map(answer->entry), prio: Set, seed, budgetMs, minAttempts }
+ * opts: { w, h, entries: [{a, c, bonus?}], dict: Map(answer->entry), prio: Set, seed, budgetMs, minAttempts,
+ *         fillers?: [{a, c, filler: true}] — yalnızca en sonda boş kalan köşeler için }
  */
 export async function generatePuzzle(opts) {
   const { w, h, entries, dict, prio, seed = Date.now(), budgetMs = 900, minAttempts = 4, maxAttempts = 60, yieldFn } = opts;
   const rand = mulberry32(seed);
+  BLANK_W = opts.blankWeight ?? 8;
   const ctx = { rand, dict, prio, blocks: opts.blocks || null };
   const fit = entries.filter((e) => e.a.length >= 2 && e.a.length <= Math.max(w, h) - 1);
   const prioList = fit.filter((e) => prio && prio.has(e.a));
@@ -533,6 +539,15 @@ export async function generatePuzzle(opts) {
   const bigIdx = buildIndex(fit);
   // cepler de yalnızca havuzdaki kelimelerle dolsun (görülmüş/öğrenilmeyen kelimeler sızmasın)
   const pocketPool = fit.slice();
+  // Dolgu: öğrenilecek kelimelerle dolmayan köşeler için en sonda kısa kelimeler (opts.fillers)
+  const used0 = new Set(fit.map((e) => e.a));
+  const fillerPool = (opts.fillers || []).filter((e) => e.a.length <= Math.max(w, h) - 1 && !used0.has(e.a));
+  const fillerCtx = fillerPool.length ? { ...ctx, dict: new Map([...fillerPool.map((e) => [e.a, e]), ...dict]) } : null;
+  // iyileştirme turu: dolgular cezalı (bonus < 0) — ancak bir boşluğu kapatıyorsa tercih edilir
+  const FILLER_PENALTY = opts.fillerPenalty ?? -4;
+  const penalized = fillerPool.map((e) => ({ ...e, bonus: (e.bonus || 0) + FILLER_PENALTY }));
+  const improveIdx = penalized.length ? buildIndex([...fit, ...penalized]) : null;
+  const improveCtx = penalized.length ? { ...ctx, dict: new Map([...penalized.map((e) => [e.a, e]), ...dict]) } : ctx;
   // Boşluk sayısı tohuma çok bağlı: bütçeyi birkaç bağımsız tura böl, her tur tam bir bulmaca üretsin,
   // sonunda en iyi puanlıyı (en az gri boşluk, en çok kesişme) seç.
   const restarts = opts.restarts || 3;
@@ -557,13 +572,17 @@ export async function generatePuzzle(opts) {
     let g = best.g;
     const end = rStart + rBudget;
     while (Date.now() < end) {
-      g = improve(g, bigIdx, ctx, Math.min(end, Date.now() + 60));
+      g = improveIdx ? improve(g, improveIdx, improveCtx, Math.min(end, Date.now() + 60)) : improve(g, bigIdx, ctx, Math.min(end, Date.now() + 60));
       if (yieldFn) await yieldFn();
     }
     // Son rötuş: cepleri doldur, ipuçlarını blok hücrelere dağıt
     g = cloneGrid(g);
     shuffle(pocketPool, rand);
     fillPockets(g, pocketPool.slice(0, 1500), ctx);
+    if (fillerCtx && stats(g).blanks) {
+      shuffle(fillerPool, rand);
+      fillPockets(g, fillerPool, fillerCtx);
+    }
     relocateClues(g);
     const sc = scoreOf(stats(g), prioCount(g, ctx));
     if (!winner || sc > winner.sc) winner = { g, sc };

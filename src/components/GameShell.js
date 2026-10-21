@@ -161,13 +161,13 @@ export function WinModal({ visible, head, body, daily, onClose, onNext, onHome, 
   );
 }
 
-// İpucu çubuğunda, ipucu metninin hemen yanında: basınca kelime kartı açılır (çubuğun tamamı da basılabilir)
-export function CardHintPill() {
+// İpucu çubuğunda, ipucu metninin hemen yanında: kelime kartı yalnızca bu düğmeyle açılır
+export function CardHintPill({ onPress }) {
   return (
-    <View style={styles.cardPill}>
+    <Pressable onPress={onPress} hitSlop={8} style={({ pressed }) => [styles.cardPill, pressed && { opacity: 0.7 }]}>
       <BulbIcon size={14} />
       <Text style={styles.cardPillText}>Kelime kartını gör</Text>
-    </View>
+    </Pressable>
   );
 }
 

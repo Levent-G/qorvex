@@ -62,7 +62,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   }, [p, model, s, selNum, givenNums]);
 
   // Henüz kesinleşmemiş ama yazılmış harfler (sayı -> harf); seçili karedeki harf önceliklidir.
-  // Alttaki şerit/tabloda gösterilir; doğru olup olmadığını ele vermemek için yeşil yapılmaz.
+  // Alttaki şerit/tabloda gösterilir; harf doğruysa kelime bitmeden de mavi olur.
   const typed = useMemo(() => {
     const t = {};
     const put = (k) => {
@@ -73,6 +73,14 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     for (const k of Object.keys(s.cells)) put(k);
     return t;
   }, [p, model, s, selKey]);
+
+  // sayı -> doğru harf (şeritte yazılan harf doğru mu?)
+  const numLetter = useMemo(() => {
+    const m = {};
+    for (const [ch, n] of Object.entries(p.code)) m[n] = ch;
+    return m;
+  }, [p]);
+  const okTyped = (n) => !!typed[n] && typed[n] === numLetter[n];
 
   const statuses = useMemo(() => model.words.map((w) => wordStatus(w, view.letters, model.solution)), [model, view]);
   const status = useMemo(() => {
@@ -249,8 +257,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                       style={[
                         styles.hiddenBox,
                         { width: hBox, height: hBox + 8 },
-                        (solved || s.committed[n]) && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
                         !s.committed[n] && typed[n] && { backgroundColor: colors.cell },
+                        (solved || s.committed[n] || okTyped(n)) && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
                         n === selNum && { backgroundColor: colors.cellActive },
                       ]}
                     >
@@ -278,7 +286,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 style={[
                   styles.keyBox,
                   { width: boxW },
-                  s.committed[n] && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
+                  (s.committed[n] || okTyped(n)) && { backgroundColor: ed.accentSoft, borderColor: ed.accentLine },
                   n === selNum && { backgroundColor: colors.cellActive },
                   !present.has(n) && { opacity: 0.3 },
                 ]}

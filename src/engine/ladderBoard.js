@@ -28,7 +28,8 @@ export function fixedCells(p) {
   return fixed;
 }
 
-const isLocked = (s, k) => !!s.revealed[k] || !!s.fixed[k];
+// Kilitli: açılmış / sabit harf ya da basamağı doğru bilinmiş kare (doğru kelime bir daha silinmez)
+const isLocked = (s, k) => !!s.revealed[k] || !!s.fixed[k] || rowStatus(s.p, s.entries, Number(k.split(',')[0])) === 'ok';
 
 function firstEmptyCol(p, entries, row, fixed = {}) {
   for (let c = 0; c < p.len; c++) if (!entries[key(row, c)] && !fixed[key(row, c)]) return c;
@@ -64,12 +65,14 @@ export function reducer(s, a) {
   switch (a.type) {
     case 'tap': {
       if (!fillableRows(p).includes(a.row)) return s;
+      if (rowStatus(p, s.entries, a.row) === 'ok') return s; // doğru basamak: yazılamaz, seçime gerek yok
       // kilitli kareye dokunulursa basamağın yazılabilir karesine git
       const col = s.fixed[key(a.row, a.col)] ? firstEmptyCol(p, s.entries, a.row, s.fixed) : a.col;
       return { ...s, sel: { row: a.row, col } };
     }
     case 'selectRow': {
       if (!fillableRows(p).includes(a.row)) return s;
+      if (rowStatus(p, s.entries, a.row) === 'ok') return s;
       return { ...s, sel: { row: a.row, col: firstEmptyCol(p, s.entries, a.row, s.fixed) } };
     }
     case 'step': {

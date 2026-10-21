@@ -2,13 +2,14 @@
 import { wordStatus } from './model';
 
 // ---------------- Durum makinesi ----------------
-function perpOk(s, key, dir) {
-  const other = (s.model.at[key] || {})[dir === 'A' ? 'D' : 'A'];
-  if (other == null) return false;
-  return wordStatus(s.model.words[other], s.entries, s.model.solution) === 'ok';
-}
-// Kilitli kare: açılmış harf ya da çapraz kelimesi doğru (yeşil) olan kare
-const locked = (s, key, dir) => !!s.revealed[key] || perpOk(s, key, dir);
+// Kilitli kare: açılmış harf ya da içinden geçen kelimelerden biri (kendisi ya da çaprazı) doğru (yeşil) olan kare.
+// Doğru bilinen kelime bir daha silinmez / üzerine yazılmaz.
+const wordOk = (s, idx) => idx != null && wordStatus(s.model.words[idx], s.entries, s.model.solution) === 'ok';
+const locked = (s, key) => {
+  if (s.revealed[key]) return true;
+  const at = s.model.at[key] || {};
+  return wordOk(s, at.A) || wordOk(s, at.D);
+};
 
 function checkSolved(s) {
   const { solution } = s.model;
@@ -16,14 +17,16 @@ function checkSolved(s) {
   return { ...s, solved: true };
 }
 
-function firstEmpty(w, entries) {
-  const j = w.keys.findIndex((k) => !entries[k]);
+// kelimenin ilk yazılabilir karesi: önce boş ve kilitsiz, yoksa ilk kilitsiz (doğru kelimelerin harflerine imleç gelmez)
+function firstOpen(s, w) {
+  let j = w.keys.findIndex((k) => !s.entries[k] && !locked(s, k));
+  if (j < 0) j = w.keys.findIndex((k) => !locked(s, k));
   return j < 0 ? 0 : j;
 }
 
 export function selectWordState(s, idx) {
   const w = s.model.words[idx];
-  const j = firstEmpty(w, s.entries);
+  const j = firstOpen(s, w);
   return { ...s, active: idx, sel: { r: w.cells[j][0], c: w.cells[j][1] } };
 }
 
@@ -54,9 +57,18 @@ export function reducer(s, a) {
       let idx;
       if (s.sel && s.sel.r === a.r && s.sel.c === a.c) idx = cur.dir === 'A' ? at.D ?? at.A : at.A ?? at.D;
       else idx = at[cur.dir] ?? at.A ?? at.D;
+      // doğru bilinen kelimeye gerek yok: karedeki diğer (bitmemiş) kelimeyi seç, ikisi de doğruysa dokunuşu yok say
+      if (wordOk(s, idx)) {
+        const other = idx === at.A ? at.D : at.A;
+        if (other == null || wordOk(s, other)) return s;
+        idx = other;
+      }
+      // kilitli kareye (yazılamaz) imleç koyma: kelimenin yazılabilir karesine git
+      if (locked(s, key)) return selectWordState(s, idx);
       return { ...s, active: idx, sel: { r: a.r, c: a.c } };
     }
     case 'selectWord':
+      if (wordOk(s, a.idx)) return s; // doğru kelimenin ipucu: seçime gerek yok
       return selectWordState(s, a.idx);
     case 'step': {
       const pos = model.order.indexOf(s.active);
@@ -85,8 +97,10 @@ export function reducer(s, a) {
         // kelime doğru: boş karesi olan sıradaki kelimeye geç
         const nx = nextOpenWord(ns, s.active);
         if (nx != null) ns = selectWordState(ns, nx);
-      } else if (i < w.keys.length - 1) {
-        ns.sel = { r: w.cells[i + 1][0], c: w.cells[i + 1][1] };
+      } else {
+        let k2 = i + 1;
+        while (k2 < w.keys.length && locked(ns, w.keys[k2])) k2++;
+        if (k2 < w.keys.length) ns.sel = { r: w.cells[k2][0], c: w.cells[k2][1] };
       }
       return checkSolved(ns);
     }

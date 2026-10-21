@@ -17,6 +17,13 @@ export const MIN_FRESH = 120; // taze kelime bunun altına düşünce en eski g�
 export const TWO_LETTER_COOLDOWN = 4;
 export const TWO_LETTER_MAX = 27;
 
+// Seviye kademesi: oyuncunun seviyesi en ağırlıklı, her alt seviye bir öncekinden daha az gelir
+// (ör. B2'de: B2 > B1 > A2 > A1). Uzaklık = oyuncu seviyesi − kelime seviyesi.
+// LEVEL_BONUS: üretici puanına eklenir; LEVEL_SHARE: alt seviye kelimelerinin her bulmacada havuza girme oranı.
+export const LEVEL_BONUS = [3, 1.5, 0, -1.5, -3, -4.5];
+export const LEVEL_SHARE = [1, 0.6, 0.35, 0.2, 0.12, 0.08];
+const levelDist = (level, w) => (level.mixed || w.l > level.idx ? 0 : level.idx - w.l);
+
 export function isDue(m, counter) {
   const gap = counter - (m.last ?? m.at ?? 0);
   return gap >= REVIEW_GAPS[Math.min(m.seen || 0, REVIEW_GAPS.length - 1)];
@@ -41,8 +48,7 @@ function softInputs(words, level, learn, withPrio) {
   const dict = new Map();
   for (const w of words) {
     if (w.l > level.idx && w.a.length > 2) continue;
-    let bonus = 0;
-    if (!level.mixed && w.l === level.idx) bonus += 3;
+    let bonus = level.mixed ? 0 : LEVEL_BONUS[levelDist(level, w)];
     const m = learn.marked[w.a];
     if (!(m && isDue(m, learn.counter))) bonus -= freshnessPenalty(w.a, learn);
     const e = { a: w.a, c: w.c, bonus };
@@ -53,10 +59,11 @@ function softInputs(words, level, learn, withPrio) {
 }
 
 /**
- * Bulmaca girdileri. Kümülatif: A2 = A1 + A2, B1 = A1..B1 ... (2 harfli kelimeler her zaman).
+ * Bulmaca girdileri. Kümülatif ve kademeli: oyuncunun seviyesi en çok, alt seviyeler azalan oranda (LEVEL_SHARE/LEVEL_BONUS).
+ * 2 harfli kelimeler her zaman.
  * strict: ızgara oyunları (çengel, kare, şifreli, resimli) — görülmüş/öğrenilmeyen kelimeler tamamen dışarıda.
  */
-export function buildInputs(words, level, learn, withPrio, strict = false) {
+export function buildInputs(words, level, learn, withPrio, strict = false, rand = Math.random) {
   if (!strict) return softInputs(words, level, learn, withPrio);
   const entries = [];
   const dict = new Map(); // ızgarada kendiliğinden oluşan kelimeleri doğrulamak için (yalnızca havuzdakiler)
@@ -77,10 +84,12 @@ export function buildInputs(words, level, learn, withPrio, strict = false) {
   );
   for (const w of words) {
     if (!inLevel(w)) continue;
-    let bonus = 0;
-    if (!level.mixed && w.l === level.idx) bonus += 3; // seviyenin kendi kelimeleri öne
+    const dist = levelDist(level, w);
+    const bonus = level.mixed ? 0 : LEVEL_BONUS[dist]; // seviyenin kendi kelimeleri en önde, alt seviyeler kademeli
     const seen = !!times[w.a] || learn.recent[w.a] != null;
     const due = !!prio && prio.has(w.a);
+    // alt seviye kelimeleri her bulmacada belli oranda havuza girer (defter tekrarı ve 2 harfliler hariç)
+    if (dist > 0 && !due && w.a.length > 2 && rand() > LEVEL_SHARE[dist]) continue;
     const e = { a: w.a, c: w.c, bonus };
     // 2 harfliler yalnızca bu bulmacanın payındakiler (twoAllowed); 3+ harfli bir kez gelen kelime bir daha gelmez
     if (w.a.length <= 2) {

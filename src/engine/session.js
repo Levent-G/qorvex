@@ -9,6 +9,7 @@ import { buildInputs as buildPoolInputs, recordAnswersTo } from './pool';
 import { findPhoto, photoCache } from '../services/pexels';
 import { photoBlock } from './picture';
 import { wordOfDay, isoWeek } from './practice';
+import { fillerEntries } from './fillers';
 import { newlyEarned, badgeList, PUZZLE_GAMES } from './badges';
 import { getStore, persist } from '../storage';
 
@@ -28,6 +29,9 @@ const yieldFn = () => new Promise((r) => setTimeout(r, 0));
 
 // Havuz kuralları engine/pool.js'de (simülasyonla aynı kod)
 const buildInputs = (level, learn, withPrio, strict = false) => buildPoolInputs(WORDS, level, learn, withPrio, strict);
+// Çengel bulmacalarda öğrenilecek kelimelerle dolmayan köşeler için kısa dolgu kelimeleri (istatistiğe sayılmaz)
+const FILLERS = fillerEntries(WORDS);
+const realAnswers = (clues) => clues.filter((k) => !k.filler).map((k) => k.answer);
 
 function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
@@ -38,13 +42,13 @@ async function makePuzzle(level, seed, withPrio, strict = true) {
   const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, strict);
   const puzzle = await generatePuzzle({
     // 5 bağımsız tur, en az boşluklusu seçilir
-    w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn,
+    w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers: FILLERS,
   });
   return puzzle;
 }
 
 function recordAppearance(puzzle) {
-  recordAnswers(puzzle.clues.map((k) => k.answer));
+  recordAnswers(realAnswers(puzzle.clues));
 }
 
 // Bir oyunda çıkan kelimeleri kaydet (tüm oyunlar ortak kelime defterini kullanır)
@@ -360,7 +364,7 @@ export const picture = makeGameStore('picture3', {
       for (let t = 0; t < 2; t++) {
         const p = await generatePuzzle({
           w: level.w, h: level.h, entries, dict, prio: pr, seed: (seed + attempt * 7919 + t * 104729) >>> 0,
-          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn,
+          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn, fillers: FILLERS,
         });
         const clue = p.clues.find((k) => k.answer === target.a);
         if (!clue) continue;
@@ -372,7 +376,7 @@ export const picture = makeGameStore('picture3', {
     }
     throw new Error('Resimli bulmaca hazırlanamadı. İnternet bağlantını kontrol edip tekrar dene.');
   },
-  answersOf: (p) => p.clues.map((k) => k.answer),
+  answersOf: (p) => realAnswers(p.clues),
 });
 
 // ---- Kare Bulmaca (klasik çapraz bulmaca) ----
@@ -749,7 +753,7 @@ export const weekly = {
     const seed = ('weekly' + wk.key + levelId).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 23);
     // tekrar kuralı gevşek: haftada bir gelen büyük bulmaca dolu olsun (daha önce çıkmış kelime de gelebilir)
     const puzzle = await makePuzzle({ ...base, w: 9, h: 11 }, seed, false, false);
-    recordAnswers(puzzle.clues.map((k) => k.answer));
+    recordAnswers(realAnswers(puzzle.clues));
     puzzle.no = wk.no;
     store.weekly = { ...newSession(puzzle), week: wk.key, levelId };
     persist();

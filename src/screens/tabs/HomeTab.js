@@ -15,16 +15,26 @@ const MONTHS_TR = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temm
 
 // Ana sayfadaki oyun ızgarası: tasarımdaki sıra, kısa ad ve alt etiket
 const HOME_GAMES = [
-  ['arrow', 'Çengel', 'Klasik'],
-  ['picture', 'Resimli', 'Görsel İpucu'],
-  ['crossword', 'Kare Bulmaca', 'Klasik Izgara'],
-  ['codeword', 'Şifreli', 'Sayı Eşleme'],
-  ['spiral', 'Sarmal', 'İç İçe Yol'],
-  ['ws', 'Kelime Avı', 'Gizli Kelimeler'],
-  ['ladder', 'Merdiven', 'Tek Harf Değişimi'],
-  ['jumble', 'Karışık', 'Anagram Çöz'],
-  ['cryptogram', 'Şifreli Söz', 'Şifreli Cümle'],
+  ['arrow', 'Çengel', 'Klasik', 'Popüler'],
+  ['picture', 'Resimli', 'Görsel İpucu', 'Popüler'],
+  ['crossword', 'Kare Bulmaca', 'Klasik Izgara', 'Klasik'],
+  ['codeword', 'Şifreli', 'Sayı Eşleme', 'Popüler'],
+  ['spiral', 'Sarmal', 'İç İçe Yol', 'Rahatlatıcı'],
+  ['ws', 'Kelime Avı', 'Gizli Kelimeler', 'Kolay'],
+  ['ladder', 'Merdiven', 'Tek Harf Değişimi', 'Zeka'],
+  ['jumble', 'Karışık', 'Anagram Çöz', 'Hızlı'],
+  ['cryptogram', 'Şifreli Söz', 'Şifreli Cümle', 'Zor'],
 ];
+// karo etiket renkleri
+const TAG_COLOR = {
+  Popüler: ed.orange,
+  Klasik: ed.primary,
+  Rahatlatıcı: ed.accentStrong,
+  Kolay: ed.good,
+  Zeka: '#7A4FB5',
+  Hızlı: '#B7791F',
+  Zor: ed.danger,
+};
 
 // Küçük ilerleme halkası
 function Ring({ value, size = 18 }) {
@@ -127,11 +137,11 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
       {/* Oyunlar: hepsi ekranda */}
       <SectionTitle title="Oyunlar" sub="9 bulmaca · hepsi İngilizce kelime öğretir" style={{ marginTop: 14 }} />
       <View style={styles.grid}>
-        {HOME_GAMES.map(([id, name, sub]) => (
+        {HOME_GAMES.map(([id, name, sub, tag]) => (
           <Pressable key={id} onPress={() => onOpenLevels(id)} style={({ pressed }) => [styles.tile, { width: tileW }, pressed && { backgroundColor: ed.surfaceAlt }]}>
-            {id === 'arrow' ? (
-              <View style={styles.popular}>
-                <Text style={styles.popularText}>Popüler</Text>
+            {tag ? (
+              <View style={[styles.popular, { backgroundColor: TAG_COLOR[tag] || ed.orange }]}>
+                <Text style={styles.popularText}>{tag}</Text>
               </View>
             ) : null}
             <GameGlyph id={id} size={40} />
