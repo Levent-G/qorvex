@@ -173,7 +173,12 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
   // Boyutlandırma
   const keyH = Math.min(48, Math.max(40, height * 0.056));
   const reserved = insets.top + insets.bottom + 50 + 6 + 84 + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT; // ipucu çubuğu: ipucu + örnek cümle
-  const size = Math.floor(Math.min((width - 8 - 4) / puzzle.w, (height - reserved) / puzzle.h));
+  // Kareler tam kare; ızgara alanı ekranda ölçülür (tahmin değil), kare sığabildiği en büyük boyutta olur
+  const [gridBox, setGridBox] = useState(null);
+  const maxW = Math.floor((width - 8 - 4) / puzzle.w);
+  const size = gridBox
+    ? Math.max(16, Math.min(maxW, Math.floor((gridBox.h - PROGRESS_H - 4 - 4) / puzzle.h)))
+    : Math.min(maxW, Math.floor((height - reserved) / puzzle.h));
 
   const w = model.words[s.active];
   const filled = Object.keys(model.solution).filter((k) => s.entries[k]).length;
@@ -195,7 +200,13 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
         onMenu={() => setMenu(true)}
       />
 
-      <View style={styles.gridWrap}>
+      <View
+        style={styles.gridWrap}
+        onLayout={(e) => {
+          const h = Math.round(e.nativeEvent.layout.height);
+          setGridBox((b) => (b && b.h === h ? b : { h }));
+        }}
+      >
         <ArrowGrid
           puzzle={puzzle}
           model={model}
@@ -356,6 +367,8 @@ export default function PuzzleScreen({ kind, levelId, onBack, store }) {
   );
 }
 
+const PROGRESS_H = 21; // ızgara altındaki "harf · kelime doğru" satırı (marginTop dahil)
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: ed.bg },
   clueThumb: { width: 48, height: 48, borderRadius: 8, marginRight: 8, overflow: 'hidden', backgroundColor: ed.surfaceAlt },
@@ -381,7 +394,7 @@ const styles = StyleSheet.create({
   doubleRule: { height: 5, borderTopWidth: 2, borderBottomWidth: 1, borderColor: colors.rule, marginHorizontal: 8 },
   thinRule: { height: 1, backgroundColor: colors.rule, marginVertical: 6 },
   gridWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 4 },
-  progress: { fontFamily: efonts.label, fontSize: 11.5, color: ed.textSoft, marginTop: 5 },
+  progress: { fontFamily: efonts.label, fontSize: 11.5, lineHeight: 16, color: ed.textSoft, marginTop: 5 },
   clueBar: {
     flexDirection: 'row', alignItems: 'center', marginHorizontal: 10, marginBottom: 8, minHeight: 56,
     borderRadius: 12, borderWidth: 1, borderColor: ed.border, backgroundColor: ed.surface,
