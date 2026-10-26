@@ -141,3 +141,32 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 • Home: games at the top, with tags on every game
 • Many fixes
 ```
+
+
+## Sürüm 1.3.1 — "Bu sürümdeki yenilikler"
+
+**Türkçe**
+
+```
+• Çengel bulmacalarda hiç boş kare yok: her kare harf ya da ipucu
+• Sıradaki bulmaca arka planda hazırlanır, anında açılır
+• Bulmaca arşivi: son 30 günün günlük bulmacaları
+• Amerikan / İngiliz aksan seçimi
+• Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar
+• İpucunun altında Türkçe örnek cümle
+• Kısa kelimeler art arda bulmacalarda tekrar gelmez
+• Birçok düzeltme
+```
+
+**English**
+
+```
+• Arrowword puzzles have no blank cells: every cell is a letter or a clue
+• The next puzzle is prepared in the background and opens instantly
+• Puzzle archive: daily puzzles from the last 30 days
+• Choose a US or UK accent
+• Hundreds of new words, irregular verbs and plurals
+• A Turkish example sentence under each clue
+• Short words no longer repeat in back-to-back puzzles
+• Many fixes
+```

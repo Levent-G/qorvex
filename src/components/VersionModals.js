@@ -7,6 +7,14 @@ import { ed, efonts } from '../theme';
 
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
+  '1.3.1': [
+    ['🧩', 'Boş karesiz bulmacalar', 'Çengel bulmacalar artık gazetedekiler gibi: her kare ya harf ya ipucu, hiç boş kare yok.'],
+    ['⚡', 'Sonraki bulmaca hazır', 'Sen çözerken sıradaki bulmaca arka planda hazırlanır, "Sonraki"ye basınca hemen açılır.'],
+    ['🗂️', 'Bulmaca arşivi', 'Kaçırdığın günlük bulmacaları son 30 gün içinden çözebilirsin.'],
+    ['🔊', 'Aksan seçimi', 'Kelimeleri Amerikan ya da İngiliz aksanıyla dinle (Profil > Ayarlar).'],
+    ['📚', 'Daha fazla kelime', 'Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar; ipucunun altında Türkçe örnek cümle.'],
+    ['🔁', 'Tekrar yok', 'İki harfli kısa kelimeler de art arda bulmacalarda tekrar gelmez.'],
+  ],
   '1.3.0': [
     ['🧩', 'Daha dolu bulmacalar', 'Çengel bulmacalarda boş kareler yarı yarıya azaldı.'],
     ['🔒', 'Doğru kelime kilitlenir', 'Bildiğin kelime artık yanlışlıkla silinmez; imleç de üzerinde durmaz, boş karelere gider.'],
