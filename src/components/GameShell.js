@@ -7,6 +7,7 @@ import LearnModal from './LearnModal';
 import { BulbIcon } from './Icons';
 import { ClockIcon, ShareIcon } from './UiIcons';
 import ShareSheet from './ShareSheet';
+import { getWord } from '../engine/words';
 import { markLearned, LEARN_LIMIT } from '../engine/session';
 import { persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
@@ -171,6 +172,18 @@ export function CardHintPill({ onPress }) {
   );
 }
 
+// İpucu bağlamı: kelimenin Türkçe örnek cümlesi (ör. "Lastik" → "Arabanın lastiklerinden biri patlak.").
+// Cevabı ele vermez, yalnızca hangi anlamın kastedildiğini gösterir.
+export function ClueContext({ answer }) {
+  const tr = answer ? getWord(answer)?.ex?.[0]?.[1] : null;
+  if (!tr) return null;
+  return (
+    <Text style={styles.clueContext} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+      “{tr}”
+    </Text>
+  );
+}
+
 // "Sonucu paylaş" (kazanma kartlarında ortak)
 export function ShareButton({ info, style }) {
   const [open, setOpen] = useState(false);
@@ -286,6 +299,7 @@ const styles = StyleSheet.create({
   btn: { flex: 1, backgroundColor: ed.primary, paddingVertical: 13, alignItems: 'center', borderRadius: 12 },
   btnGhost: { backgroundColor: ed.surfaceAlt },
   btnText: { fontFamily: efonts.bodyBold, fontSize: 15, color: ed.onPrimary },
+  clueContext: { fontFamily: efonts.headlineItalic, fontSize: 13, lineHeight: 17, color: ed.textSoft, marginTop: 1 },
   cardPill: { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 10, backgroundColor: ed.accentSoft, paddingLeft: 5, paddingRight: 7, paddingVertical: 3, marginLeft: 8 },
   cardPillText: { fontFamily: efonts.labelBold, fontSize: 10, color: ed.accentInk },
   shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, alignSelf: 'center', marginTop: 14, paddingHorizontal: 16, paddingVertical: 9, borderRadius: 20, backgroundColor: ed.accentSoft },

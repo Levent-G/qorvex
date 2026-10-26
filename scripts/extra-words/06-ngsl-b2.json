@@ -1,0 +1,1176 @@
+[
+ {
+  "a": "THROUGH",
+  "l": 1,
+  "p": "preposition",
+  "c": "İçinden, boyunca",
+  "m": [
+   "içinden",
+   "boyunca",
+   "aracılığıyla"
+  ],
+  "ex": [
+   [
+    "We walked through the park.",
+    "Parkın içinden yürüdük."
+   ]
+  ]
+ },
+ {
+  "a": "AMAZE",
+  "l": 3,
+  "p": "verb",
+  "c": "Hayrete düşürmek",
+  "m": [
+   "hayrete düşürmek",
+   "şaşırtmak"
+  ],
+  "ex": [
+   [
+    "Her talent will amaze you.",
+    "Yeteneği seni hayrete düşürecek."
+   ]
+  ]
+ },
+ {
+  "a": "SUPPLIER",
+  "l": 3,
+  "p": "noun",
+  "c": "Tedarikçi",
+  "m": [
+   "tedarikçi",
+   "sağlayıcı"
+  ],
+  "ex": [
+   [
+    "We changed our paper supplier.",
+    "Kağıt tedarikçimizi değiştirdik."
+   ]
+  ]
+ },
+ {
+  "a": "DISAPPOINT",
+  "l": 3,
+  "p": "verb",
+  "c": "Hayal kırıklığı",
+  "m": [
+   "hayal kırıklığına uğratmak"
+  ],
+  "ex": [
+   [
+    "I don't want to disappoint my parents.",
+    "Ailemi hayal kırıklığına uğratmak istemiyorum."
+   ]
+  ]
+ },
+ {
+  "a": "OUTLINE",
+  "l": 3,
+  "p": "noun",
+  "c": "Taslak, ana hat",
+  "m": [
+   "taslak",
+   "ana hatlar",
+   "dış çizgi"
+  ],
+  "ex": [
+   [
+    "Write an outline before the essay.",
+    "Kompozisyondan önce bir taslak yaz."
+   ]
+  ]
+ },
+ {
+  "a": "METER",
+  "l": 3,
+  "p": "noun",
+  "c": "Sayaç",
+  "m": [
+   "sayaç",
+   "ölçü aleti"
+  ],
+  "ex": [
+   [
+    "The man came to read the gas meter.",
+    "Adam gaz sayacını okumaya geldi."
+   ]
+  ]
+ },
+ {
+  "a": "FASCINATE",
+  "l": 3,
+  "p": "verb",
+  "c": "Büyülemek",
+  "m": [
+   "büyülemek",
+   "hayran bırakmak"
+  ],
+  "ex": [
+   [
+    "Stars always fascinate children.",
+    "Yıldızlar çocukları hep büyüler."
+   ]
+  ]
+ },
+ {
+  "a": "LIABILITY",
+  "l": 3,
+  "p": "noun",
+  "c": "Yükümlülük",
+  "m": [
+   "yükümlülük",
+   "sorumluluk",
+   "borç"
+  ],
+  "ex": [
+   [
+    "The company accepted liability for the accident.",
+    "Şirket kazanın sorumluluğunu kabul etti."
+   ]
+  ]
+ },
+ {
+  "a": "STAIN",
+  "l": 3,
+  "p": "noun",
+  "c": "Leke",
+  "m": [
+   "leke",
+   "lekelemek"
+  ],
+  "ex": [
+   [
+    "There is a coffee stain on my shirt.",
+    "Gömleğimde kahve lekesi var."
+   ]
+  ]
+ },
+ {
+  "a": "DEDICATE",
+  "l": 3,
+  "p": "verb",
+  "c": "Adamak",
+  "m": [
+   "adamak",
+   "ithaf etmek"
+  ],
+  "ex": [
+   [
+    "She will dedicate her life to science.",
+    "Hayatını bilime adayacak."
+   ]
+  ]
+ },
+ {
+  "a": "EMBARRASS",
+  "l": 3,
+  "p": "verb",
+  "c": "Utandırmak",
+  "m": [
+   "utandırmak",
+   "mahcup etmek"
+  ],
+  "ex": [
+   [
+    "Please don't embarrass me in front of my friends.",
+    "Lütfen beni arkadaşlarımın önünde utandırma."
+   ]
+  ]
+ },
+ {
+  "a": "SERVER",
+  "l": 3,
+  "p": "noun",
+  "c": "Sunucu",
+  "m": [
+   "sunucu (bilgisayar)",
+   "servis yapan kişi"
+  ],
+  "ex": [
+   [
+    "The website is down because the server failed.",
+    "Sunucu çöktüğü için site kapalı."
+   ]
+  ]
+ },
+ {
+  "a": "VOCABULARY",
+  "l": 3,
+  "p": "noun",
+  "c": "Kelime dağarcığı",
+  "m": [
+   "kelime dağarcığı",
+   "sözcük bilgisi"
+  ],
+  "ex": [
+   [
+    "Reading improves your vocabulary.",
+    "Okumak kelime dağarcığını geliştirir."
+   ]
+  ]
+ },
+ {
+  "a": "AMONGST",
+  "l": 3,
+  "p": "preposition",
+  "c": "Arasında",
+  "m": [
+   "arasında",
+   "içinde"
+  ],
+  "ex": [
+   [
+    "She was happy amongst her friends.",
+    "Arkadaşlarının arasında mutluydu."
+   ]
+  ]
+ },
+ {
+  "a": "PROVIDER",
+  "l": 3,
+  "p": "noun",
+  "c": "Sağlayıcı",
+  "m": [
+   "sağlayıcı",
+   "tedarikçi"
+  ],
+  "ex": [
+   [
+    "Call your internet provider.",
+    "İnternet sağlayıcını ara."
+   ]
+  ]
+ },
+ {
+  "a": "EXPLOIT",
+  "l": 3,
+  "p": "verb",
+  "c": "Sömürmek",
+  "m": [
+   "sömürmek",
+   "istismar etmek",
+   "yararlanmak"
+  ],
+  "ex": [
+   [
+    "They exploit workers in poor countries.",
+    "Yoksul ülkelerde işçileri sömürüyorlar."
+   ]
+  ]
+ },
+ {
+  "a": "DEFENDANT",
+  "l": 3,
+  "p": "noun",
+  "c": "Sanık",
+  "m": [
+   "sanık",
+   "davalı"
+  ],
+  "ex": [
+   [
+    "The defendant said he was innocent.",
+    "Sanık masum olduğunu söyledi."
+   ]
+  ]
+ },
+ {
+  "a": "SCATTER",
+  "l": 3,
+  "p": "verb",
+  "c": "Saçmak, dağıtmak",
+  "m": [
+   "saçmak",
+   "dağıtmak",
+   "dağılmak"
+  ],
+  "ex": [
+   [
+    "The wind will scatter the leaves.",
+    "Rüzgar yaprakları dağıtacak."
+   ]
+  ]
+ },
+ {
+  "a": "FAINT",
+  "l": 3,
+  "p": "verb",
+  "c": "Bayılmak",
+  "m": [
+   "bayılmak",
+   "soluk",
+   "zayıf"
+  ],
+  "ex": [
+   [
+    "She felt hot and started to faint.",
+    "Sıcaklık hissetti ve bayılmaya başladı."
+   ]
+  ]
+ },
+ {
+  "a": "LEARNER",
+  "l": 3,
+  "p": "noun",
+  "c": "Öğrenen kişi",
+  "m": [
+   "öğrenen kişi",
+   "öğrenci"
+  ],
+  "ex": [
+   [
+    "This book is for English learners.",
+    "Bu kitap İngilizce öğrenenler için."
+   ]
+  ]
+ },
+ {
+  "a": "MORTALITY",
+  "l": 3,
+  "p": "noun",
+  "c": "Ölüm oranı",
+  "m": [
+   "ölüm oranı",
+   "ölümlülük"
+  ],
+  "ex": [
+   [
+    "Infant mortality has fallen.",
+    "Bebek ölüm oranı düştü."
+   ]
+  ]
+ },
+ {
+  "a": "TENSE",
+  "l": 3,
+  "p": "adjective",
+  "c": "Gergin",
+  "m": [
+   "gergin",
+   "zaman kipi"
+  ],
+  "ex": [
+   [
+    "I always feel tense before exams.",
+    "Sınavlardan önce hep gergin hissederim."
+   ]
+  ]
+ },
+ {
+  "a": "DINE",
+  "l": 3,
+  "p": "verb",
+  "c": "Akşam yemeği yemek",
+  "m": [
+   "akşam yemeği yemek",
+   "yemek yemek"
+  ],
+  "ex": [
+   [
+    "We will dine at a small restaurant.",
+    "Küçük bir restoranda akşam yemeği yiyeceğiz."
+   ]
+  ]
+ },
+ {
+  "a": "MOLECULE",
+  "l": 3,
+  "p": "noun",
+  "c": "Molekül",
+  "m": [
+   "molekül"
+  ],
+  "ex": [
+   [
+    "Water is made of tiny molecules.",
+    "Su küçük moleküllerden oluşur."
+   ]
+  ]
+ },
+ {
+  "a": "AMUSE",
+  "l": 3,
+  "p": "verb",
+  "c": "Eğlendirmek",
+  "m": [
+   "eğlendirmek",
+   "güldürmek"
+  ],
+  "ex": [
+   [
+    "The clown tried to amuse the children.",
+    "Palyaço çocukları eğlendirmeye çalıştı."
+   ]
+  ]
+ },
+ {
+  "a": "RETAILER",
+  "l": 3,
+  "p": "noun",
+  "c": "Perakendeci",
+  "m": [
+   "perakendeci",
+   "satıcı"
+  ],
+  "ex": [
+   [
+    "The retailer reduced its prices.",
+    "Perakendeci fiyatlarını düşürdü."
+   ]
+  ]
+ },
+ {
+  "a": "INEVITABLY",
+  "l": 3,
+  "p": "adverb",
+  "c": "Kaçınılmaz olarak",
+  "m": [
+   "kaçınılmaz olarak",
+   "ister istemez"
+  ],
+  "ex": [
+   [
+    "Prices will inevitably rise.",
+    "Fiyatlar kaçınılmaz olarak artacak."
+   ]
+  ]
+ },
+ {
+  "a": "CAPTION",
+  "l": 3,
+  "p": "noun",
+  "c": "Resim altı yazısı",
+  "m": [
+   "resim altı yazısı",
+   "altyazı"
+  ],
+  "ex": [
+   [
+    "Read the caption under the photo.",
+    "Fotoğrafın altındaki yazıyı oku."
+   ]
+  ]
+ },
+ {
+  "a": "KILOMETER",
+  "l": 3,
+  "p": "noun",
+  "c": "Kilometre",
+  "m": [
+   "kilometre"
+  ],
+  "ex": [
+   [
+    "The school is one kilometer away.",
+    "Okul bir kilometre uzakta."
+   ]
+  ]
+ },
+ {
+  "a": "SELLER",
+  "l": 3,
+  "p": "noun",
+  "c": "Satıcı",
+  "m": [
+   "satıcı"
+  ],
+  "ex": [
+   [
+    "The seller gave us a discount.",
+    "Satıcı bize indirim yaptı."
+   ]
+  ]
+ },
+ {
+  "a": "THRILL",
+  "l": 3,
+  "p": "noun",
+  "c": "Heyecan",
+  "m": [
+   "heyecan",
+   "coşku",
+   "heyecanlandırmak"
+  ],
+  "ex": [
+   [
+    "Flying for the first time was a real thrill.",
+    "İlk kez uçmak gerçek bir heyecandı."
+   ]
+  ]
+ },
+ {
+  "a": "ETHICS",
+  "l": 3,
+  "p": "noun",
+  "c": "Ahlak, etik",
+  "m": [
+   "etik",
+   "ahlak kuralları"
+  ],
+  "ex": [
+   [
+    "Doctors must follow a code of ethics.",
+    "Doktorlar etik kurallara uymalı."
+   ]
+  ]
+ },
+ {
+  "a": "VACCINE",
+  "l": 3,
+  "p": "noun",
+  "c": "Aşı",
+  "m": [
+   "aşı"
+  ],
+  "ex": [
+   [
+    "The new vaccine protects against the flu.",
+    "Yeni aşı gripten korur."
+   ]
+  ]
+ },
+ {
+  "a": "PERFORMER",
+  "l": 3,
+  "p": "noun",
+  "c": "Sanatçı, oyuncu",
+  "m": [
+   "sahne sanatçısı",
+   "oyuncu",
+   "icracı"
+  ],
+  "ex": [
+   [
+    "The performer sang three songs.",
+    "Sanatçı üç şarkı söyledi."
+   ]
+  ]
+ },
+ {
+  "a": "CATHEDRAL",
+  "l": 3,
+  "p": "noun",
+  "c": "Katedral",
+  "m": [
+   "katedral"
+  ],
+  "ex": [
+   [
+    "We visited the old cathedral.",
+    "Eski katedrali ziyaret ettik."
+   ]
+  ]
+ },
+ {
+  "a": "GLOW",
+  "l": 3,
+  "p": "verb",
+  "c": "Parıldamak",
+  "m": [
+   "parıldamak",
+   "ışık saçmak",
+   "ışıltı"
+  ],
+  "ex": [
+   [
+    "The lamp began to glow in the dark.",
+    "Lamba karanlıkta parıldamaya başladı."
+   ]
+  ]
+ },
+ {
+  "a": "CLARIFY",
+  "l": 3,
+  "p": "verb",
+  "c": "Netleştirmek",
+  "m": [
+   "açıklığa kavuşturmak",
+   "netleştirmek"
+  ],
+  "ex": [
+   [
+    "Can you clarify your question?",
+    "Sorunu biraz açar mısın?"
+   ]
+  ]
+ },
+ {
+  "a": "SWELL",
+  "l": 3,
+  "p": "verb",
+  "c": "Şişmek",
+  "m": [
+   "şişmek",
+   "kabarmak"
+  ],
+  "ex": [
+   [
+    "My ankle began to swell after the fall.",
+    "Düşüşten sonra bileğim şişmeye başladı."
+   ]
+  ]
+ },
+ {
+  "a": "WHALE",
+  "l": 3,
+  "p": "noun",
+  "c": "Balina",
+  "m": [
+   "balina"
+  ],
+  "ex": [
+   [
+    "A huge whale swam near the boat.",
+    "Teknenin yakınında dev bir balina yüzdü."
+   ]
+  ]
+ },
+ {
+  "a": "MATURITY",
+  "l": 3,
+  "p": "noun",
+  "c": "Olgunluk",
+  "m": [
+   "olgunluk",
+   "vade"
+  ],
+  "ex": [
+   [
+    "She showed great maturity for her age.",
+    "Yaşına göre büyük bir olgunluk gösterdi."
+   ]
+  ]
+ },
+ {
+  "a": "KNIT",
+  "l": 3,
+  "p": "verb",
+  "c": "Örmek",
+  "m": [
+   "örmek (örgü)"
+  ],
+  "ex": [
+   [
+    "My grandmother likes to knit sweaters.",
+    "Büyükannem kazak örmeyi sever."
+   ]
+  ]
+ },
+ {
+  "a": "BUNDLE",
+  "l": 3,
+  "p": "noun",
+  "c": "Bohça, deste",
+  "m": [
+   "deste",
+   "bohça",
+   "paket"
+  ],
+  "ex": [
+   [
+    "He found a bundle of old letters.",
+    "Bir deste eski mektup buldu."
+   ]
+  ]
+ },
+ {
+  "a": "VENDOR",
+  "l": 3,
+  "p": "noun",
+  "c": "Satıcı (sokak)",
+  "m": [
+   "satıcı",
+   "seyyar satıcı"
+  ],
+  "ex": [
+   [
+    "We bought ice cream from a street vendor.",
+    "Seyyar satıcıdan dondurma aldık."
+   ]
+  ]
+ },
+ {
+  "a": "ELECTRON",
+  "l": 3,
+  "p": "noun",
+  "c": "Elektron",
+  "m": [
+   "elektron"
+  ],
+  "ex": [
+   [
+    "An electron has a negative charge.",
+    "Elektronun negatif yükü vardır."
+   ]
+  ]
+ },
+ {
+  "a": "DRAWER",
+  "l": 3,
+  "p": "noun",
+  "c": "Çekmece",
+  "m": [
+   "çekmece"
+  ],
+  "ex": [
+   [
+    "The scissors are in the top drawer.",
+    "Makas üst çekmecede."
+   ]
+  ]
+ },
+ {
+  "a": "THRUST",
+  "l": 3,
+  "p": "verb",
+  "c": "İtmek, sokmak",
+  "m": [
+   "itmek",
+   "sokmak",
+   "itiş gücü"
+  ],
+  "ex": [
+   [
+    "He thrust the letter into my hand.",
+    "Mektubu elime tutuşturdu."
+   ]
+  ]
+ },
+ {
+  "a": "UNDERNEATH",
+  "l": 3,
+  "p": "preposition",
+  "c": "Altında",
+  "m": [
+   "altında",
+   "altına"
+  ],
+  "ex": [
+   [
+    "The cat is hiding underneath the bed.",
+    "Kedi yatağın altında saklanıyor."
+   ]
+  ]
+ },
+ {
+  "a": "OVERLAP",
+  "l": 3,
+  "p": "verb",
+  "c": "Çakışmak",
+  "m": [
+   "çakışmak",
+   "örtüşmek"
+  ],
+  "ex": [
+   [
+    "Our holidays overlap this year.",
+    "Bu yıl tatillerimiz çakışıyor."
+   ]
+  ]
+ },
+ {
+  "a": "FURNISH",
+  "l": 3,
+  "p": "verb",
+  "c": "Döşemek",
+  "m": [
+   "döşemek (eşya ile)",
+   "sağlamak"
+  ],
+  "ex": [
+   [
+    "They want to furnish the flat simply.",
+    "Daireyi sade döşemek istiyorlar."
+   ]
+  ]
+ },
+ {
+  "a": "CURL",
+  "l": 3,
+  "p": "noun",
+  "c": "Bukle",
+  "m": [
+   "bukle",
+   "kıvrım",
+   "kıvırmak"
+  ],
+  "ex": [
+   [
+    "She has beautiful curls in her hair.",
+    "Saçında güzel bukleler var."
+   ]
+  ]
+ },
+ {
+  "a": "HIKE",
+  "l": 3,
+  "p": "noun",
+  "c": "Doğa yürüyüşü",
+  "m": [
+   "doğa yürüyüşü",
+   "yürüyüş yapmak"
+  ],
+  "ex": [
+   [
+    "We went on a long hike in the mountains.",
+    "Dağlarda uzun bir yürüyüşe çıktık."
+   ]
+  ]
+ },
+ {
+  "a": "TRADER",
+  "l": 3,
+  "p": "noun",
+  "c": "Tüccar",
+  "m": [
+   "tüccar",
+   "borsacı"
+  ],
+  "ex": [
+   [
+    "The trader sold spices in the market.",
+    "Tüccar pazarda baharat sattı."
+   ]
+  ]
+ },
+ {
+  "a": "SUITCASE",
+  "l": 3,
+  "p": "noun",
+  "c": "Bavul",
+  "m": [
+   "bavul",
+   "valiz"
+  ],
+  "ex": [
+   [
+    "I packed my suitcase last night.",
+    "Bavulumu dün gece hazırladım."
+   ]
+  ]
+ },
+ {
+  "a": "BROADEN",
+  "l": 3,
+  "p": "verb",
+  "c": "Genişletmek",
+  "m": [
+   "genişletmek",
+   "geliştirmek"
+  ],
+  "ex": [
+   [
+    "Travel will broaden your mind.",
+    "Seyahat ufkunu genişletir."
+   ]
+  ]
+ },
+ {
+  "a": "PICNIC",
+  "l": 3,
+  "p": "noun",
+  "c": "Piknik",
+  "m": [
+   "piknik"
+  ],
+  "ex": [
+   [
+    "Let's have a picnic by the lake.",
+    "Gölün kenarında piknik yapalım."
+   ]
+  ]
+ },
+ {
+  "a": "MISLEAD",
+  "l": 3,
+  "p": "verb",
+  "c": "Yanıltmak",
+  "m": [
+   "yanıltmak",
+   "yanlış yönlendirmek"
+  ],
+  "ex": [
+   [
+    "The advert tried to mislead customers.",
+    "Reklam müşterileri yanıltmaya çalıştı."
+   ]
+  ]
+ },
+ {
+  "a": "ASTONISH",
+  "l": 3,
+  "p": "verb",
+  "c": "Çok şaşırtmak",
+  "m": [
+   "çok şaşırtmak",
+   "hayrete düşürmek"
+  ],
+  "ex": [
+   [
+    "The result will astonish everyone.",
+    "Sonuç herkesi çok şaşırtacak."
+   ]
+  ]
+ },
+ {
+  "a": "TERRACE",
+  "l": 3,
+  "p": "noun",
+  "c": "Teras",
+  "m": [
+   "teras",
+   "sıra evler"
+  ],
+  "ex": [
+   [
+    "We had breakfast on the terrace.",
+    "Kahvaltıyı terasta yaptık."
+   ]
+  ]
+ },
+ {
+  "a": "OBSCURE",
+  "l": 3,
+  "p": "adjective",
+  "c": "Az bilinen",
+  "m": [
+   "belirsiz",
+   "az bilinen",
+   "anlaşılmaz"
+  ],
+  "ex": [
+   [
+    "He quoted an obscure poet.",
+    "Az bilinen bir şairden alıntı yaptı."
+   ]
+  ]
+ },
+ {
+  "a": "SOFA",
+  "l": 3,
+  "p": "noun",
+  "c": "Kanepe",
+  "m": [
+   "kanepe",
+   "koltuk"
+  ],
+  "ex": [
+   [
+    "The dog is sleeping on the sofa.",
+    "Köpek kanepede uyuyor."
+   ]
+  ]
+ },
+ {
+  "a": "UNCERTAIN",
+  "l": 3,
+  "p": "adjective",
+  "c": "Belirsiz",
+  "m": [
+   "belirsiz",
+   "emin olmayan"
+  ],
+  "ex": [
+   [
+    "The future of the project is uncertain.",
+    "Projenin geleceği belirsiz."
+   ]
+  ]
+ },
+ {
+  "a": "ORGANISM",
+  "l": 3,
+  "p": "noun",
+  "c": "Organizma",
+  "m": [
+   "organizma",
+   "canlı"
+  ],
+  "ex": [
+   [
+    "Bacteria are tiny organisms.",
+    "Bakteriler küçük organizmalardır."
+   ]
+  ]
+ },
+ {
+  "a": "DISGUST",
+  "l": 3,
+  "p": "noun",
+  "c": "İğrenme",
+  "m": [
+   "iğrenme",
+   "tiksinti",
+   "iğrendirmek"
+  ],
+  "ex": [
+   [
+    "She looked at the food with disgust.",
+    "Yemeğe tiksintiyle baktı."
+   ]
+  ]
+ },
+ {
+  "a": "RULER",
+  "l": 3,
+  "p": "noun",
+  "c": "Cetvel; hükümdar",
+  "m": [
+   "cetvel",
+   "hükümdar"
+  ],
+  "ex": [
+   [
+    "Draw a straight line with a ruler.",
+    "Cetvelle düz bir çizgi çiz."
+   ]
+  ]
+ },
+ {
+  "a": "TEMPER",
+  "l": 3,
+  "p": "noun",
+  "c": "Öfke, huy",
+  "m": [
+   "öfke",
+   "huy",
+   "mizaç"
+  ],
+  "ex": [
+   [
+    "He lost his temper and shouted.",
+    "Öfkesine yenik düşüp bağırdı."
+   ]
+  ]
+ },
+ {
+  "a": "ROAR",
+  "l": 3,
+  "p": "verb",
+  "c": "Kükremek",
+  "m": [
+   "kükremek",
+   "gürlemek",
+   "kükreme"
+  ],
+  "ex": [
+   [
+    "We heard the lion roar.",
+    "Aslanın kükrediğini duyduk."
+   ]
+  ]
+ },
+ {
+  "a": "HORMONE",
+  "l": 3,
+  "p": "noun",
+  "c": "Hormon",
+  "m": [
+   "hormon"
+  ],
+  "ex": [
+   [
+    "Stress changes your hormone levels.",
+    "Stres hormon seviyelerini değiştirir."
+   ]
+  ]
+ },
+ {
+  "a": "TEXTILE",
+  "l": 3,
+  "p": "noun",
+  "c": "Tekstil, kumaş",
+  "m": [
+   "tekstil",
+   "dokuma",
+   "kumaş"
+  ],
+  "ex": [
+   [
+    "The town is famous for textiles.",
+    "Kasaba tekstiliyle ünlü."
+   ]
+  ]
+ },
+ {
+  "a": "DASH",
+  "l": 3,
+  "p": "verb",
+  "c": "Fırlamak, koşmak",
+  "m": [
+   "fırlamak",
+   "hızla koşmak",
+   "tire"
+  ],
+  "ex": [
+   [
+    "I have to dash to the station.",
+    "İstasyona koşmam lazım."
+   ]
+  ]
+ },
+ {
+  "a": "WARMTH",
+  "l": 3,
+  "p": "noun",
+  "c": "Sıcaklık",
+  "m": [
+   "sıcaklık",
+   "samimiyet"
+  ],
+  "ex": [
+   [
+    "I felt the warmth of the fire.",
+    "Ateşin sıcaklığını hissettim."
+   ]
+  ]
+ },
+ {
+  "a": "BROCHURE",
+  "l": 3,
+  "p": "noun",
+  "c": "Broşür",
+  "m": [
+   "broşür"
+  ],
+  "ex": [
+   [
+    "Take a brochure about the hotel.",
+    "Otel hakkında bir broşür al."
+   ]
+  ]
+ },
+ {
+  "a": "WHISTLE",
+  "l": 3,
+  "p": "noun",
+  "c": "Düdük; ıslık",
+  "m": [
+   "düdük",
+   "ıslık",
+   "ıslık çalmak"
+  ],
+  "ex": [
+   [
+    "The referee blew the whistle.",
+    "Hakem düdüğü çaldı."
+   ]
+  ]
+ },
+ {
+  "a": "OMIT",
+  "l": 3,
+  "p": "verb",
+  "c": "Atlamak, çıkarmak",
+  "m": [
+   "atlamak",
+   "dahil etmemek"
+  ],
+  "ex": [
+   [
+    "Don't omit any details.",
+    "Hiçbir ayrıntıyı atlama."
+   ]
+  ]
+ }
+]

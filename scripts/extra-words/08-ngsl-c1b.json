@@ -1,0 +1,2232 @@
+[
+ {
+  "a": "BUTTERFLY",
+  "l": 2,
+  "p": "noun",
+  "c": "Kelebek",
+  "m": [
+   "kelebek"
+  ],
+  "ex": [
+   [
+    "A butterfly landed on the flower.",
+    "Çiçeğin üstüne bir kelebek kondu."
+   ]
+  ]
+ },
+ {
+  "a": "DOLPHIN",
+  "l": 2,
+  "p": "noun",
+  "c": "Yunus",
+  "m": [
+   "yunus (balığı)"
+  ],
+  "ex": [
+   [
+    "We saw dolphins near the boat.",
+    "Teknenin yakınında yunuslar gördük."
+   ]
+  ]
+ },
+ {
+  "a": "TORCH",
+  "l": 4,
+  "p": "noun",
+  "c": "El feneri; meşale",
+  "m": [
+   "el feneri",
+   "meşale"
+  ],
+  "ex": [
+   [
+    "Take a torch, it's dark outside.",
+    "El feneri al, dışarısı karanlık."
+   ]
+  ]
+ },
+ {
+  "a": "SKATE",
+  "l": 2,
+  "p": "verb",
+  "c": "Paten kaymak",
+  "m": [
+   "paten kaymak",
+   "paten"
+  ],
+  "ex": [
+   [
+    "The children skate in the park.",
+    "Çocuklar parkta paten kayıyor."
+   ]
+  ]
+ },
+ {
+  "a": "POLLUTE",
+  "l": 4,
+  "p": "verb",
+  "c": "Kirletmek",
+  "m": [
+   "kirletmek (çevre)"
+  ],
+  "ex": [
+   [
+    "Factories pollute the river.",
+    "Fabrikalar nehri kirletiyor."
+   ]
+  ]
+ },
+ {
+  "a": "BALCONY",
+  "l": 2,
+  "p": "noun",
+  "c": "Balkon",
+  "m": [
+   "balkon"
+  ],
+  "ex": [
+   [
+    "We drink tea on the balcony.",
+    "Balkonda çay içiyoruz."
+   ]
+  ]
+ },
+ {
+  "a": "IRREGULAR",
+  "l": 4,
+  "p": "adjective",
+  "c": "Düzensiz",
+  "m": [
+   "düzensiz",
+   "kuralsız"
+  ],
+  "ex": [
+   [
+    "Go is an irregular verb.",
+    "\"Go\" düzensiz bir fiildir."
+   ]
+  ]
+ },
+ {
+  "a": "LUGGAGE",
+  "l": 2,
+  "p": "noun",
+  "c": "Bagaj, valizler",
+  "m": [
+   "bagaj",
+   "valizler"
+  ],
+  "ex": [
+   [
+    "Don't leave your luggage alone.",
+    "Bagajını başıboş bırakma."
+   ]
+  ]
+ },
+ {
+  "a": "WARDROBE",
+  "l": 2,
+  "p": "noun",
+  "c": "Gardırop",
+  "m": [
+   "gardırop",
+   "elbise dolabı"
+  ],
+  "ex": [
+   [
+    "Hang your coat in the wardrobe.",
+    "Montunu gardıroba as."
+   ]
+  ]
+ },
+ {
+  "a": "ANTIBIOTIC",
+  "l": 4,
+  "p": "noun",
+  "c": "Antibiyotik",
+  "m": [
+   "antibiyotik"
+  ],
+  "ex": [
+   [
+    "The doctor gave me antibiotics.",
+    "Doktor bana antibiyotik verdi."
+   ]
+  ]
+ },
+ {
+  "a": "BLOOM",
+  "l": 4,
+  "p": "verb",
+  "c": "Çiçek açmak",
+  "m": [
+   "çiçek açmak",
+   "çiçek"
+  ],
+  "ex": [
+   [
+    "The roses bloom in June.",
+    "Güller haziranda çiçek açar."
+   ]
+  ]
+ },
+ {
+  "a": "REPAY",
+  "l": 4,
+  "p": "verb",
+  "c": "Geri ödemek",
+  "m": [
+   "geri ödemek",
+   "karşılığını vermek"
+  ],
+  "ex": [
+   [
+    "I will repay the money next month.",
+    "Parayı gelecek ay geri ödeyeceğim."
+   ]
+  ]
+ },
+ {
+  "a": "DELIGHTFUL",
+  "l": 4,
+  "p": "adjective",
+  "c": "Çok hoş",
+  "m": [
+   "çok hoş",
+   "keyifli"
+  ],
+  "ex": [
+   [
+    "We had a delightful evening.",
+    "Çok keyifli bir akşam geçirdik."
+   ]
+  ]
+ },
+ {
+  "a": "SCENERY",
+  "l": 4,
+  "p": "noun",
+  "c": "Manzara, doğa",
+  "m": [
+   "manzara",
+   "doğa görünümü"
+  ],
+  "ex": [
+   [
+    "The mountain scenery is beautiful.",
+    "Dağ manzarası çok güzel."
+   ]
+  ]
+ },
+ {
+  "a": "NICKNAME",
+  "l": 2,
+  "p": "noun",
+  "c": "Lakap",
+  "m": [
+   "lakap",
+   "takma ad"
+  ],
+  "ex": [
+   [
+    "His nickname is Bobo.",
+    "Lakabı Bobo."
+   ]
+  ]
+ },
+ {
+  "a": "COMPLIMENT",
+  "l": 4,
+  "p": "noun",
+  "c": "İltifat",
+  "m": [
+   "iltifat",
+   "övgü"
+  ],
+  "ex": [
+   [
+    "She gave me a nice compliment.",
+    "Bana güzel bir iltifatta bulundu."
+   ]
+  ]
+ },
+ {
+  "a": "GLUE",
+  "l": 2,
+  "p": "noun",
+  "c": "Yapıştırıcı",
+  "m": [
+   "yapıştırıcı",
+   "tutkal",
+   "yapıştırmak"
+  ],
+  "ex": [
+   [
+    "Use glue to fix the cup.",
+    "Fincanı tamir etmek için yapıştırıcı kullan."
+   ]
+  ]
+ },
+ {
+  "a": "PINCH",
+  "l": 4,
+  "p": "verb",
+  "c": "Çimdiklemek",
+  "m": [
+   "çimdiklemek",
+   "tutam"
+  ],
+  "ex": [
+   [
+    "Pinch me, I must be dreaming.",
+    "Çimdikle beni, rüya görüyor olmalıyım."
+   ]
+  ]
+ },
+ {
+  "a": "ROAST",
+  "l": 4,
+  "p": "verb",
+  "c": "Fırında kızartmak",
+  "m": [
+   "fırında kızartmak",
+   "kavurmak"
+  ],
+  "ex": [
+   [
+    "We roast a chicken on Sundays.",
+    "Pazarları fırında tavuk kızartırız."
+   ]
+  ]
+ },
+ {
+  "a": "UNFAMILIAR",
+  "l": 4,
+  "p": "adjective",
+  "c": "Tanıdık olmayan",
+  "m": [
+   "tanıdık olmayan",
+   "yabancı"
+  ],
+  "ex": [
+   [
+    "This word is unfamiliar to me.",
+    "Bu kelime bana yabancı."
+   ]
+  ]
+ },
+ {
+  "a": "HERD",
+  "l": 4,
+  "p": "noun",
+  "c": "Sürü (büyükbaş)",
+  "m": [
+   "sürü (büyükbaş)"
+  ],
+  "ex": [
+   [
+    "A herd of cows blocked the road.",
+    "Bir inek sürüsü yolu kapattı."
+   ]
+  ]
+ },
+ {
+  "a": "PEEL",
+  "l": 2,
+  "p": "verb",
+  "c": "Soymak (kabuk)",
+  "m": [
+   "soymak (kabuk)",
+   "kabuk"
+  ],
+  "ex": [
+   [
+    "Peel the potatoes first.",
+    "Önce patatesleri soy."
+   ]
+  ]
+ },
+ {
+  "a": "CUSHION",
+  "l": 2,
+  "p": "noun",
+  "c": "Minder, kırlent",
+  "m": [
+   "minder",
+   "kırlent"
+  ],
+  "ex": [
+   [
+    "There are red cushions on the sofa.",
+    "Kanepede kırmızı kırlentler var."
+   ]
+  ]
+ },
+ {
+  "a": "CRISP",
+  "l": 4,
+  "p": "adjective",
+  "c": "Gevrek, çıtır",
+  "m": [
+   "gevrek",
+   "çıtır",
+   "taze"
+  ],
+  "ex": [
+   [
+    "The apples are crisp and sweet.",
+    "Elmalar çıtır ve tatlı."
+   ]
+  ]
+ },
+ {
+  "a": "FOOLISH",
+  "l": 4,
+  "p": "adjective",
+  "c": "Aptalca",
+  "m": [
+   "aptalca",
+   "akılsız"
+  ],
+  "ex": [
+   [
+    "It was foolish to drive so fast.",
+    "Bu kadar hızlı sürmek aptalcaydı."
+   ]
+  ]
+ },
+ {
+  "a": "NAIVE",
+  "l": 4,
+  "p": "adjective",
+  "c": "Saf, toy",
+  "m": [
+   "saf",
+   "toy",
+   "deneyimsiz"
+  ],
+  "ex": [
+   [
+    "He was naive to believe her.",
+    "Ona inanacak kadar saftı."
+   ]
+  ]
+ },
+ {
+  "a": "TEMPTATION",
+  "l": 4,
+  "p": "noun",
+  "c": "Ayartma, cazibe",
+  "m": [
+   "ayartma",
+   "cazibe",
+   "günah isteği"
+  ],
+  "ex": [
+   [
+    "I couldn't resist the temptation of chocolate.",
+    "Çikolatanın cazibesine dayanamadım."
+   ]
+  ]
+ },
+ {
+  "a": "MICROSCOPE",
+  "l": 4,
+  "p": "noun",
+  "c": "Mikroskop",
+  "m": [
+   "mikroskop"
+  ],
+  "ex": [
+   [
+    "We looked at cells under a microscope.",
+    "Hücrelere mikroskopla baktık."
+   ]
+  ]
+ },
+ {
+  "a": "ENVY",
+  "l": 4,
+  "p": "noun",
+  "c": "Kıskançlık, haset",
+  "m": [
+   "haset",
+   "kıskançlık",
+   "imrenmek"
+  ],
+  "ex": [
+   [
+    "She looked at his new car with envy.",
+    "Yeni arabasına hasetle baktı."
+   ]
+  ]
+ },
+ {
+  "a": "SALMON",
+  "l": 2,
+  "p": "noun",
+  "c": "Somon",
+  "m": [
+   "somon (balığı)"
+  ],
+  "ex": [
+   [
+    "We had salmon for dinner.",
+    "Akşam yemeğinde somon yedik."
+   ]
+  ]
+ },
+ {
+  "a": "MIST",
+  "l": 2,
+  "p": "noun",
+  "c": "Sis, pus",
+  "m": [
+   "pus",
+   "hafif sis"
+  ],
+  "ex": [
+   [
+    "The hills were covered in mist.",
+    "Tepeler pusla kaplıydı."
+   ]
+  ]
+ },
+ {
+  "a": "SADNESS",
+  "l": 4,
+  "p": "noun",
+  "c": "Üzüntü",
+  "m": [
+   "üzüntü",
+   "keder"
+  ],
+  "ex": [
+   [
+    "There was sadness in her eyes.",
+    "Gözlerinde bir hüzün vardı."
+   ]
+  ]
+ },
+ {
+  "a": "STAIRCASE",
+  "l": 4,
+  "p": "noun",
+  "c": "Merdiven (bina)",
+  "m": [
+   "merdiven",
+   "merdiven boşluğu"
+  ],
+  "ex": [
+   [
+    "The house has a wooden staircase.",
+    "Evin ahşap bir merdiveni var."
+   ]
+  ]
+ },
+ {
+  "a": "MUSHROOM",
+  "l": 2,
+  "p": "noun",
+  "c": "Mantar",
+  "m": [
+   "mantar"
+  ],
+  "ex": [
+   [
+    "I like pizza with mushrooms.",
+    "Mantarlı pizzayı severim."
+   ]
+  ]
+ },
+ {
+  "a": "WILDERNESS",
+  "l": 4,
+  "p": "noun",
+  "c": "Vahşi doğa",
+  "m": [
+   "vahşi doğa",
+   "el değmemiş bölge"
+  ],
+  "ex": [
+   [
+    "They got lost in the wilderness.",
+    "Vahşi doğada kayboldular."
+   ]
+  ]
+ },
+ {
+  "a": "HEIR",
+  "l": 4,
+  "p": "noun",
+  "c": "Varis",
+  "m": [
+   "varis",
+   "mirasçı"
+  ],
+  "ex": [
+   [
+    "He is the heir to the throne.",
+    "Tahtın varisi o."
+   ]
+  ]
+ },
+ {
+  "a": "BULB",
+  "l": 4,
+  "p": "noun",
+  "c": "Ampul",
+  "m": [
+   "ampul",
+   "çiçek soğanı"
+  ],
+  "ex": [
+   [
+    "The light bulb has gone out.",
+    "Ampul yandı."
+   ]
+  ]
+ },
+ {
+  "a": "CHESS",
+  "l": 2,
+  "p": "noun",
+  "c": "Satranç",
+  "m": [
+   "satranç"
+  ],
+  "ex": [
+   [
+    "Do you play chess?",
+    "Satranç oynar mısın?"
+   ]
+  ]
+ },
+ {
+  "a": "QUARREL",
+  "l": 4,
+  "p": "noun",
+  "c": "Kavga, ağız dalaşı",
+  "m": [
+   "kavga",
+   "tartışma",
+   "atışma"
+  ],
+  "ex": [
+   [
+    "They had a quarrel about money.",
+    "Para yüzünden kavga ettiler."
+   ]
+  ]
+ },
+ {
+  "a": "VOYAGE",
+  "l": 4,
+  "p": "noun",
+  "c": "Deniz yolculuğu",
+  "m": [
+   "deniz yolculuğu",
+   "sefer"
+  ],
+  "ex": [
+   [
+    "The voyage took three weeks.",
+    "Yolculuk üç hafta sürdü."
+   ]
+  ]
+ },
+ {
+  "a": "LIBRARIAN",
+  "l": 2,
+  "p": "noun",
+  "c": "Kütüphaneci",
+  "m": [
+   "kütüphaneci"
+  ],
+  "ex": [
+   [
+    "Ask the librarian for help.",
+    "Kütüphaneciden yardım iste."
+   ]
+  ]
+ },
+ {
+  "a": "CEREAL",
+  "l": 2,
+  "p": "noun",
+  "c": "Mısır gevreği",
+  "m": [
+   "mısır gevreği",
+   "tahıl"
+  ],
+  "ex": [
+   [
+    "I eat cereal with milk.",
+    "Sütle mısır gevreği yerim."
+   ]
+  ]
+ },
+ {
+  "a": "BARBECUE",
+  "l": 2,
+  "p": "noun",
+  "c": "Mangal",
+  "m": [
+   "mangal",
+   "barbekü"
+  ],
+  "ex": [
+   [
+    "We had a barbecue in the garden.",
+    "Bahçede mangal yaptık."
+   ]
+  ]
+ },
+ {
+  "a": "CHORUS",
+  "l": 4,
+  "p": "noun",
+  "c": "Koro; nakarat",
+  "m": [
+   "koro",
+   "nakarat"
+  ],
+  "ex": [
+   [
+    "Everyone sang the chorus.",
+    "Herkes nakaratı söyledi."
+   ]
+  ]
+ },
+ {
+  "a": "FOOTSTEP",
+  "l": 4,
+  "p": "noun",
+  "c": "Ayak sesi, adım",
+  "m": [
+   "ayak sesi",
+   "adım"
+  ],
+  "ex": [
+   [
+    "I heard footsteps in the hall.",
+    "Koridorda ayak sesleri duydum."
+   ]
+  ]
+ },
+ {
+  "a": "FATIGUE",
+  "l": 4,
+  "p": "noun",
+  "c": "Yorgunluk",
+  "m": [
+   "yorgunluk",
+   "bitkinlik"
+  ],
+  "ex": [
+   [
+    "Fatigue can cause accidents.",
+    "Yorgunluk kazalara yol açabilir."
+   ]
+  ]
+ },
+ {
+  "a": "NEWCOMER",
+  "l": 4,
+  "p": "noun",
+  "c": "Yeni gelen",
+  "m": [
+   "yeni gelen",
+   "acemi"
+  ],
+  "ex": [
+   [
+    "She is a newcomer to the city.",
+    "Şehre yeni gelmiş."
+   ]
+  ]
+ },
+ {
+  "a": "REFUND",
+  "l": 4,
+  "p": "noun",
+  "c": "Para iadesi",
+  "m": [
+   "para iadesi",
+   "geri ödemek"
+  ],
+  "ex": [
+   [
+    "I asked for a refund.",
+    "Para iadesi istedim."
+   ]
+  ]
+ },
+ {
+  "a": "POSTCARD",
+  "l": 2,
+  "p": "noun",
+  "c": "Kartpostal",
+  "m": [
+   "kartpostal"
+  ],
+  "ex": [
+   [
+    "Send me a postcard from Rome.",
+    "Bana Roma'dan kartpostal gönder."
+   ]
+  ]
+ },
+ {
+  "a": "TRIANGLE",
+  "l": 2,
+  "p": "noun",
+  "c": "Üçgen",
+  "m": [
+   "üçgen"
+  ],
+  "ex": [
+   [
+    "A triangle has three sides.",
+    "Üçgenin üç kenarı vardır."
+   ]
+  ]
+ },
+ {
+  "a": "SEASONAL",
+  "l": 4,
+  "p": "adjective",
+  "c": "Mevsimlik",
+  "m": [
+   "mevsimlik",
+   "mevsimsel"
+  ],
+  "ex": [
+   [
+    "He does seasonal work on farms.",
+    "Çiftliklerde mevsimlik iş yapıyor."
+   ]
+  ]
+ },
+ {
+  "a": "OPTIONAL",
+  "l": 4,
+  "p": "adjective",
+  "c": "İsteğe bağlı",
+  "m": [
+   "isteğe bağlı",
+   "seçmeli"
+  ],
+  "ex": [
+   [
+    "The last question is optional.",
+    "Son soru isteğe bağlı."
+   ]
+  ]
+ },
+ {
+  "a": "WAGON",
+  "l": 4,
+  "p": "noun",
+  "c": "Vagon, at arabası",
+  "m": [
+   "vagon",
+   "at arabası"
+  ],
+  "ex": [
+   [
+    "The horse pulled the wagon.",
+    "At arabayı çekti."
+   ]
+  ]
+ },
+ {
+  "a": "GEOMETRY",
+  "l": 4,
+  "p": "noun",
+  "c": "Geometri",
+  "m": [
+   "geometri"
+  ],
+  "ex": [
+   [
+    "We study geometry in maths class.",
+    "Matematik dersinde geometri çalışıyoruz."
+   ]
+  ]
+ },
+ {
+  "a": "MASSAGE",
+  "l": 2,
+  "p": "noun",
+  "c": "Masaj",
+  "m": [
+   "masaj",
+   "masaj yapmak"
+  ],
+  "ex": [
+   [
+    "I need a back massage.",
+    "Sırt masajına ihtiyacım var."
+   ]
+  ]
+ },
+ {
+  "a": "STOVE",
+  "l": 2,
+  "p": "noun",
+  "c": "Ocak, soba",
+  "m": [
+   "ocak",
+   "soba"
+  ],
+  "ex": [
+   [
+    "The soup is on the stove.",
+    "Çorba ocakta."
+   ]
+  ]
+ },
+ {
+  "a": "GRAPE",
+  "l": 2,
+  "p": "noun",
+  "c": "Üzüm",
+  "m": [
+   "üzüm"
+  ],
+  "ex": [
+   [
+    "These grapes are very sweet.",
+    "Bu üzümler çok tatlı."
+   ]
+  ]
+ },
+ {
+  "a": "GARBAGE",
+  "l": 2,
+  "p": "noun",
+  "c": "Çöp",
+  "m": [
+   "çöp"
+  ],
+  "ex": [
+   [
+    "Take out the garbage, please.",
+    "Lütfen çöpü dışarı çıkar."
+   ]
+  ]
+ },
+ {
+  "a": "RIBBON",
+  "l": 2,
+  "p": "noun",
+  "c": "Kurdele",
+  "m": [
+   "kurdele",
+   "şerit"
+  ],
+  "ex": [
+   [
+    "She tied a ribbon in her hair.",
+    "Saçına bir kurdele bağladı."
+   ]
+  ]
+ },
+ {
+  "a": "ADORE",
+  "l": 4,
+  "p": "verb",
+  "c": "Bayılmak, tapmak",
+  "m": [
+   "bayılmak",
+   "tapmak",
+   "çok sevmek"
+  ],
+  "ex": [
+   [
+    "I adore my little sister.",
+    "Küçük kız kardeşime bayılıyorum."
+   ]
+  ]
+ },
+ {
+  "a": "CYLINDER",
+  "l": 4,
+  "p": "noun",
+  "c": "Silindir",
+  "m": [
+   "silindir",
+   "tüp"
+  ],
+  "ex": [
+   [
+    "The gas is in a metal cylinder.",
+    "Gaz metal bir tüpte."
+   ]
+  ]
+ },
+ {
+  "a": "WICKED",
+  "l": 4,
+  "p": "adjective",
+  "c": "Kötü, şeytani",
+  "m": [
+   "kötü",
+   "şeytani",
+   "acımasız"
+  ],
+  "ex": [
+   [
+    "The wicked witch lived in the forest.",
+    "Kötü cadı ormanda yaşardı."
+   ]
+  ]
+ },
+ {
+  "a": "REHEARSAL",
+  "l": 4,
+  "p": "noun",
+  "c": "Prova",
+  "m": [
+   "prova"
+  ],
+  "ex": [
+   [
+    "The band has a rehearsal tonight.",
+    "Grubun bu akşam provası var."
+   ]
+  ]
+ },
+ {
+  "a": "PASTA",
+  "l": 2,
+  "p": "noun",
+  "c": "Makarna",
+  "m": [
+   "makarna"
+  ],
+  "ex": [
+   [
+    "We had pasta for lunch.",
+    "Öğle yemeğinde makarna yedik."
+   ]
+  ]
+ },
+ {
+  "a": "SHARK",
+  "l": 2,
+  "p": "noun",
+  "c": "Köpek balığı",
+  "m": [
+   "köpek balığı"
+  ],
+  "ex": [
+   [
+    "A shark was seen near the beach.",
+    "Sahilin yakınında köpek balığı görüldü."
+   ]
+  ]
+ },
+ {
+  "a": "NEPHEW",
+  "l": 2,
+  "p": "noun",
+  "c": "Yeğen (erkek)",
+  "m": [
+   "yeğen (erkek)"
+  ],
+  "ex": [
+   [
+    "My nephew is ten years old.",
+    "Yeğenim on yaşında."
+   ]
+  ]
+ },
+ {
+  "a": "FOUNTAIN",
+  "l": 2,
+  "p": "noun",
+  "c": "Çeşme, fıskiye",
+  "m": [
+   "çeşme",
+   "fıskiye"
+  ],
+  "ex": [
+   [
+    "There is a fountain in the square.",
+    "Meydanda bir çeşme var."
+   ]
+  ]
+ },
+ {
+  "a": "GARLIC",
+  "l": 2,
+  "p": "noun",
+  "c": "Sarımsak",
+  "m": [
+   "sarımsak"
+  ],
+  "ex": [
+   [
+    "Add some garlic to the sauce.",
+    "Sosa biraz sarımsak ekle."
+   ]
+  ]
+ },
+ {
+  "a": "TECHNICIAN",
+  "l": 4,
+  "p": "noun",
+  "c": "Teknisyen",
+  "m": [
+   "teknisyen"
+  ],
+  "ex": [
+   [
+    "A technician fixed the computer.",
+    "Bir teknisyen bilgisayarı tamir etti."
+   ]
+  ]
+ },
+ {
+  "a": "CROW",
+  "l": 2,
+  "p": "noun",
+  "c": "Karga",
+  "m": [
+   "karga"
+  ],
+  "ex": [
+   [
+    "A black crow sat on the fence.",
+    "Çitin üstüne siyah bir karga kondu."
+   ]
+  ]
+ },
+ {
+  "a": "SHORTEN",
+  "l": 4,
+  "p": "verb",
+  "c": "Kısaltmak",
+  "m": [
+   "kısaltmak"
+  ],
+  "ex": [
+   [
+    "Can you shorten these trousers?",
+    "Bu pantolonu kısaltabilir misin?"
+   ]
+  ]
+ },
+ {
+  "a": "ELEVATOR",
+  "l": 2,
+  "p": "noun",
+  "c": "Asansör",
+  "m": [
+   "asansör"
+  ],
+  "ex": [
+   [
+    "Take the elevator to the fifth floor.",
+    "Beşinci kata asansörle çık."
+   ]
+  ]
+ },
+ {
+  "a": "VASE",
+  "l": 2,
+  "p": "noun",
+  "c": "Vazo",
+  "m": [
+   "vazo"
+  ],
+  "ex": [
+   [
+    "Put the flowers in a vase.",
+    "Çiçekleri vazoya koy."
+   ]
+  ]
+ },
+ {
+  "a": "YACHT",
+  "l": 4,
+  "p": "noun",
+  "c": "Yat",
+  "m": [
+   "yat (tekne)"
+  ],
+  "ex": [
+   [
+    "They sailed around the islands on a yacht.",
+    "Yatla adaların etrafında dolaştılar."
+   ]
+  ]
+ },
+ {
+  "a": "WHEELCHAIR",
+  "l": 4,
+  "p": "noun",
+  "c": "Engelli sandalyesi",
+  "m": [
+   "tekerlekli sandalye"
+  ],
+  "ex": [
+   [
+    "He uses a wheelchair since the accident.",
+    "Kazadan beri tekerlekli sandalye kullanıyor."
+   ]
+  ]
+ },
+ {
+  "a": "QUIZ",
+  "l": 2,
+  "p": "noun",
+  "c": "Bilgi yarışması",
+  "m": [
+   "bilgi yarışması",
+   "kısa sınav"
+  ],
+  "ex": [
+   [
+    "We have a quiz on Friday.",
+    "Cuma günü kısa bir sınavımız var."
+   ]
+  ]
+ },
+ {
+  "a": "STOOL",
+  "l": 2,
+  "p": "noun",
+  "c": "Tabure",
+  "m": [
+   "tabure"
+  ],
+  "ex": [
+   [
+    "He sat on a stool at the bar.",
+    "Barda bir tabureye oturdu."
+   ]
+  ]
+ },
+ {
+  "a": "SLOGAN",
+  "l": 4,
+  "p": "noun",
+  "c": "Parola, şiar",
+  "m": [
+   "slogan"
+  ],
+  "ex": [
+   [
+    "The company has a new slogan.",
+    "Şirketin yeni bir sloganı var."
+   ]
+  ]
+ },
+ {
+  "a": "SKELETON",
+  "l": 4,
+  "p": "noun",
+  "c": "İskelet",
+  "m": [
+   "iskelet"
+  ],
+  "ex": [
+   [
+    "The museum has a dinosaur skeleton.",
+    "Müzede bir dinozor iskeleti var."
+   ]
+  ]
+ },
+ {
+  "a": "DAYLIGHT",
+  "l": 4,
+  "p": "noun",
+  "c": "Gün ışığı",
+  "m": [
+   "gün ışığı"
+  ],
+  "ex": [
+   [
+    "We must arrive before daylight ends.",
+    "Gün ışığı bitmeden varmalıyız."
+   ]
+  ]
+ },
+ {
+  "a": "TODDLER",
+  "l": 4,
+  "p": "noun",
+  "c": "Yeni yürüyen çocuk",
+  "m": [
+   "yeni yürüyen çocuk"
+  ],
+  "ex": [
+   [
+    "The toddler is learning to walk.",
+    "Küçük çocuk yürümeyi öğreniyor."
+   ]
+  ]
+ },
+ {
+  "a": "ASTHMA",
+  "l": 4,
+  "p": "noun",
+  "c": "Astım",
+  "m": [
+   "astım"
+  ],
+  "ex": [
+   [
+    "He has asthma and can't run far.",
+    "Astımı var, uzağa koşamıyor."
+   ]
+  ]
+ },
+ {
+  "a": "PERFUME",
+  "l": 2,
+  "p": "noun",
+  "c": "Parfüm",
+  "m": [
+   "parfüm"
+  ],
+  "ex": [
+   [
+    "She wears a nice perfume.",
+    "Güzel bir parfüm sürüyor."
+   ]
+  ]
+ },
+ {
+  "a": "MICROWAVE",
+  "l": 2,
+  "p": "noun",
+  "c": "Mikrodalga",
+  "m": [
+   "mikrodalga fırın"
+  ],
+  "ex": [
+   [
+    "Heat the soup in the microwave.",
+    "Çorbayı mikrodalgada ısıt."
+   ]
+  ]
+ },
+ {
+  "a": "SPICE",
+  "l": 2,
+  "p": "noun",
+  "c": "Baharat",
+  "m": [
+   "baharat"
+  ],
+  "ex": [
+   [
+    "This dish needs more spice.",
+    "Bu yemeğe daha çok baharat lazım."
+   ]
+  ]
+ },
+ {
+  "a": "SAUSAGE",
+  "l": 2,
+  "p": "noun",
+  "c": "Sosis, sucuk",
+  "m": [
+   "sosis",
+   "sucuk"
+  ],
+  "ex": [
+   [
+    "We had eggs and sausages.",
+    "Yumurta ve sosis yedik."
+   ]
+  ]
+ },
+ {
+  "a": "CANOE",
+  "l": 4,
+  "p": "noun",
+  "c": "Kano",
+  "m": [
+   "kano"
+  ],
+  "ex": [
+   [
+    "We paddled the canoe down the river.",
+    "Kanoyla nehirde kürek çektik."
+   ]
+  ]
+ },
+ {
+  "a": "JEWEL",
+  "l": 4,
+  "p": "noun",
+  "c": "Mücevher",
+  "m": [
+   "mücevher",
+   "değerli taş"
+  ],
+  "ex": [
+   [
+    "The crown is full of jewels.",
+    "Taç mücevherlerle dolu."
+   ]
+  ]
+ },
+ {
+  "a": "SCARF",
+  "l": 2,
+  "p": "noun",
+  "c": "Atkı, eşarp",
+  "m": [
+   "atkı",
+   "eşarp"
+  ],
+  "ex": [
+   [
+    "Wear a scarf, it's cold.",
+    "Atkı tak, hava soğuk."
+   ]
+  ]
+ },
+ {
+  "a": "HAMBURGER",
+  "l": 2,
+  "p": "noun",
+  "c": "Köfteli sandviç",
+  "m": [
+   "hamburger"
+  ],
+  "ex": [
+   [
+    "I ordered a hamburger and chips.",
+    "Hamburger ve patates kızartması sipariş ettim."
+   ]
+  ]
+ },
+ {
+  "a": "CELLAR",
+  "l": 4,
+  "p": "noun",
+  "c": "Mahzen, bodrum",
+  "m": [
+   "mahzen",
+   "bodrum"
+  ],
+  "ex": [
+   [
+    "They keep wine in the cellar.",
+    "Şarabı mahzende saklıyorlar."
+   ]
+  ]
+ },
+ {
+  "a": "PYRAMID",
+  "l": 4,
+  "p": "noun",
+  "c": "Piramit",
+  "m": [
+   "piramit"
+  ],
+  "ex": [
+   [
+    "We visited the pyramids in Egypt.",
+    "Mısır'da piramitleri gezdik."
+   ]
+  ]
+ },
+ {
+  "a": "ARMCHAIR",
+  "l": 2,
+  "p": "noun",
+  "c": "Koltuk",
+  "m": [
+   "koltuk (tek kişilik)"
+  ],
+  "ex": [
+   [
+    "Grandpa is sleeping in his armchair.",
+    "Dedem koltuğunda uyuyor."
+   ]
+  ]
+ },
+ {
+  "a": "DINOSAUR",
+  "l": 2,
+  "p": "noun",
+  "c": "Dinozor",
+  "m": [
+   "dinozor"
+  ],
+  "ex": [
+   [
+    "Dinosaurs lived millions of years ago.",
+    "Dinozorlar milyonlarca yıl önce yaşadı."
+   ]
+  ]
+ },
+ {
+  "a": "COMEDIAN",
+  "l": 4,
+  "p": "noun",
+  "c": "Komedyen",
+  "m": [
+   "komedyen"
+  ],
+  "ex": [
+   [
+    "The comedian made everyone laugh.",
+    "Komedyen herkesi güldürdü."
+   ]
+  ]
+ },
+ {
+  "a": "COMB",
+  "l": 2,
+  "p": "noun",
+  "c": "Tarak",
+  "m": [
+   "tarak",
+   "taramak"
+  ],
+  "ex": [
+   [
+    "I always carry a comb.",
+    "Yanımda hep bir tarak taşırım."
+   ]
+  ]
+ },
+ {
+  "a": "SOCKET",
+  "l": 4,
+  "p": "noun",
+  "c": "Priz",
+  "m": [
+   "priz",
+   "yuva"
+  ],
+  "ex": [
+   [
+    "Plug the charger into the socket.",
+    "Şarj aletini prize tak."
+   ]
+  ]
+ },
+ {
+  "a": "VOLCANO",
+  "l": 2,
+  "p": "noun",
+  "c": "Yanardağ",
+  "m": [
+   "yanardağ",
+   "volkan"
+  ],
+  "ex": [
+   [
+    "The volcano erupted last year.",
+    "Yanardağ geçen yıl patladı."
+   ]
+  ]
+ },
+ {
+  "a": "BLOUSE",
+  "l": 2,
+  "p": "noun",
+  "c": "Bluz",
+  "m": [
+   "bluz"
+  ],
+  "ex": [
+   [
+    "She wore a white blouse.",
+    "Beyaz bir bluz giydi."
+   ]
+  ]
+ },
+ {
+  "a": "MOTORWAY",
+  "l": 4,
+  "p": "noun",
+  "c": "Otoyol",
+  "m": [
+   "otoyol",
+   "otoban"
+  ],
+  "ex": [
+   [
+    "The motorway was very busy.",
+    "Otoyol çok kalabalıktı."
+   ]
+  ]
+ },
+ {
+  "a": "COMMUTE",
+  "l": 4,
+  "p": "verb",
+  "c": "İşe gidip gelmek",
+  "m": [
+   "işe gidip gelmek"
+  ],
+  "ex": [
+   [
+    "I commute to work by train.",
+    "İşe trenle gidip geliyorum."
+   ]
+  ]
+ },
+ {
+  "a": "FERTILE",
+  "l": 4,
+  "p": "adjective",
+  "c": "Verimli",
+  "m": [
+   "verimli",
+   "bereketli",
+   "doğurgan"
+  ],
+  "ex": [
+   [
+    "The soil here is very fertile.",
+    "Buradaki toprak çok verimli."
+   ]
+  ]
+ },
+ {
+  "a": "FIREPLACE",
+  "l": 2,
+  "p": "noun",
+  "c": "Şömine",
+  "m": [
+   "şömine"
+  ],
+  "ex": [
+   [
+    "We sat in front of the fireplace.",
+    "Şöminenin önünde oturduk."
+   ]
+  ]
+ },
+ {
+  "a": "DESSERT",
+  "l": 2,
+  "p": "noun",
+  "c": "Tatlı (yemek sonu)",
+  "m": [
+   "tatlı",
+   "yemek sonrası tatlı"
+  ],
+  "ex": [
+   [
+    "What's for dessert?",
+    "Tatlı olarak ne var?"
+   ]
+  ]
+ },
+ {
+  "a": "JUMPER",
+  "l": 2,
+  "p": "noun",
+  "c": "Kazak",
+  "m": [
+   "kazak"
+  ],
+  "ex": [
+   [
+    "My mum knitted me a jumper.",
+    "Annem bana bir kazak ördü."
+   ]
+  ]
+ },
+ {
+  "a": "SOUVENIR",
+  "l": 2,
+  "p": "noun",
+  "c": "Hediyelik eşya",
+  "m": [
+   "hatıra",
+   "hediyelik eşya"
+  ],
+  "ex": [
+   [
+    "I bought a souvenir for my friend.",
+    "Arkadaşıma bir hediyelik eşya aldım."
+   ]
+  ]
+ },
+ {
+  "a": "VIOLIN",
+  "l": 2,
+  "p": "noun",
+  "c": "Keman",
+  "m": [
+   "keman"
+  ],
+  "ex": [
+   [
+    "She plays the violin.",
+    "Keman çalıyor."
+   ]
+  ]
+ },
+ {
+  "a": "PUPPY",
+  "l": 2,
+  "p": "noun",
+  "c": "Köpek yavrusu",
+  "m": [
+   "köpek yavrusu"
+  ],
+  "ex": [
+   [
+    "We got a new puppy.",
+    "Yeni bir köpek yavrusu aldık."
+   ]
+  ]
+ },
+ {
+  "a": "KETTLE",
+  "l": 2,
+  "p": "noun",
+  "c": "Su ısıtıcısı",
+  "m": [
+   "su ısıtıcısı",
+   "çaydanlık"
+  ],
+  "ex": [
+   [
+    "Put the kettle on.",
+    "Su ısıtıcısını çalıştır."
+   ]
+  ]
+ },
+ {
+  "a": "BEGINNER",
+  "l": 2,
+  "p": "noun",
+  "c": "Yeni başlayan",
+  "m": [
+   "yeni başlayan",
+   "acemi"
+  ],
+  "ex": [
+   [
+    "This class is for beginners.",
+    "Bu sınıf yeni başlayanlar için."
+   ]
+  ]
+ },
+ {
+  "a": "MOSQUITO",
+  "l": 2,
+  "p": "noun",
+  "c": "Sivrisinek",
+  "m": [
+   "sivrisinek"
+  ],
+  "ex": [
+   [
+    "A mosquito bit me.",
+    "Beni sivrisinek ısırdı."
+   ]
+  ]
+ },
+ {
+  "a": "NIECE",
+  "l": 2,
+  "p": "noun",
+  "c": "Yeğen (kız)",
+  "m": [
+   "yeğen (kız)"
+  ],
+  "ex": [
+   [
+    "My niece loves dolls.",
+    "Kız yeğenim bebekleri çok sever."
+   ]
+  ]
+ },
+ {
+  "a": "CHIMNEY",
+  "l": 4,
+  "p": "noun",
+  "c": "Baca",
+  "m": [
+   "baca"
+  ],
+  "ex": [
+   [
+    "Smoke came out of the chimney.",
+    "Bacadan duman çıktı."
+   ]
+  ]
+ },
+ {
+  "a": "CIRCUS",
+  "l": 2,
+  "p": "noun",
+  "c": "Sirk",
+  "m": [
+   "sirk"
+  ],
+  "ex": [
+   [
+    "We went to the circus.",
+    "Sirke gittik."
+   ]
+  ]
+ },
+ {
+  "a": "CARDBOARD",
+  "l": 2,
+  "p": "noun",
+  "c": "Karton",
+  "m": [
+   "karton",
+   "mukavva"
+  ],
+  "ex": [
+   [
+    "Put the books in a cardboard box.",
+    "Kitapları karton bir kutuya koy."
+   ]
+  ]
+ },
+ {
+  "a": "TRACTOR",
+  "l": 2,
+  "p": "noun",
+  "c": "Traktör",
+  "m": [
+   "traktör"
+  ],
+  "ex": [
+   [
+    "The farmer drives a tractor.",
+    "Çiftçi traktör kullanıyor."
+   ]
+  ]
+ },
+ {
+  "a": "ERASE",
+  "l": 4,
+  "p": "verb",
+  "c": "Silmek (iz)",
+  "m": [
+   "silmek",
+   "yok etmek"
+  ],
+  "ex": [
+   [
+    "Erase the wrong answer.",
+    "Yanlış cevabı sil."
+   ]
+  ]
+ },
+ {
+  "a": "VOLLEYBALL",
+  "l": 2,
+  "p": "noun",
+  "c": "Voleybol",
+  "m": [
+   "voleybol"
+  ],
+  "ex": [
+   [
+    "We played volleyball on the beach.",
+    "Plajda voleybol oynadık."
+   ]
+  ]
+ },
+ {
+  "a": "GOOSE",
+  "l": 2,
+  "p": "noun",
+  "c": "Kaz",
+  "m": [
+   "kaz"
+  ],
+  "ex": [
+   [
+    "A goose was swimming in the pond.",
+    "Gölette bir kaz yüzüyordu."
+   ]
+  ]
+ },
+ {
+  "a": "WAITRESS",
+  "l": 2,
+  "p": "noun",
+  "c": "Kadın garson",
+  "m": [
+   "kadın garson"
+  ],
+  "ex": [
+   [
+    "The waitress brought our food.",
+    "Garson yemeğimizi getirdi."
+   ]
+  ]
+ },
+ {
+  "a": "CHALK",
+  "l": 2,
+  "p": "noun",
+  "c": "Tebeşir",
+  "m": [
+   "tebeşir"
+  ],
+  "ex": [
+   [
+    "The teacher wrote with chalk.",
+    "Öğretmen tebeşirle yazdı."
+   ]
+  ]
+ },
+ {
+  "a": "PIGEON",
+  "l": 2,
+  "p": "noun",
+  "c": "Güvercin",
+  "m": [
+   "güvercin"
+  ],
+  "ex": [
+   [
+    "Pigeons live in the city square.",
+    "Güvercinler şehir meydanında yaşar."
+   ]
+  ]
+ },
+ {
+  "a": "VILLAIN",
+  "l": 4,
+  "p": "noun",
+  "c": "Kötü adam",
+  "m": [
+   "kötü adam (film, roman)"
+  ],
+  "ex": [
+   [
+    "The villain was caught at the end.",
+    "Kötü adam sonunda yakalandı."
+   ]
+  ]
+ },
+ {
+  "a": "WATERFALL",
+  "l": 2,
+  "p": "noun",
+  "c": "Şelale",
+  "m": [
+   "şelale"
+  ],
+  "ex": [
+   [
+    "We swam under the waterfall.",
+    "Şelalenin altında yüzdük."
+   ]
+  ]
+ },
+ {
+  "a": "PEANUT",
+  "l": 2,
+  "p": "noun",
+  "c": "Yer fıstığı",
+  "m": [
+   "yer fıstığı"
+  ],
+  "ex": [
+   [
+    "He is allergic to peanuts.",
+    "Yer fıstığına alerjisi var."
+   ]
+  ]
+ },
+ {
+  "a": "JELLY",
+  "l": 2,
+  "p": "noun",
+  "c": "Jöle",
+  "m": [
+   "jöle",
+   "reçel (ABD)"
+  ],
+  "ex": [
+   [
+    "The kids love strawberry jelly.",
+    "Çocuklar çilekli jöleye bayılır."
+   ]
+  ]
+ },
+ {
+  "a": "TRIVIAL",
+  "l": 4,
+  "p": "adjective",
+  "c": "Önemsiz",
+  "m": [
+   "önemsiz",
+   "sıradan"
+  ],
+  "ex": [
+   [
+    "Don't worry about trivial things.",
+    "Önemsiz şeyleri dert etme."
+   ]
+  ]
+ },
+ {
+  "a": "VACANT",
+  "l": 4,
+  "p": "adjective",
+  "c": "Boş (yer, oda)",
+  "m": [
+   "boş",
+   "münhal"
+  ],
+  "ex": [
+   [
+    "Is this seat vacant?",
+    "Bu koltuk boş mu?"
+   ]
+  ]
+ },
+ {
+  "a": "REVOLT",
+  "l": 4,
+  "p": "noun",
+  "c": "İsyan",
+  "m": [
+   "isyan",
+   "ayaklanma"
+  ],
+  "ex": [
+   [
+    "The people rose in revolt.",
+    "Halk isyan etti."
+   ]
+  ]
+ },
+ {
+  "a": "ABUNDANT",
+  "l": 4,
+  "p": "adjective",
+  "c": "Bol",
+  "m": [
+   "bol",
+   "bereketli"
+  ],
+  "ex": [
+   [
+    "Fish are abundant in this lake.",
+    "Bu gölde balık bol."
+   ]
+  ]
+ },
+ {
+  "a": "HARDSHIP",
+  "l": 4,
+  "p": "noun",
+  "c": "Zorluk, sıkıntı",
+  "m": [
+   "zorluk",
+   "sıkıntı",
+   "yokluk"
+  ],
+  "ex": [
+   [
+    "They lived through years of hardship.",
+    "Yıllarca sıkıntı çektiler."
+   ]
+  ]
+ },
+ {
+  "a": "SCARCE",
+  "l": 4,
+  "p": "adjective",
+  "c": "Kıt, az bulunan",
+  "m": [
+   "kıt",
+   "az bulunan"
+  ],
+  "ex": [
+   [
+    "Water is scarce in the desert.",
+    "Çölde su kıttır."
+   ]
+  ]
+ },
+ {
+  "a": "PEDESTRIAN",
+  "l": 4,
+  "p": "noun",
+  "c": "Yaya",
+  "m": [
+   "yaya"
+  ],
+  "ex": [
+   [
+    "Pedestrians must use the crossing.",
+    "Yayalar geçidi kullanmalı."
+   ]
+  ]
+ },
+ {
+  "a": "GRATITUDE",
+  "l": 4,
+  "p": "noun",
+  "c": "Minnettarlık",
+  "m": [
+   "minnettarlık",
+   "şükran"
+  ],
+  "ex": [
+   [
+    "I want to show my gratitude.",
+    "Minnettarlığımı göstermek istiyorum."
+   ]
+  ]
+ },
+ {
+  "a": "FURY",
+  "l": 4,
+  "p": "noun",
+  "c": "Öfke, hiddet",
+  "m": [
+   "öfke",
+   "hiddet"
+  ],
+  "ex": [
+   [
+    "He shouted in fury.",
+    "Öfkeyle bağırdı."
+   ]
+  ]
+ },
+ {
+  "a": "FOAM",
+  "l": 2,
+  "p": "noun",
+  "c": "Köpük",
+  "m": [
+   "köpük"
+  ],
+  "ex": [
+   [
+    "There is foam on my coffee.",
+    "Kahvemin üstünde köpük var."
+   ]
+  ]
+ },
+ {
+  "a": "SUBMARINE",
+  "l": 4,
+  "p": "noun",
+  "c": "Denizaltı",
+  "m": [
+   "denizaltı"
+  ],
+  "ex": [
+   [
+    "The submarine went deep under the sea.",
+    "Denizaltı denizin derinliklerine indi."
+   ]
+  ]
+ },
+ {
+  "a": "MIMIC",
+  "l": 4,
+  "p": "verb",
+  "c": "Taklit etmek",
+  "m": [
+   "taklit etmek"
+  ],
+  "ex": [
+   [
+    "Parrots can mimic human voices.",
+    "Papağanlar insan sesini taklit edebilir."
+   ]
+  ]
+ },
+ {
+  "a": "IDLE",
+  "l": 4,
+  "p": "adjective",
+  "c": "Boş, aylak",
+  "m": [
+   "boş",
+   "aylak",
+   "çalışmayan"
+  ],
+  "ex": [
+   [
+    "The machines are idle at night.",
+    "Makineler gece boş duruyor."
+   ]
+  ]
+ },
+ {
+  "a": "WARY",
+  "l": 4,
+  "p": "adjective",
+  "c": "Temkinli",
+  "m": [
+   "temkinli",
+   "ihtiyatlı"
+  ],
+  "ex": [
+   [
+    "Be wary of strangers online.",
+    "İnternette yabancılara karşı temkinli ol."
+   ]
+  ]
+ },
+ {
+  "a": "INVENTOR",
+  "l": 4,
+  "p": "noun",
+  "c": "Mucit",
+  "m": [
+   "mucit"
+  ],
+  "ex": [
+   [
+    "Edison was a famous inventor.",
+    "Edison ünlü bir mucitti."
+   ]
+  ]
+ },
+ {
+  "a": "GERM",
+  "l": 4,
+  "p": "noun",
+  "c": "Mikrop",
+  "m": [
+   "mikrop"
+  ],
+  "ex": [
+   [
+    "Wash your hands to kill germs.",
+    "Mikropları öldürmek için ellerini yıka."
+   ]
+  ]
+ },
+ {
+  "a": "CLAW",
+  "l": 4,
+  "p": "noun",
+  "c": "Pençe",
+  "m": [
+   "pençe"
+  ],
+  "ex": [
+   [
+    "The cat scratched me with its claws.",
+    "Kedi beni pençeleriyle tırmaladı."
+   ]
+  ]
+ }
+]

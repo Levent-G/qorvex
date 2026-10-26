@@ -103,6 +103,11 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
         </View>
       </Pressable>
 
+      <Pressable onPress={() => onOpenRoute({ name: 'archive' })} hitSlop={6} style={styles.archiveLink}>
+        <Text style={styles.archiveText}>Geçmiş günlerin bulmacaları · Arşiv</Text>
+        <ChevronRight size={13} color={ed.accent} />
+      </Pressable>
+
       {/* Seviye bandı: atlama tebriği ya da mevcut durum */}
       {promo ? (
         <View style={styles.banner}>
@@ -202,6 +207,8 @@ export default function HomeTab({ onOpenLevels, onOpenDaily, onTab, onOpenRoute 
 const card = { backgroundColor: ed.surface, borderRadius: 14, borderWidth: 1, borderColor: ed.border };
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 16, paddingBottom: 24, paddingTop: 12 },
+  archiveLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 8, paddingHorizontal: 4 },
+  archiveText: { fontFamily: efonts.labelBold, fontSize: 12, color: ed.accent },
   chips: { flexDirection: 'row', gap: 10, marginTop: 14 },
   chip: { ...card, flex: 1, flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 12, paddingVertical: 11 },
   chipLabel: { flex: 1, fontFamily: efonts.bodyMedium, fontSize: 13, color: ed.textSoft },

@@ -20,6 +20,7 @@ export function getSettings() {
   if (st.theme !== 'dark') st.theme = 'light';
   if (!st.textScale) st.textScale = 1;
   if (!st.reminder) st.reminder = { on: false, hour: 20, minute: 0 };
+  if (!st.accent) st.accent = 'en-US'; // okunuş: Amerikan (en-US) ya da İngiliz (en-GB)
   return st;
 }
 
@@ -56,6 +57,15 @@ export function setTextScale(k) {
   textScale.k = k;
   persist();
   emit();
+}
+
+export const ACCENTS = [
+  { id: 'en-US', label: 'Amerikan' },
+  { id: 'en-GB', label: 'İngiliz' },
+];
+export function setAccent(id) {
+  getSettings().accent = id;
+  persist();
 }
 
 export function setReminder(patch) {

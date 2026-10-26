@@ -6,11 +6,11 @@ import ArrowGrid from '../components/ArrowGrid';
 import Keyboard from '../components/Keyboard';
 import LearnModal from '../components/LearnModal';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
-import { GameHeader, HintMenu, WinModal, LoadingPage, shellStyles, CardHintPill } from '../components/GameShell';
+import { GameHeader, HintMenu, WinModal, LoadingPage, shellStyles, CardHintPill, ClueContext } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { buildModel, wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
-import { getLevel, getLevelSession, getDailySession, markSolved, markLearned, LEARN_LIMIT, recordHint, recordHard } from '../engine/session';
+import { getLevel, getLevelSession, getDailySession, markSolved, markLearned, LEARN_LIMIT, recordHint, recordHard, prefetchLevel } from '../engine/session';
 import { getStore, persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
@@ -172,7 +172,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
 
   // Boyutlandırma
   const keyH = Math.min(48, Math.max(40, height * 0.056));
-  const reserved = insets.top + insets.bottom + 50 + 6 + 66 + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT;
+  const reserved = insets.top + insets.bottom + 50 + 6 + 84 + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT; // ipucu çubuğu: ipucu + örnek cümle
   const size = Math.floor(Math.min((width - 8 - 4) / puzzle.w, (height - reserved) / puzzle.h));
 
   const w = model.words[s.active];
@@ -237,6 +237,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             </Text>
             <CardHintPill onPress={() => openLearn(s.active)} />
           </View>
+          {photo && w.answer === photo.answer ? null : <ClueContext answer={w.answer} />}
         </View>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={styles.clueNav}>
           <ChevronIcon dir="right" size={20} color={ed.textSoft} />
@@ -328,6 +329,8 @@ export default function PuzzleScreen({ kind, levelId, onBack, store }) {
             ? await getDailySession()
             : await getLevelSession(levelId, forceNew);
         setSession(sess);
+        // sonraki seviye bulmacasını arka planda hazırla (ekran açıldıktan biraz sonra)
+        if (!store && kind === 'level') setTimeout(() => prefetchLevel(levelId), 1500);
       } catch (e) {
         setError(String(e?.message || e));
       }

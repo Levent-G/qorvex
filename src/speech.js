@@ -2,6 +2,7 @@
 // (yoksa iOS konuşma sesini yan taraftaki sessiz anahtarıyla susturur).
 import * as Speech from 'expo-speech';
 import { setAudioModeAsync } from 'expo-audio';
+import { getSettings } from './settings';
 
 let audioReady = null;
 function ensureAudio() {
@@ -17,7 +18,7 @@ export async function speakWord(text, rate = 0.9) {
   if (!text) return;
   await ensureAudio();
   Speech.stop(); // önceki okuma sürüyorsa kes, yenisini sıraya sokma
-  Speech.speak(text.toLowerCase(), { language: 'en-US', rate });
+  Speech.speak(text.toLowerCase(), { language: getSettings().accent || 'en-US', rate }); // seçilen aksan
 }
 
 export function stopSpeaking() {

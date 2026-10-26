@@ -3,7 +3,8 @@
 // Oklar: R  ipucu solda, kelime sağa | D  ipucu üstte, kelime aşağı
 //        RD ipucu solda, kelime sağdaki hücreden aşağı | DR ipucu üstte, kelime alttaki hücreden sağa
 
-const E = 0, L = 1, B = 2, C = 3, X = 4; // X: fotoğraf alanı (resimli çengel), harf/ipucu konmaz
+const E = 0, L = 1, B = 2, C = 3, X = 4;
+const L_ = L; // onarım kodunda "L" uzunluk değişkeniyle karışmasın // X: fotoğraf alanı (resimli çengel), harf/ipucu konmaz
 
 export function mulberry32(seed) {
   let s = seed >>> 0;
@@ -70,6 +71,13 @@ function clueOpts(g, r, c, dir) {
   return out;
 }
 
+// ızgaradaki iki harfli kelime sayısı (tekdüze "TO, IT, ME" dolgusunu sınırlamak için)
+function twoCount(g) {
+  let n = 0;
+  for (const x of g.words) if (x.entry.a.length === 2) n++;
+  return n;
+}
+
 function evaluate(g, entry, r, c, dir, first, ctx) {
   const word = entry.a;
   const w = g.w, h = g.h, n = word.length;
@@ -103,6 +111,7 @@ function evaluate(g, entry, r, c, dir, first, ctx) {
   }
   if (!first && cross === 0) return null;
   if (cross === n) return null;
+  if (n === 2 && ctx.maxTwo != null && twoCount(g) >= ctx.maxTwo) return null;
 
   // Bu değerlendirmede ayrılan ipucu yuvaları
   const reserved = [];
@@ -158,6 +167,7 @@ function evaluate(g, entry, r, c, dir, first, ctx) {
       }
       const ent = ctx.dict.get(s);
       if (!ent || g.used.has(s) || s === word) return null;
+      if (s.length === 2 && ctx.maxTwo != null && twoCount(g) + (n === 2 ? 1 : 0) >= ctx.maxTwo) return null;
       if (extra) for (const x of extra) if (x.entry.a === s) return null;
       const o = pick(sr, sc, pdir);
       if (!o) return null;
@@ -478,6 +488,140 @@ function attempt(w, h, entries, ctx) {
   return g;
 }
 
+
+// ================= Boş kare onarımı (sistematik, geri izlemeli) =================
+// Bir boş kare iki yolla kapanır: (1) onu kapsayan bir kelime yerleşir, (2) sağından/altından bir kelime başlar
+// ve kare ipucu karesi olur. Her boş kare için desene uyan tüm kelimeler denenir; hiçbiri olmazsa yanındaki
+// bir kelime sökülüp bölge yeniden kurulur. Yalnızca toplam boş kare sayısı azalıyorsa kabul edilir.
+function blankCells(g) {
+  const out = [];
+  for (let i = 0; i < g.t.length; i++) if (g.t[i] === E || (g.t[i] === B && !g.clues[i].length)) out.push(i);
+  return out;
+}
+// (sr,sc)'den dir yönünde L uzunluğunda desen: harf karelerinde harf, boşta '', başka bir şeyse null
+function patternAt(g, sr, sc, dir, L) {
+  const dr = dir === 'A' ? 0 : 1, dc = dir === 'A' ? 1 : 0;
+  if (sr < 0 || sc < 0 || sr + dr * (L - 1) >= g.h || sc + dc * (L - 1) >= g.w) return null;
+  const pat = new Array(L);
+  let empty = 0;
+  for (let k = 0; k < L; k++) {
+    const i = (sr + dr * k) * g.w + (sc + dc * k);
+    const t = g.t[i];
+    if (t === L_) pat[k] = g.ch[i];
+    else if (t === E) { pat[k] = ''; empty++; }
+    else return null;
+  }
+  return empty ? pat : null; // en az bir yeni harf
+}
+function matches(a, pat) {
+  for (let k = 0; k < pat.length; k++) if (pat[k] && pat[k] !== a[k]) return false;
+  return true;
+}
+function repairBlanks(g0, words, ctx, deadline) {
+  const byLen = new Map();
+  for (const e of words) {
+    const l = e.a.length;
+    if (!byLen.has(l)) byLen.set(l, []);
+    byLen.get(l).push(e);
+  }
+  const maxLen = Math.max(g0.w, g0.h) - 1;
+  const blanksN = (g) => stats(g).blanks;
+
+  // b'yi kapatabilecek yerleşimler (puana göre sıralı)
+  function candidates(g, b) {
+    const out = [];
+    const r = Math.floor(b / g.w), c = b % g.w;
+    const seen = new Set();
+    const tryAt = (sr, sc, dir, L, needIdx) => {
+      const pat = patternAt(g, sr, sc, dir, L);
+      if (!pat) return;
+      const list = byLen.get(L);
+      if (!list) return;
+      for (const e of list) {
+        if (g.used.has(e.a) || !matches(e.a, pat)) continue;
+        const key = e.a + sr + ',' + sc + dir;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const pl = evaluate(g, e, sr, sc, dir, false, ctx);
+        if (pl) out.push({ e, pl });
+      }
+    };
+    for (const dir of ['A', 'D']) {
+      const dr = dir === 'A' ? 0 : 1, dc = dir === 'A' ? 1 : 0;
+      // (1) b'yi kapsayan kelime (b boşsa)
+      if (g.t[b] === E) for (let L = 2; L <= maxLen; L++) for (let k = 0; k < L; k++) tryAt(r - dr * k, c - dc * k, dir, L);
+    }
+    // (2) b ipucu karesi olur: sağından ya da altından başlayan kelime (R, D, RD, DR)
+    for (const [sr, sc, dir] of [[r, c + 1, 'A'], [r + 1, c, 'D'], [r, c + 1, 'D'], [r + 1, c, 'A']])
+      for (let L = 2; L <= maxLen; L++) tryAt(sr, sc, dir, L);
+    out.sort((x, y) => y.pl.score - x.pl.score);
+    return out.slice(0, 60);
+  }
+  // b'nin yanındaki (komşu karelerinden geçen) kelimeler
+  function neighborWords(g, b) {
+    const r = Math.floor(b / g.w), c = b % g.w;
+    const cells = new Set();
+    for (const [dr, dc] of [[0, 1], [0, -1], [1, 0], [-1, 0], [0, 0]]) {
+      const rr = r + dr, cc = c + dc;
+      if (rr >= 0 && cc >= 0 && rr < g.h && cc < g.w) cells.add(rr * g.w + cc);
+    }
+    const out = [];
+    for (const x of g.words) {
+      const n = x.entry.a.length, ddr = x.dir === 'A' ? 0 : 1, ddc = x.dir === 'A' ? 1 : 0;
+      let hit = cells.has(x.ci);
+      for (let k = 0; k < n && !hit; k++) if (cells.has((x.r + ddr * k) * g.w + (x.c + ddc * k))) hit = true;
+      if (hit) out.push(x);
+    }
+    return shuffle(out, ctx.rand);
+  }
+  // b'yi kapatmayı dene; olmazsa (depth > 0) yanındaki kelimeyi söküp bölgeyi yeniden kur
+  function fixBlank(g, b, depth) {
+    const base = blanksN(g);
+    let best = null, bestN = base;
+    for (const { e, pl } of candidates(g, b)) {
+      const ng = cloneGrid(g);
+      place(ng, e, pl);
+      const n = blanksN(ng);
+      if (n < bestN) { bestN = n; best = ng; if (n === 0) break; }
+    }
+    if (best || depth <= 0) return best;
+    for (const w of neighborWords(g, b).slice(0, 5)) {
+      if (Date.now() > deadline) return null;
+      if (ctx.prio && ctx.prio.has(w.entry.a)) continue; // defter tekrar kelimesi sökülmez
+      const ng = rebuild(g.w, g.h, g.words.filter((x) => x !== w), ctx.blocks);
+      if (!runsValid(ng, new Set([w]))) continue;
+      let cg = fixBlank(ng, b, depth - 1) || ng;
+      // sökülen kelimenin bıraktığı yeni boşlukları da kapat
+      for (let pass = 0; pass < 4 && blanksN(cg) >= base; pass++) {
+        let moved = false;
+        for (const i of blankCells(cg)) {
+          if (Date.now() > deadline) break;
+          const t = fixBlank(cg, i, depth - 1);
+          if (t) { cg = t; moved = true; if (blanksN(cg) < base) break; }
+        }
+        if (!moved) break;
+      }
+      if (blanksN(cg) < base) return cg;
+    }
+    return null;
+  }
+
+  let g = g0, cur = blanksN(g), guard = 0;
+  while (cur > 0 && Date.now() < deadline && guard++ < 80) {
+    let improved = false;
+    for (const b of shuffle(blankCells(g), ctx.rand)) {
+      if (Date.now() > deadline) break;
+      const ng = fixBlank(g, b, 2);
+      if (ng) {
+        const n = blanksN(ng);
+        if (n < cur) { g = ng; cur = n; improved = true; break; }
+      }
+    }
+    if (!improved) break;
+  }
+  return g;
+}
+
 // Çift ipuçlu karede her ipucu okunun çıktığı kenarın yanında: sağ kenardan çıkanlar (R, RD) üst yarıda,
 // alt kenardan çıkanlar (DR, D) alt yarıda. Böylece ok metnin hemen yanında, yön karışmaz.
 export const CLUE_SLOT_ORDER = { R: 0, RD: 1, DR: 2, D: 3 };
@@ -532,7 +676,8 @@ export async function generatePuzzle(opts) {
   const { w, h, entries, dict, prio, seed = Date.now(), budgetMs = 900, minAttempts = 4, maxAttempts = 60, yieldFn } = opts;
   const rand = mulberry32(seed);
   BLANK_W = opts.blankWeight ?? 8;
-  const ctx = { rand, dict, prio, blocks: opts.blocks || null };
+  // bir bulmacada en fazla bu kadar iki harfli kelime (varsayılan 4; ölçümle seçildi: boşluk/çeşitlilik dengesi; null = sınırsız)
+  const ctx = { rand, dict, prio, blocks: opts.blocks || null, maxTwo: opts.maxTwo === undefined ? 4 : opts.maxTwo };
   const fit = entries.filter((e) => e.a.length >= 2 && e.a.length <= Math.max(w, h) - 1);
   const prioList = fit.filter((e) => prio && prio.has(e.a));
   const rest = fit.filter((e) => !(prio && prio.has(e.a)));
@@ -553,6 +698,7 @@ export async function generatePuzzle(opts) {
   const restarts = opts.restarts || 3;
   const start = Date.now();
   let winner = null;
+  const rounds = [];
   for (let round = 0; round < restarts; round++) {
     const rStart = Date.now();
     const rBudget = (start + budgetMs - rStart) / (restarts - round);
@@ -583,12 +729,29 @@ export async function generatePuzzle(opts) {
       shuffle(fillerPool, rand);
       fillPockets(g, fillerPool, fillerCtx);
     }
-    relocateClues(g);
     const sc = scoreOf(stats(g), prioCount(g, ctx));
-    if (!winner || sc > winner.sc) winner = { g, sc };
+    rounds.push({ g, sc });
     if (yieldFn) await yieldFn();
   }
-  if (!winner) throw new Error('Bulmaca üretilemedi');
+  if (!rounds.length) throw new Error('Bulmaca üretilemedi');
+  // Boş kare onarımı: en iyi iki turu sistematik onarımdan geçir, en az boşluklu (eşitse yüksek puanlı) olanı seç
+  rounds.sort((x, y) => y.sc - x.sc);
+  const repairWords = [...fit, ...fillerPool];
+  const repairCtx = fillerCtx || ctx;
+  const repairBudget = opts.repairMs ?? 1000;
+  for (const [i, rd] of rounds.slice(0, 2).entries()) {
+    if (stats(rd.g).blanks) {
+      const until = Date.now() + repairBudget / (i === 0 ? 1.6 : 2.5);
+      rd.g = repairBlanks(rd.g, repairWords, repairCtx, until);
+      rd.sc = scoreOf(stats(rd.g), prioCount(rd.g, ctx));
+    }
+    if (yieldFn) await yieldFn();
+  }
+  for (const rd of rounds) {
+    relocateClues(rd.g);
+    const b = stats(rd.g).blanks;
+    if (!winner || b < winner.b || (b === winner.b && rd.sc > winner.sc)) winner = { ...rd, b };
+  }
   const out = serialize(winner.g);
   out.stats = stats(winner.g);
   return out;

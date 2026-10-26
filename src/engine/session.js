@@ -1,5 +1,6 @@
 // Bulmaca oturumları: seviye başına tek aktif bulmaca, günün bulmacası, öğrenme takibi.
 import { generatePuzzle, mulberry32 } from './generator';
+import { generateSwedish } from './swedish';
 import { generateWordSearch } from './wordsearch';
 import { generateLadder } from './ladder';
 import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
@@ -32,23 +33,43 @@ const buildInputs = (level, learn, withPrio, strict = false) => buildPoolInputs(
 // Çengel bulmacalarda öğrenilecek kelimelerle dolmayan köşeler için kısa dolgu kelimeleri (istatistiğe sayılmaz)
 const FILLERS = fillerEntries(WORDS);
 const realAnswers = (clues) => clues.filter((k) => !k.filler).map((k) => k.answer);
+// Dolgu olarak kullanılan kısa kelimeler istatistiğe sayılmaz ama dönüşüm için ayrı izlenir
+const FILLER_REST = 4; // iki harfli dolgu en az bu kadar bulmaca dinlenir
+function fillersNow() {
+  const learn = getStore().learn;
+  const fr = learn.fillerRecent || {};
+  return FILLERS.filter((f) => f.a.length > 2 || learn.counter - (fr[f.a] ?? -1e9) >= FILLER_REST);
+}
+function recordFillers(clues) {
+  const learn = getStore().learn;
+  const fr = learn.fillerRecent || (learn.fillerRecent = {});
+  for (const k of clues) if (k.filler) fr[k.answer] = learn.counter;
+}
 
 function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
 }
 
-async function makePuzzle(level, seed, withPrio, strict = true) {
+// Çengel bulmaca boyutu: 6x9'da boşluksuz (sıfır boş kare) üretici her seferinde ~1 sn'de bulur
+export const ARROW_SIZE = { w: 6, h: 9 };
+async function makePuzzle(level, seed, withPrio, strict = true, size = ARROW_SIZE) {
   const store = getStore();
   const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, strict);
-  const puzzle = await generatePuzzle({
-    // 5 bağımsız tur, en az boşluklusu seçilir
-    w: level.w, h: level.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers: FILLERS,
-  });
-  return puzzle;
+  const fillers = fillersNow();
+  // 1) boşluksuz üretici (İsveç tipi): her kare harf ya da ipucu
+  const p = await generateSwedish({ w: size.w, h: size.h, entries, fillers, prio, seed, timeMs: 1500, maxTwo: 4, yieldFn });
+  if (p) return p;
+  // 1b) havuz daralmışsa: seviyedeki görülmüş kelimeler de dolgu olarak (istatistiğe sayılmaz) — yine boşluksuz
+  const seenAsFill = buildInputs(level, store.learn, false, false).entries.map((e) => ({ a: e.a, c: e.c, filler: true }));
+  const p2 = await generateSwedish({ w: size.w, h: size.h, entries, fillers: [...fillers, ...seenAsFill], prio, seed: seed ^ 0x5bd1e995, timeMs: 3000, maxTwo: 5, yieldFn });
+  if (p2) return p2;
+  // 2) yedek: eski üretici (nadiren; boş kare kalabilir)
+  return generatePuzzle({ w: size.w, h: size.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers });
 }
 
 function recordAppearance(puzzle) {
   recordAnswers(realAnswers(puzzle.clues));
+  recordFillers(puzzle.clues);
 }
 
 // Bir oyunda çıkan kelimeleri kaydet (tüm oyunlar ortak kelime defterini kullanır)
@@ -56,12 +77,33 @@ function recordAnswers(answers) {
   recordAnswersTo(getStore().learn, answers);
 }
 
+// Sonraki seviye bulmacası, oyuncu mevcut bulmacayı çözerken arka planda hazırlanır ("Sonraki" anında açılsın).
+// Yalnızca bellekte tutulur; kelimeler bulmaca kullanılınca kaydedilir.
+const prefetched = new Map(); // levelId -> { at: learn.counter, job: Promise<puzzle | null> }
+export function prefetchLevel(levelId) {
+  if (prefetched.has(levelId)) return;
+  const level = getLevel(levelId);
+  if (!level) return;
+  const st = getStore().levels[levelId];
+  const seed = (Date.now() ^ (((st && st.no) || 0) + 1) * 7919) >>> 0;
+  prefetched.set(levelId, { at: getStore().learn.counter, job: makePuzzle(level, seed, true).catch(() => null) });
+}
+
 export async function getLevelSession(levelId, forceNew = false) {
   const store = getStore();
   const level = getLevel(levelId);
   const st = store.levels[levelId] || (store.levels[levelId] = { no: 0, solvedCount: 0, current: null });
   if (st.current && !forceNew) return st.current;
-  const puzzle = await makePuzzle(level, (Date.now() ^ (st.no * 7919)) >>> 0, true);
+  let puzzle = null;
+  if (prefetched.has(levelId)) {
+    const pf = prefetched.get(levelId);
+    prefetched.delete(levelId);
+    puzzle = await pf.job; // arka planda hazırlanan
+    // hazırlandıktan sonra bu kelimelerden biri başka bir oyunda geldiyse kullanma (tekrar kuralı)
+    const recent = getStore().learn.recent;
+    if (puzzle && puzzle.clues.some((k) => !k.filler && (recent[k.answer] ?? -1) > pf.at)) puzzle = null;
+  }
+  if (!puzzle) puzzle = await makePuzzle(level, (Date.now() ^ (st.no * 7919)) >>> 0, true);
   recordAppearance(puzzle);
   st.no++;
   puzzle.no = st.no;
@@ -282,6 +324,7 @@ function makeGameStore(storeKey, { make, answersOf, dailyLevel = 'MIX', salt, st
       const inputs = buildInputs(level, getStore().learn, true, strict);
       const puzzle = await make(levelId, (Date.now() ^ (ls.no * salt)) >>> 0, inputs);
       recordAnswers(answersOf(puzzle));
+      if (puzzle.clues) recordFillers(puzzle.clues);
       ls.no++;
       puzzle.no = ls.no;
       ls.current = fresh(puzzle);
@@ -364,7 +407,7 @@ export const picture = makeGameStore('picture3', {
       for (let t = 0; t < 2; t++) {
         const p = await generatePuzzle({
           w: level.w, h: level.h, entries, dict, prio: pr, seed: (seed + attempt * 7919 + t * 104729) >>> 0,
-          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn, fillers: FILLERS,
+          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn, fillers: fillersNow(),
         });
         const clue = p.clues.find((k) => k.answer === target.a);
         if (!clue) continue;
@@ -481,6 +524,17 @@ function profileStore() {
 const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 const isoDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+// Çözülen bulmacadaki kelimeler (oyun türüne göre; dolgu kelimeler hariç) — "karşılaşılan kelime" istatistiği
+function solvedAnswers(p) {
+  if (!p) return [];
+  if (Array.isArray(p.clues)) return realAnswers(p.clues);
+  if (Array.isArray(p.rungs)) return p.rungs.map((x) => x.answer);
+  const out = Array.isArray(p.words) ? p.words.map((x) => x.answer) : [];
+  if (p.bonus && p.bonus.answer) out.push(p.bonus.answer);
+  if (p.word) out.push(p.word);
+  return out;
+}
+
 // Bir bulmaca çözüldüğünde: toplam, günlük seri, seviye ilerlemesi ve oyun başına süre/ipucu
 export function recordSolve(kind, levelId, gameId, session) {
   const st = statsStore();
@@ -494,7 +548,12 @@ export function recordSolve(kind, levelId, gameId, session) {
       g.totalSec += sec;
       g.timed++;
       g.recent = [...(g.recent || []), sec].slice(-10);
+      st.recentAll = [...(st.recentAll || []), sec].slice(-10); // tüm oyunlarda son 10 çözüm
     }
+    // karşılaşılan kelimeler: yalnızca çözülen bulmacalardan
+    const wmap = st.words || (st.words = {});
+    if (!st.wordsSince) st.wordsSince = isoDay();
+    for (const a of solvedAnswers(session && session.puzzle)) wmap[a] = (wmap[a] || 0) + 1;
     // ipucusuz çözüm: hiç kare/harf açılmadıysa
     const opened = session && session.revealed ? Object.keys(session.revealed).length : 0;
     if (session && !opened && !session.hinted) st.clean = (st.clean || 0) + 1;
@@ -551,9 +610,10 @@ export function recordHint(type, session) {
 export function getDetailedStats() {
   const st = statsStore();
   const learn = getStore().learn;
-  const times = learn.times || {};
-  const seen = new Set([...Object.keys(times), ...Object.keys(learn.recent || {})]);
-  const encounters = Object.values(times).reduce((a, b) => a + b, 0);
+  // karşılaşılan = çözülen bulmacalardaki kelimeler (üretilip çözülmeyenler sayılmaz)
+  const wmap = st.words || {};
+  const seenCount = Object.keys(wmap).length;
+  const encounters = Object.values(wmap).reduce((a, b) => a + b, 0);
   const marked = Object.values(learn.marked || {});
   const sumDays = (from, to) => {
     let n = 0;
@@ -564,22 +624,21 @@ export function getDetailedStats() {
     }
     return n;
   };
-  // ortalama süre: son 10 çözüm ile tüm zamanlar (tüm oyunlar)
-  let recentSum = 0, recentN = 0, allSum = 0, allN = 0;
+  // ortalama süre: tüm oyunlarda son 10 çözüm ile tüm zamanlar
+  let allSum = 0, allN = 0;
   for (const g of Object.values(st.games || {})) {
-    for (const x of g.recent || []) {
-      recentSum += x;
-      recentN++;
-    }
     allSum += g.totalSec || 0;
     allN += g.timed || 0;
   }
+  const recentList = st.recentAll || [];
+  const recentSum = recentList.reduce((a, b) => a + b, 0), recentN = recentList.length;
   return {
     games: st.games || {},
     hints: st.hints || { letter: 0, word: 0 },
     clean: st.clean || 0,
     total: st.total || 0,
-    seenWords: seen.size,
+    seenWords: seenCount,
+    wordsSince: st.wordsSince || null,
     encounters,
     notebook: marked.length,
     learned: marked.filter((m) => (m.seen || 0) >= 3).length,
@@ -752,8 +811,9 @@ export const weekly = {
     const base = getLevel(levelId);
     const seed = ('weekly' + wk.key + levelId).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 23);
     // tekrar kuralı gevşek: haftada bir gelen büyük bulmaca dolu olsun (daha önce çıkmış kelime de gelebilir)
-    const puzzle = await makePuzzle({ ...base, w: 9, h: 11 }, seed, false, false);
+    const puzzle = await makePuzzle(base, seed, false, false, { w: 6, h: 10 }); // haftalık: biraz daha büyük, yine boşluksuz
     recordAnswers(realAnswers(puzzle.clues));
+    recordFillers(puzzle.clues);
     puzzle.no = wk.no;
     store.weekly = { ...newSession(puzzle), week: wk.key, levelId };
     persist();
@@ -814,4 +874,64 @@ export function checkBadges() {
 }
 export function getBadges() {
   return badgeList(badgeContext(), earnedStore());
+}
+// ================= Bulmaca arşivi: geçmiş günlerin "Günün Gazete Bulmacası" (Çengel) =================
+export const ARCHIVE_DAYS = 30;
+const dayKeyOf = (d) => todayKey(d);
+const dayNo = (d) => Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+function archiveMap() {
+  const store = getStore();
+  return store.archive || (store.archive = {});
+}
+// Son N gün (bugün hariç; bugün ana sayfadaki günün bulmacası): { key, date, no, state: 'new'|'started'|'solved', seconds }
+export function archiveDays(n = ARCHIVE_DAYS) {
+  const a = archiveMap();
+  const out = [];
+  for (let i = 1; i <= n; i++) {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    const key = dayKeyOf(d);
+    const s = a[key];
+    const started = s && Object.keys(s.entries || {}).some((k) => s.entries[k]);
+    out.push({ key, date: d, no: dayNo(d), state: s?.solved ? 'solved' : started ? 'started' : 'new', seconds: s?.seconds || 0 });
+  }
+  return out;
+}
+const archiveStores = new Map();
+// PuzzleScreen'e verilecek mağaza nesnesi (haftalık meydan okumayla aynı arayüz); tarih başına sabit nesne
+export function archiveStore(key) {
+  if (archiveStores.has(key)) return archiveStores.get(key);
+  const [y, m, d] = key.split('-').map(Number);
+  const date = new Date(y, m - 1, d, 12);
+  const st = {
+    label: `Arşiv · ${d}.${m}.${y}`,
+    async getDaily() {
+      const a = archiveMap();
+      if (a[key]) return a[key];
+      await yieldFn();
+      const seed = key.split('').reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 17); // o günün tohumu
+      const puzzle = await makePuzzle(getLevel('MIX'), seed, false);
+      puzzle.no = dayNo(date);
+      a[key] = { ...newSession(puzzle), date: key };
+      // en fazla ARCHIVE_DAYS + 5 kayıt tut (eskiler silinir)
+      const num = (k) => k.split('-').map(Number).reduce((acc, v) => acc * 100 + v, 0); // 2026-10-5 → 20261005
+      const keys = Object.keys(a).sort((x, z) => num(z) - num(x));
+      for (const k of keys.slice(ARCHIVE_DAYS + 5)) delete a[k];
+      persist();
+      return a[key];
+    },
+    getSession() {
+      return st.getDaily();
+    },
+    peekDaily() {
+      return archiveMap()[key] || null;
+    },
+    markSolved() {
+      recordSolve('daily', null, 'arrow', archiveMap()[key]);
+      persist();
+    },
+  };
+  archiveStores.set(key, st);
+  return st;
 }

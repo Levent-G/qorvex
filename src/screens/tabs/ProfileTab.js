@@ -2,7 +2,10 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Linking, Switch, Alert, Platform } from 'react-native';
 import { FlameIcon, TrophyIcon, BookOpenIcon, ChevronRight, CheckIcon, BadgeCheckIcon, GridIcon, LockIcon, BellIcon, MoonIcon, TextSizeIcon } from '../../components/UiIcons';
-import { getSettings, setTheme, setTextScale, setReminder, THEMES, TEXT_SCALES } from '../../settings';
+import { getSettings, setTheme, setTextScale, setReminder, setAccent, THEMES, TEXT_SCALES, ACCENTS } from '../../settings';
+import { speakWord } from '../../speech';
+import { openReviewPage } from '../../rating';
+import { SpeakerIcon } from '../../components/Icons';
 import { requestReminderPermission, rescheduleReminders } from '../../reminders';
 import BadgeShelf from '../../components/BadgeShelf';
 import { currentVersion } from '../../appVersion';
@@ -52,6 +55,7 @@ function Segmented({ options, value, onChange }) {
 function SettingsCard() {
   const st = getSettings();
   const [rem, setRem] = useState({ ...st.reminder });
+  const [accent, setAccentState] = useState(st.accent);
   const toggle = async (on) => {
     if (on) {
       const ok = await requestReminderPermission().catch(() => false);
@@ -96,6 +100,24 @@ function SettingsCard() {
           <Text style={styles.setSub}>Açık ya da koyu tema</Text>
         </View>
         <Segmented options={THEMES.map((t) => ({ value: t.id, label: t.label }))} value={st.theme} onChange={setTheme} />
+      </View>
+      <View style={[styles.setRow, { flexWrap: 'wrap' }]}>
+        <View style={styles.setIcon}>
+          <SpeakerIcon size={17} color={ed.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.setTitle}>Okunuş Aksanı</Text>
+          <Text style={styles.setSub}>Kelimeler hangi aksanla okunsun</Text>
+        </View>
+        <Segmented
+          options={ACCENTS.map((x) => ({ value: x.id, label: x.label }))}
+          value={accent}
+          onChange={(id) => {
+            setAccent(id);
+            setAccentState(id);
+            speakWord('Hello, how are you?', 0.9); // örnek dinlet
+          }}
+        />
       </View>
       <View style={[styles.setRow, { borderBottomWidth: 0, flexWrap: 'wrap' }]}>
         <View style={styles.setIcon}>
@@ -262,6 +284,12 @@ export default function ProfileTab({ onTab }) {
           onPress={() => onTab('notebook')}
         />
         <SetRow icon={<LockIcon size={17} color={ed.primary} />} title="Cihaz Depolaması" sub="Tüm ilerlemen yalnızca bu cihazda saklanır" />
+        <SetRow
+          icon={<TrophyIcon size={17} color={ed.primary} />}
+          title="Uygulamayı Değerlendir"
+          sub="Beğendiysen App Store'da birkaç yıldız bizi çok mutlu eder"
+          onPress={openReviewPage}
+        />
         <SetRow
           icon={<BadgeCheckIcon size={17} color={ed.primary} />}
           title="Hakkında & Gizlilik"

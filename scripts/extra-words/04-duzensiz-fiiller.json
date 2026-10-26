@@ -1,0 +1,2114 @@
+[
+ {
+  "a": "WAS",
+  "l": 1,
+  "p": "verb",
+  "c": "İdi (be)",
+  "m": [
+   "idi",
+   "be fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She was very tired yesterday.",
+    "Dün çok yorgundu."
+   ]
+  ]
+ },
+ {
+  "a": "BEEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Olmuş (be)",
+  "m": [
+   "olmuş",
+   "be fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "I have been to Paris twice.",
+    "Paris'e iki kez gittim."
+   ]
+  ]
+ },
+ {
+  "a": "BECAME",
+  "l": 1,
+  "p": "verb",
+  "c": "Oldu (become)",
+  "m": [
+   "oldu",
+   "become fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He became a doctor.",
+    "Doktor oldu."
+   ]
+  ]
+ },
+ {
+  "a": "BEGAN",
+  "l": 1,
+  "p": "verb",
+  "c": "Başladı (begin)",
+  "m": [
+   "başladı",
+   "begin fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The film began at eight.",
+    "Film sekizde başladı."
+   ]
+  ]
+ },
+ {
+  "a": "BEGUN",
+  "l": 1,
+  "p": "verb",
+  "c": "Başlamış (begin)",
+  "m": [
+   "başlamış",
+   "begin fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The lesson has already begun.",
+    "Ders çoktan başladı."
+   ]
+  ]
+ },
+ {
+  "a": "BITTEN",
+  "l": 3,
+  "p": "verb",
+  "c": "Isırılmış (bite)",
+  "m": [
+   "ısırılmış",
+   "bite fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "He was bitten by a dog.",
+    "Onu bir köpek ısırdı."
+   ]
+  ]
+ },
+ {
+  "a": "BLEW",
+  "l": 1,
+  "p": "verb",
+  "c": "Üfledi (blow)",
+  "m": [
+   "üfledi",
+   "blow fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She blew out the candles.",
+    "Mumları üfleyip söndürdü."
+   ]
+  ]
+ },
+ {
+  "a": "BLOWN",
+  "l": 2,
+  "p": "verb",
+  "c": "Üflenmiş (blow)",
+  "m": [
+   "üflenmiş",
+   "blow fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The wind has blown the leaves away.",
+    "Rüzgar yaprakları uçurmuş."
+   ]
+  ]
+ },
+ {
+  "a": "BROKE",
+  "l": 1,
+  "p": "verb",
+  "c": "Kırdı (break)",
+  "m": [
+   "kırdı",
+   "break fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He broke the window.",
+    "Camı kırdı."
+   ]
+  ]
+ },
+ {
+  "a": "BROUGHT",
+  "l": 1,
+  "p": "verb",
+  "c": "Getirdi (bring)",
+  "m": [
+   "getirdi",
+   "bring fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She brought a cake.",
+    "Bir pasta getirdi."
+   ]
+  ]
+ },
+ {
+  "a": "BUILT",
+  "l": 1,
+  "p": "verb",
+  "c": "İnşa etti (build)",
+  "m": [
+   "inşa etti",
+   "build fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They built a new bridge.",
+    "Yeni bir köprü inşa ettiler."
+   ]
+  ]
+ },
+ {
+  "a": "BOUGHT",
+  "l": 1,
+  "p": "verb",
+  "c": "Satın aldı (buy)",
+  "m": [
+   "satın aldı",
+   "buy fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I bought a new phone.",
+    "Yeni bir telefon aldım."
+   ]
+  ]
+ },
+ {
+  "a": "CAUGHT",
+  "l": 1,
+  "p": "verb",
+  "c": "Yakaladı (catch)",
+  "m": [
+   "yakaladı",
+   "catch fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The police caught the thief.",
+    "Polis hırsızı yakaladı."
+   ]
+  ]
+ },
+ {
+  "a": "CHOSE",
+  "l": 1,
+  "p": "verb",
+  "c": "Seçti (choose)",
+  "m": [
+   "seçti",
+   "choose fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She chose the red dress.",
+    "Kırmızı elbiseyi seçti."
+   ]
+  ]
+ },
+ {
+  "a": "CHOSEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Seçilmiş (choose)",
+  "m": [
+   "seçilmiş",
+   "choose fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "He was chosen as captain.",
+    "Kaptan seçildi."
+   ]
+  ]
+ },
+ {
+  "a": "CAME",
+  "l": 1,
+  "p": "verb",
+  "c": "Geldi (come)",
+  "m": [
+   "geldi",
+   "come fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They came home late.",
+    "Eve geç geldiler."
+   ]
+  ]
+ },
+ {
+  "a": "DREW",
+  "l": 1,
+  "p": "verb",
+  "c": "Çizdi (draw)",
+  "m": [
+   "çizdi",
+   "draw fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The child drew a house.",
+    "Çocuk bir ev çizdi."
+   ]
+  ]
+ },
+ {
+  "a": "DRAWN",
+  "l": 1,
+  "p": "verb",
+  "c": "Çizilmiş (draw)",
+  "m": [
+   "çizilmiş",
+   "draw fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The map was drawn by hand.",
+    "Harita elle çizilmiş."
+   ]
+  ]
+ },
+ {
+  "a": "DREAMT",
+  "l": 1,
+  "p": "verb",
+  "c": "Rüyasında gördü",
+  "m": [
+   "rüyasında gördü",
+   "dream fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I dreamt about the sea.",
+    "Rüyamda denizi gördüm."
+   ]
+  ]
+ },
+ {
+  "a": "DRANK",
+  "l": 1,
+  "p": "verb",
+  "c": "İçti (drink)",
+  "m": [
+   "içti",
+   "drink fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He drank a glass of water.",
+    "Bir bardak su içti."
+   ]
+  ]
+ },
+ {
+  "a": "DROVE",
+  "l": 1,
+  "p": "verb",
+  "c": "Sürdü (araba)",
+  "m": [
+   "sürdü",
+   "drive fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She drove to work.",
+    "İşe arabayla gitti."
+   ]
+  ]
+ },
+ {
+  "a": "DRIVEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Sürülmüş (drive)",
+  "m": [
+   "sürülmüş",
+   "drive fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "This car has been driven a lot.",
+    "Bu araba çok kullanılmış."
+   ]
+  ]
+ },
+ {
+  "a": "ATE",
+  "l": 1,
+  "p": "verb",
+  "c": "Yedi (eat)",
+  "m": [
+   "yedi",
+   "eat fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "We ate pizza for dinner.",
+    "Akşam yemeğinde pizza yedik."
+   ]
+  ]
+ },
+ {
+  "a": "EATEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Yenmiş (eat)",
+  "m": [
+   "yenmiş",
+   "eat fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Have you eaten yet?",
+    "Yemek yedin mi?"
+   ]
+  ]
+ },
+ {
+  "a": "FELL",
+  "l": 1,
+  "p": "verb",
+  "c": "Düştü (fall)",
+  "m": [
+   "düştü",
+   "fall fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He fell off his bike.",
+    "Bisikletinden düştü."
+   ]
+  ]
+ },
+ {
+  "a": "FALLEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Düşmüş (fall)",
+  "m": [
+   "düşmüş",
+   "fall fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Many leaves have fallen.",
+    "Birçok yaprak düşmüş."
+   ]
+  ]
+ },
+ {
+  "a": "FED",
+  "l": 1,
+  "p": "verb",
+  "c": "Besledi (feed)",
+  "m": [
+   "besledi",
+   "feed fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She fed the cat.",
+    "Kediyi besledi."
+   ]
+  ]
+ },
+ {
+  "a": "FELT",
+  "l": 1,
+  "p": "verb",
+  "c": "Hissetti (feel)",
+  "m": [
+   "hissetti",
+   "feel fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I felt happy.",
+    "Mutlu hissettim."
+   ]
+  ]
+ },
+ {
+  "a": "FOUGHT",
+  "l": 1,
+  "p": "verb",
+  "c": "Kavga etti (fight)",
+  "m": [
+   "kavga etti",
+   "fight fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The boys fought in the street.",
+    "Çocuklar sokakta kavga etti."
+   ]
+  ]
+ },
+ {
+  "a": "FLEW",
+  "l": 1,
+  "p": "verb",
+  "c": "Uçtu (fly)",
+  "m": [
+   "uçtu",
+   "fly fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The bird flew away.",
+    "Kuş uçup gitti."
+   ]
+  ]
+ },
+ {
+  "a": "FLOWN",
+  "l": 1,
+  "p": "verb",
+  "c": "Uçmuş (fly)",
+  "m": [
+   "uçmuş",
+   "fly fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Have you ever flown in a plane?",
+    "Hiç uçağa bindin mi?"
+   ]
+  ]
+ },
+ {
+  "a": "FORGOT",
+  "l": 1,
+  "p": "verb",
+  "c": "Unuttu (forget)",
+  "m": [
+   "unuttu",
+   "forget fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I forgot my keys.",
+    "Anahtarlarımı unuttum."
+   ]
+  ]
+ },
+ {
+  "a": "FORGOTTEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Unutulmuş (forget)",
+  "m": [
+   "unutulmuş",
+   "forget fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "It is a forgotten village.",
+    "Unutulmuş bir köy."
+   ]
+  ]
+ },
+ {
+  "a": "FORGAVE",
+  "l": 3,
+  "p": "verb",
+  "c": "Affetti (forgive)",
+  "m": [
+   "affetti",
+   "forgive fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She forgave him.",
+    "Onu affetti."
+   ]
+  ]
+ },
+ {
+  "a": "FORGIVEN",
+  "l": 4,
+  "p": "verb",
+  "c": "Affedilmiş",
+  "m": [
+   "affedilmiş",
+   "forgive fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "You are forgiven.",
+    "Affedildin."
+   ]
+  ]
+ },
+ {
+  "a": "FROZE",
+  "l": 2,
+  "p": "verb",
+  "c": "Dondu (freeze)",
+  "m": [
+   "dondu",
+   "freeze fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The lake froze last night.",
+    "Göl dün gece dondu."
+   ]
+  ]
+ },
+ {
+  "a": "GOT",
+  "l": 1,
+  "p": "verb",
+  "c": "Aldı, edindi (get)",
+  "m": [
+   "aldı, edindi",
+   "get fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I got a letter today.",
+    "Bugün bir mektup aldım."
+   ]
+  ]
+ },
+ {
+  "a": "GAVE",
+  "l": 1,
+  "p": "verb",
+  "c": "Verdi (give)",
+  "m": [
+   "verdi",
+   "give fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He gave me a book.",
+    "Bana bir kitap verdi."
+   ]
+  ]
+ },
+ {
+  "a": "GIVEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Verilmiş (give)",
+  "m": [
+   "verilmiş",
+   "give fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "I was given a prize.",
+    "Bana bir ödül verildi."
+   ]
+  ]
+ },
+ {
+  "a": "WENT",
+  "l": 1,
+  "p": "verb",
+  "c": "Gitti (go)",
+  "m": [
+   "gitti",
+   "go fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "We went to the beach.",
+    "Plaja gittik."
+   ]
+  ]
+ },
+ {
+  "a": "GONE",
+  "l": 1,
+  "p": "verb",
+  "c": "Gitmiş (go)",
+  "m": [
+   "gitmiş",
+   "go fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "She has gone to London.",
+    "Londra'ya gitti."
+   ]
+  ]
+ },
+ {
+  "a": "GREW",
+  "l": 1,
+  "p": "verb",
+  "c": "Büyüdü (grow)",
+  "m": [
+   "büyüdü",
+   "grow fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He grew up in Izmir.",
+    "İzmir'de büyüdü."
+   ]
+  ]
+ },
+ {
+  "a": "GROWN",
+  "l": 1,
+  "p": "verb",
+  "c": "Büyümüş (grow)",
+  "m": [
+   "büyümüş",
+   "grow fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The children have grown a lot.",
+    "Çocuklar çok büyümüş."
+   ]
+  ]
+ },
+ {
+  "a": "HUNG",
+  "l": 2,
+  "p": "verb",
+  "c": "Astı (hang)",
+  "m": [
+   "astı",
+   "hang fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She hung the picture on the wall.",
+    "Resmi duvara astı."
+   ]
+  ]
+ },
+ {
+  "a": "HAD",
+  "l": 1,
+  "p": "verb",
+  "c": "Sahipti (have)",
+  "m": [
+   "sahipti",
+   "have fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I had a dog when I was a child.",
+    "Çocukken bir köpeğim vardı."
+   ]
+  ]
+ },
+ {
+  "a": "HEARD",
+  "l": 1,
+  "p": "verb",
+  "c": "Duydu (hear)",
+  "m": [
+   "duydu",
+   "hear fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I heard a strange noise.",
+    "Garip bir ses duydum."
+   ]
+  ]
+ },
+ {
+  "a": "HID",
+  "l": 1,
+  "p": "verb",
+  "c": "Sakladı (hide)",
+  "m": [
+   "sakladı",
+   "hide fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He hid the money.",
+    "Parayı sakladı."
+   ]
+  ]
+ },
+ {
+  "a": "HELD",
+  "l": 1,
+  "p": "verb",
+  "c": "Tuttu (hold)",
+  "m": [
+   "tuttu",
+   "hold fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She held the baby.",
+    "Bebeği kucağında tuttu."
+   ]
+  ]
+ },
+ {
+  "a": "KEPT",
+  "l": 1,
+  "p": "verb",
+  "c": "Sakladı, tuttu",
+  "m": [
+   "sakladı, tuttu",
+   "keep fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He kept all her letters.",
+    "Onun bütün mektuplarını sakladı."
+   ]
+  ]
+ },
+ {
+  "a": "KNEW",
+  "l": 1,
+  "p": "verb",
+  "c": "Bildi, biliyordu",
+  "m": [
+   "bildi, biliyordu",
+   "know fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I knew the answer.",
+    "Cevabı biliyordum."
+   ]
+  ]
+ },
+ {
+  "a": "KNOWN",
+  "l": 1,
+  "p": "verb",
+  "c": "Bilinen (know)",
+  "m": [
+   "bilinen",
+   "know fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "He is a well known writer.",
+    "Tanınmış bir yazar."
+   ]
+  ]
+ },
+ {
+  "a": "LAID",
+  "l": 2,
+  "p": "verb",
+  "c": "Koydu, serdi (lay)",
+  "m": [
+   "koydu, serdi",
+   "lay fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She laid the book on the table.",
+    "Kitabı masaya koydu."
+   ]
+  ]
+ },
+ {
+  "a": "LED",
+  "l": 1,
+  "p": "verb",
+  "c": "Yönetti (lead)",
+  "m": [
+   "yönetti",
+   "lead fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She led the team to victory.",
+    "Takımı zafere taşıdı."
+   ]
+  ]
+ },
+ {
+  "a": "LENT",
+  "l": 1,
+  "p": "verb",
+  "c": "Ödünç verdi (lend)",
+  "m": [
+   "ödünç verdi",
+   "lend fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He lent me his car.",
+    "Bana arabasını ödünç verdi."
+   ]
+  ]
+ },
+ {
+  "a": "MADE",
+  "l": 1,
+  "p": "verb",
+  "c": "Yaptı (make)",
+  "m": [
+   "yaptı",
+   "make fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She made a cake.",
+    "Bir pasta yaptı."
+   ]
+  ]
+ },
+ {
+  "a": "MEANT",
+  "l": 1,
+  "p": "verb",
+  "c": "Kastetti (mean)",
+  "m": [
+   "kastetti",
+   "mean fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I meant what I said.",
+    "Söylediğimi kastettim."
+   ]
+  ]
+ },
+ {
+  "a": "MET",
+  "l": 1,
+  "p": "verb",
+  "c": "Tanıştı (meet)",
+  "m": [
+   "tanıştı",
+   "meet fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "We met at university.",
+    "Üniversitede tanıştık."
+   ]
+  ]
+ },
+ {
+  "a": "PAID",
+  "l": 1,
+  "p": "verb",
+  "c": "Ödedi (pay)",
+  "m": [
+   "ödedi",
+   "pay fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I paid the bill.",
+    "Hesabı ödedim."
+   ]
+  ]
+ },
+ {
+  "a": "RODE",
+  "l": 1,
+  "p": "verb",
+  "c": "Bindi (at)",
+  "m": [
+   "bindi",
+   "ride fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She rode a horse.",
+    "Ata bindi."
+   ]
+  ]
+ },
+ {
+  "a": "RIDDEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Binilmiş (ride)",
+  "m": [
+   "binilmiş",
+   "ride fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Have you ever ridden a camel?",
+    "Hiç deveye bindin mi?"
+   ]
+  ]
+ },
+ {
+  "a": "RANG",
+  "l": 1,
+  "p": "verb",
+  "c": "Çaldı (zil)",
+  "m": [
+   "çaldı",
+   "ring fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The phone rang twice.",
+    "Telefon iki kez çaldı."
+   ]
+  ]
+ },
+ {
+  "a": "RUNG",
+  "l": 2,
+  "p": "verb",
+  "c": "Çalınmış (zil)",
+  "m": [
+   "çalınmış",
+   "ring fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The bell has rung.",
+    "Zil çaldı."
+   ]
+  ]
+ },
+ {
+  "a": "RISEN",
+  "l": 2,
+  "p": "verb",
+  "c": "Yükselmiş (rise)",
+  "m": [
+   "yükselmiş",
+   "rise fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Prices have risen again.",
+    "Fiyatlar yine yükseldi."
+   ]
+  ]
+ },
+ {
+  "a": "RAN",
+  "l": 1,
+  "p": "verb",
+  "c": "Koştu (run)",
+  "m": [
+   "koştu",
+   "run fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He ran to the bus stop.",
+    "Otobüs durağına koştu."
+   ]
+  ]
+ },
+ {
+  "a": "SAID",
+  "l": 1,
+  "p": "verb",
+  "c": "Dedi (say)",
+  "m": [
+   "dedi",
+   "say fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She said hello.",
+    "Merhaba dedi."
+   ]
+  ]
+ },
+ {
+  "a": "SAW",
+  "l": 1,
+  "p": "verb",
+  "c": "Gördü (see)",
+  "m": [
+   "gördü",
+   "see fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I saw him yesterday.",
+    "Onu dün gördüm."
+   ]
+  ]
+ },
+ {
+  "a": "SEEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Görülmüş (see)",
+  "m": [
+   "görülmüş",
+   "see fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Have you seen this film?",
+    "Bu filmi gördün mü?"
+   ]
+  ]
+ },
+ {
+  "a": "SOLD",
+  "l": 1,
+  "p": "verb",
+  "c": "Sattı (sell)",
+  "m": [
+   "sattı",
+   "sell fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They sold their house.",
+    "Evlerini sattılar."
+   ]
+  ]
+ },
+ {
+  "a": "SENT",
+  "l": 1,
+  "p": "verb",
+  "c": "Gönderdi (send)",
+  "m": [
+   "gönderdi",
+   "send fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I sent you an email.",
+    "Sana bir e-posta gönderdim."
+   ]
+  ]
+ },
+ {
+  "a": "SHOOK",
+  "l": 1,
+  "p": "verb",
+  "c": "Salladı (shake)",
+  "m": [
+   "salladı",
+   "shake fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He shook my hand.",
+    "Elimi sıktı."
+   ]
+  ]
+ },
+ {
+  "a": "SHAKEN",
+  "l": 2,
+  "p": "verb",
+  "c": "Sarsılmış (shake)",
+  "m": [
+   "sarsılmış",
+   "shake fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "She was shaken by the news.",
+    "Haberle sarsıldı."
+   ]
+  ]
+ },
+ {
+  "a": "SHONE",
+  "l": 2,
+  "p": "verb",
+  "c": "Parladı (shine)",
+  "m": [
+   "parladı",
+   "shine fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The sun shone all day.",
+    "Güneş bütün gün parladı."
+   ]
+  ]
+ },
+ {
+  "a": "SHOWED",
+  "l": 1,
+  "p": "verb",
+  "c": "Gösterdi (show)",
+  "m": [
+   "gösterdi",
+   "show fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She showed me her photos.",
+    "Bana fotoğraflarını gösterdi."
+   ]
+  ]
+ },
+ {
+  "a": "SHOWN",
+  "l": 1,
+  "p": "verb",
+  "c": "Gösterilmiş (show)",
+  "m": [
+   "gösterilmiş",
+   "show fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The film was shown on TV.",
+    "Film televizyonda gösterildi."
+   ]
+  ]
+ },
+ {
+  "a": "SANG",
+  "l": 1,
+  "p": "verb",
+  "c": "Şarkı söyledi",
+  "m": [
+   "şarkı söyledi",
+   "sing fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She sang a beautiful song.",
+    "Güzel bir şarkı söyledi."
+   ]
+  ]
+ },
+ {
+  "a": "SUNG",
+  "l": 1,
+  "p": "verb",
+  "c": "Söylenmiş (şarkı)",
+  "m": [
+   "söylenmiş",
+   "sing fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "This song is sung at weddings.",
+    "Bu şarkı düğünlerde söylenir."
+   ]
+  ]
+ },
+ {
+  "a": "SANK",
+  "l": 2,
+  "p": "verb",
+  "c": "Battı (sink)",
+  "m": [
+   "battı",
+   "sink fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The ship sank quickly.",
+    "Gemi hızla battı."
+   ]
+  ]
+ },
+ {
+  "a": "SUNK",
+  "l": 3,
+  "p": "verb",
+  "c": "Batmış (sink)",
+  "m": [
+   "batmış",
+   "sink fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The boat has sunk.",
+    "Tekne batmış."
+   ]
+  ]
+ },
+ {
+  "a": "SAT",
+  "l": 1,
+  "p": "verb",
+  "c": "Oturdu (sit)",
+  "m": [
+   "oturdu",
+   "sit fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He sat next to me.",
+    "Yanıma oturdu."
+   ]
+  ]
+ },
+ {
+  "a": "SLEPT",
+  "l": 1,
+  "p": "verb",
+  "c": "Uyudu (sleep)",
+  "m": [
+   "uyudu",
+   "sleep fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I slept for ten hours.",
+    "On saat uyudum."
+   ]
+  ]
+ },
+ {
+  "a": "SPOKE",
+  "l": 1,
+  "p": "verb",
+  "c": "Konuştu (speak)",
+  "m": [
+   "konuştu",
+   "speak fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She spoke to the teacher.",
+    "Öğretmenle konuştu."
+   ]
+  ]
+ },
+ {
+  "a": "SPENT",
+  "l": 1,
+  "p": "verb",
+  "c": "Harcadı (spend)",
+  "m": [
+   "harcadı",
+   "spend fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I spent all my money.",
+    "Bütün paramı harcadım."
+   ]
+  ]
+ },
+ {
+  "a": "STOOD",
+  "l": 1,
+  "p": "verb",
+  "c": "Ayakta durdu",
+  "m": [
+   "ayakta durdu",
+   "stand fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "We stood in the queue.",
+    "Kuyrukta bekledik."
+   ]
+  ]
+ },
+ {
+  "a": "STOLE",
+  "l": 1,
+  "p": "verb",
+  "c": "Çaldı (hırsızlık)",
+  "m": [
+   "çaldı",
+   "steal fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "Someone stole my bag.",
+    "Biri çantamı çaldı."
+   ]
+  ]
+ },
+ {
+  "a": "STOLEN",
+  "l": 2,
+  "p": "verb",
+  "c": "Çalınmış (steal)",
+  "m": [
+   "çalınmış",
+   "steal fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "My bike was stolen.",
+    "Bisikletim çalındı."
+   ]
+  ]
+ },
+ {
+  "a": "STUCK",
+  "l": 2,
+  "p": "verb",
+  "c": "Sıkışıp kaldı",
+  "m": [
+   "sıkışıp kaldı",
+   "stick fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The door is stuck.",
+    "Kapı sıkıştı."
+   ]
+  ]
+ },
+ {
+  "a": "STUNG",
+  "l": 2,
+  "p": "verb",
+  "c": "Soktu (arı)",
+  "m": [
+   "soktu",
+   "sting fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "A bee stung me.",
+    "Beni bir arı soktu."
+   ]
+  ]
+ },
+ {
+  "a": "STRUCK",
+  "l": 3,
+  "p": "verb",
+  "c": "Vurdu, çarptı",
+  "m": [
+   "vurdu, çarptı",
+   "strike fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "Lightning struck the tree.",
+    "Ağaca yıldırım düştü."
+   ]
+  ]
+ },
+ {
+  "a": "SWORE",
+  "l": 3,
+  "p": "verb",
+  "c": "Yemin etti (swear)",
+  "m": [
+   "yemin etti",
+   "swear fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He swore to tell the truth.",
+    "Doğruyu söyleyeceğine yemin etti."
+   ]
+  ]
+ },
+ {
+  "a": "SWORN",
+  "l": 4,
+  "p": "verb",
+  "c": "Yeminli (swear)",
+  "m": [
+   "yeminli",
+   "swear fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "She is a sworn translator.",
+    "O yeminli bir tercüman."
+   ]
+  ]
+ },
+ {
+  "a": "SWEPT",
+  "l": 3,
+  "p": "verb",
+  "c": "Süpürdü (sweep)",
+  "m": [
+   "süpürdü",
+   "sweep fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She swept the floor.",
+    "Yeri süpürdü."
+   ]
+  ]
+ },
+ {
+  "a": "SWAM",
+  "l": 1,
+  "p": "verb",
+  "c": "Yüzdü (swim)",
+  "m": [
+   "yüzdü",
+   "swim fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "We swam in the sea.",
+    "Denizde yüzdük."
+   ]
+  ]
+ },
+ {
+  "a": "SWUNG",
+  "l": 4,
+  "p": "verb",
+  "c": "Salladı, savurdu",
+  "m": [
+   "salladı, savurdu",
+   "swing fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He swung the bat.",
+    "Sopayı savurdu."
+   ]
+  ]
+ },
+ {
+  "a": "TOOK",
+  "l": 1,
+  "p": "verb",
+  "c": "Aldı, götürdü",
+  "m": [
+   "aldı, götürdü",
+   "take fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She took the bus.",
+    "Otobüse bindi."
+   ]
+  ]
+ },
+ {
+  "a": "TAKEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Alınmış (take)",
+  "m": [
+   "alınmış",
+   "take fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "This seat is taken.",
+    "Bu koltuk dolu."
+   ]
+  ]
+ },
+ {
+  "a": "TAUGHT",
+  "l": 1,
+  "p": "verb",
+  "c": "Öğretti (teach)",
+  "m": [
+   "öğretti",
+   "teach fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "My father taught me to swim.",
+    "Babam bana yüzmeyi öğretti."
+   ]
+  ]
+ },
+ {
+  "a": "TORE",
+  "l": 3,
+  "p": "verb",
+  "c": "Yırttı (tear)",
+  "m": [
+   "yırttı",
+   "tear fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He tore the paper.",
+    "Kağıdı yırttı."
+   ]
+  ]
+ },
+ {
+  "a": "TORN",
+  "l": 4,
+  "p": "verb",
+  "c": "Yırtık (tear)",
+  "m": [
+   "yırtık",
+   "tear fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "His shirt was torn.",
+    "Gömleği yırtılmıştı."
+   ]
+  ]
+ },
+ {
+  "a": "TOLD",
+  "l": 1,
+  "p": "verb",
+  "c": "Anlattı, söyledi",
+  "m": [
+   "anlattı, söyledi",
+   "tell fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She told me a story.",
+    "Bana bir hikaye anlattı."
+   ]
+  ]
+ },
+ {
+  "a": "THREW",
+  "l": 1,
+  "p": "verb",
+  "c": "Fırlattı (throw)",
+  "m": [
+   "fırlattı",
+   "throw fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He threw the ball.",
+    "Topu fırlattı."
+   ]
+  ]
+ },
+ {
+  "a": "THROWN",
+  "l": 2,
+  "p": "verb",
+  "c": "Fırlatılmış",
+  "m": [
+   "fırlatılmış",
+   "throw fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The ball was thrown too far.",
+    "Top çok uzağa atıldı."
+   ]
+  ]
+ },
+ {
+  "a": "UNDERSTOOD",
+  "l": 1,
+  "p": "verb",
+  "c": "Anladı",
+  "m": [
+   "anladı",
+   "understand fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I understood the question.",
+    "Soruyu anladım."
+   ]
+  ]
+ },
+ {
+  "a": "WOKE",
+  "l": 1,
+  "p": "verb",
+  "c": "Uyandı (wake)",
+  "m": [
+   "uyandı",
+   "wake fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "I woke up at seven.",
+    "Yedide uyandım."
+   ]
+  ]
+ },
+ {
+  "a": "WOKEN",
+  "l": 1,
+  "p": "verb",
+  "c": "Uyandırılmış",
+  "m": [
+   "uyandırılmış",
+   "wake fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "I was woken by the noise.",
+    "Gürültüyle uyandım."
+   ]
+  ]
+ },
+ {
+  "a": "WORE",
+  "l": 1,
+  "p": "verb",
+  "c": "Giydi (wear)",
+  "m": [
+   "giydi",
+   "wear fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She wore a blue dress.",
+    "Mavi bir elbise giydi."
+   ]
+  ]
+ },
+ {
+  "a": "WORN",
+  "l": 1,
+  "p": "verb",
+  "c": "Giyilmiş, eskimiş",
+  "m": [
+   "giyilmiş, eskimiş",
+   "wear fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "His shoes are worn.",
+    "Ayakkabıları eskimiş."
+   ]
+  ]
+ },
+ {
+  "a": "WEPT",
+  "l": 2,
+  "p": "verb",
+  "c": "Ağladı (weep)",
+  "m": [
+   "ağladı",
+   "weep fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She wept at the news.",
+    "Habere ağladı."
+   ]
+  ]
+ },
+ {
+  "a": "WON",
+  "l": 1,
+  "p": "verb",
+  "c": "Kazandı (yarış)",
+  "m": [
+   "kazandı",
+   "win fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "Our team won the match.",
+    "Takımımız maçı kazandı."
+   ]
+  ]
+ },
+ {
+  "a": "WROTE",
+  "l": 1,
+  "p": "verb",
+  "c": "Yazdı (write)",
+  "m": [
+   "yazdı",
+   "write fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He wrote a letter.",
+    "Bir mektup yazdı."
+   ]
+  ]
+ },
+ {
+  "a": "BLED",
+  "l": 4,
+  "p": "verb",
+  "c": "Kanadı (bleed)",
+  "m": [
+   "kanadı",
+   "bleed fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "His nose bled.",
+    "Burnu kanadı."
+   ]
+  ]
+ },
+ {
+  "a": "BRED",
+  "l": 4,
+  "p": "verb",
+  "c": "Yetiştirdi (breed)",
+  "m": [
+   "yetiştirdi",
+   "breed fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They bred horses.",
+    "At yetiştirdiler."
+   ]
+  ]
+ },
+ {
+  "a": "CREPT",
+  "l": 4,
+  "p": "verb",
+  "c": "Sessizce süründü",
+  "m": [
+   "sessizce süründü",
+   "creep fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The cat crept towards the bird.",
+    "Kedi kuşa doğru sessizce süründü."
+   ]
+  ]
+ },
+ {
+  "a": "DEALT",
+  "l": 1,
+  "p": "verb",
+  "c": "İlgilendi, uğraştı",
+  "m": [
+   "ilgilendi, uğraştı",
+   "deal fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She dealt with the problem.",
+    "Sorunla ilgilendi."
+   ]
+  ]
+ },
+ {
+  "a": "DUG",
+  "l": 3,
+  "p": "verb",
+  "c": "Kazdı (dig)",
+  "m": [
+   "kazdı",
+   "dig fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The dog dug a hole.",
+    "Köpek bir çukur kazdı."
+   ]
+  ]
+ },
+ {
+  "a": "FLED",
+  "l": 4,
+  "p": "verb",
+  "c": "Kaçtı (flee)",
+  "m": [
+   "kaçtı",
+   "flee fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They fled the country.",
+    "Ülkeden kaçtılar."
+   ]
+  ]
+ },
+ {
+  "a": "LEAPT",
+  "l": 4,
+  "p": "verb",
+  "c": "Sıçradı (leap)",
+  "m": [
+   "sıçradı",
+   "leap fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The cat leapt onto the wall.",
+    "Kedi duvara sıçradı."
+   ]
+  ]
+ },
+ {
+  "a": "SOUGHT",
+  "l": 3,
+  "p": "verb",
+  "c": "Aradı (arayış)",
+  "m": [
+   "aradı",
+   "seek fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He sought help from a doctor.",
+    "Bir doktordan yardım istedi."
+   ]
+  ]
+ },
+ {
+  "a": "SLID",
+  "l": 3,
+  "p": "verb",
+  "c": "Kaydı (slide)",
+  "m": [
+   "kaydı",
+   "slide fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The glass slid off the table.",
+    "Bardak masadan kaydı."
+   ]
+  ]
+ },
+ {
+  "a": "SPUN",
+  "l": 4,
+  "p": "verb",
+  "c": "Döndü, döndürdü",
+  "m": [
+   "döndü, döndürdü",
+   "spin fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "The wheel spun fast.",
+    "Tekerlek hızla döndü."
+   ]
+  ]
+ },
+ {
+  "a": "UNDID",
+  "l": 2,
+  "p": "verb",
+  "c": "Geri aldı, çözdü",
+  "m": [
+   "geri aldı, çözdü",
+   "undo fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He undid his tie.",
+    "Kravatını çözdü."
+   ]
+  ]
+ },
+ {
+  "a": "UNDONE",
+  "l": 2,
+  "p": "verb",
+  "c": "Çözülmüş (undo)",
+  "m": [
+   "çözülmüş",
+   "undo fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Your shoelace is undone.",
+    "Ayakkabı bağcığın çözülmüş."
+   ]
+  ]
+ },
+ {
+  "a": "WITHDREW",
+  "l": 3,
+  "p": "verb",
+  "c": "Geri çekti",
+  "m": [
+   "geri çekti",
+   "withdraw fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She withdrew some money.",
+    "Biraz para çekti."
+   ]
+  ]
+ },
+ {
+  "a": "WITHDRAWN",
+  "l": 4,
+  "p": "verb",
+  "c": "Geri çekilmiş",
+  "m": [
+   "geri çekilmiş",
+   "withdraw fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The offer was withdrawn.",
+    "Teklif geri çekildi."
+   ]
+  ]
+ },
+ {
+  "a": "FORBADE",
+  "l": 3,
+  "p": "verb",
+  "c": "Yasakladı (forbid)",
+  "m": [
+   "yasakladı",
+   "forbid fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "Her father forbade her to go.",
+    "Babası gitmesini yasakladı."
+   ]
+  ]
+ },
+ {
+  "a": "FORBIDDEN",
+  "l": 4,
+  "p": "verb",
+  "c": "Yasak (forbid)",
+  "m": [
+   "yasak",
+   "forbid fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "Smoking is forbidden here.",
+    "Burada sigara içmek yasak."
+   ]
+  ]
+ },
+ {
+  "a": "AROSE",
+  "l": 3,
+  "p": "verb",
+  "c": "Ortaya çıktı",
+  "m": [
+   "ortaya çıktı",
+   "arise fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "A problem arose.",
+    "Bir sorun çıktı."
+   ]
+  ]
+ },
+ {
+  "a": "ARISEN",
+  "l": 4,
+  "p": "verb",
+  "c": "Ortaya çıkmış",
+  "m": [
+   "ortaya çıkmış",
+   "arise fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "New questions have arisen.",
+    "Yeni sorular ortaya çıktı."
+   ]
+  ]
+ },
+ {
+  "a": "AWOKE",
+  "l": 2,
+  "p": "verb",
+  "c": "Uyandı (awake)",
+  "m": [
+   "uyandı",
+   "awake fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She awoke early.",
+    "Erken uyandı."
+   ]
+  ]
+ },
+ {
+  "a": "BOUND",
+  "l": 4,
+  "p": "verb",
+  "c": "Bağladı (bind)",
+  "m": [
+   "bağladı",
+   "bind fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "They bound his hands.",
+    "Ellerini bağladılar."
+   ]
+  ]
+ },
+ {
+  "a": "OVERCAME",
+  "l": 3,
+  "p": "verb",
+  "c": "Üstesinden geldi",
+  "m": [
+   "üstesinden geldi",
+   "overcome fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "She overcame her fear.",
+    "Korkusunun üstesinden geldi."
+   ]
+  ]
+ },
+ {
+  "a": "UNDERTOOK",
+  "l": 3,
+  "p": "verb",
+  "c": "Üstlendi",
+  "m": [
+   "üstlendi",
+   "undertake fiilinin 2. hali"
+  ],
+  "ex": [
+   [
+    "He undertook the task.",
+    "Görevi üstlendi."
+   ]
+  ]
+ },
+ {
+  "a": "UNDERTAKEN",
+  "l": 4,
+  "p": "verb",
+  "c": "Üstlenilmiş",
+  "m": [
+   "üstlenilmiş",
+   "undertake fiilinin 3. hali"
+  ],
+  "ex": [
+   [
+    "The work was undertaken last year.",
+    "İş geçen yıl üstlenildi."
+   ]
+  ]
+ }
+]

@@ -126,6 +126,26 @@ if (fs.existsSync(IPA_FILE)) {
   for (const w of words) if (ipa[w.a]) { w.ipa = ipa[w.a]; n++; }
   console.log(`${n} kelimeye okunuş eklendi`);
 }
+// Eş sesli / belirsiz ipuçlarına kısa açıklama (scripts/clue-qualifiers.json) — ana liste ve ek kelimeler dahil, en son uygulanır
+const QUAL_FILE = path.resolve(__dirname, 'clue-qualifiers.json');
+if (fs.existsSync(QUAL_FILE)) {
+  const qual = JSON.parse(fs.readFileSync(QUAL_FILE, 'utf8'));
+  const byA = new Map(words.map((w) => [w.a, w]));
+  const bad = [];
+  let n = 0;
+  for (const [a, c] of Object.entries(qual)) {
+    if (a.startsWith('_')) continue;
+    const w = byA.get(a);
+    if (!w) bad.push(`${a}: listede yok`);
+    else if (!c || c.length > 18) bad.push(`${a}: ipucu 1-18 karakter olmalı ("${c}")`);
+    else { w.c = c; n++; }
+  }
+  if (bad.length) {
+    console.error('HATALI İPUCU AÇIKLAMALARI:\n' + bad.join('\n'));
+    process.exit(1);
+  }
+  console.log(`${n} ipucuna açıklama eklendi`);
+}
 const missing = Object.keys(fixes).filter((a) => !map.has(a.toLowerCase()));
 if (missing.length) console.warn(`UYARI: listede olmayan düzeltmeler: ${missing.join(', ')}`);
 console.log(`${fixed} ipucu elle düzeltildi`);

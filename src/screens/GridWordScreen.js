@@ -8,7 +8,7 @@ import PuzzleGrid from '../components/PuzzleGrid';
 import Keyboard from '../components/Keyboard';
 import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
 import { BookIcon, ChevronIcon } from '../components/Icons';
-import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedEffect, useLearnCard, shellStyles, CardHintPill } from '../components/GameShell';
+import { useGameSession, LoadingPage, GameHeader, HintMenu, WinModal, useSolvedEffect, useLearnCard, shellStyles, CardHintPill, ClueContext } from '../components/GameShell';
 import { buildWordModel, cellsOf, cellKey } from '../engine/gridgames';
 import { wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
@@ -104,7 +104,7 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
   const isPic = variant === 'picture';
   const thumb = 70;
   const STRIP = 66; // resim şeridi
-  const reserved = insets.top + insets.bottom + 50 + 6 + (isPic ? thumb + 16 + STRIP : 66) + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT;
+  const reserved = insets.top + insets.bottom + 50 + 6 + (isPic ? thumb + 16 + STRIP : 84) + keyH * 3 + 12 + 26 + BACK_BAR_HEIGHT;
   const size = Math.floor(Math.min((width - 16) / prep.w, (height - reserved) / prep.h));
 
   const w = model.words[s.active];
@@ -202,6 +202,7 @@ function Board({ variant, store, session, kind, levelId, onBack, onNext }) {
             </Text>
             {wTrOpen ? <CardHintPill onPress={() => learn.openLearn(w.answer, w.text)} /> : null}
           </View>
+          {wTrOpen && !wPhoto ? <ClueContext answer={w.answer} /> : null}
         </Pressable>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={shellStyles.clueNav}>
           <ChevronIcon dir="right" size={22} />

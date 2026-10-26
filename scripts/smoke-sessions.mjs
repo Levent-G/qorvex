@@ -142,6 +142,63 @@ for (const [name, get] of games) {
   else console.log(`✓ 5 soru türü (${[...types].join(',')}), zamana karşı, günün kelimesi (${w1.a}), telaffuz, haftalık (${wk.puzzle.clues.length} kelime), rozetler (${fresh.length} yeni)`);
 }
 
+// Karşılaşılan kelime: yalnızca çözülen bulmacalar sayılır; son 10 çözüm ortalaması gerçekten son 10 çözüm
+{
+  const errs = [];
+  const before = S.getDetailedStats();
+  await S.getLevelSession('A1', true); // üretildi ama çözülmedi → sayılmamalı
+  const mid = S.getDetailedStats();
+  if (mid.seenWords !== before.seenWords || mid.encounters !== before.encounters) errs.push('çözülmeyen bulmaca sayıldı');
+  const sess = await S.getLevelSession('A1', true);
+  const words = sess.puzzle.clues.filter((k) => !k.filler).map((k) => k.answer);
+  sess.seconds = 30;
+  S.markSolved('level', 'A1');
+  const after = S.getDetailedStats();
+  if (after.encounters - mid.encounters !== words.length) errs.push(`karşılaşma ${after.encounters - mid.encounters} ≠ ${words.length}`);
+  if (after.seenWords <= mid.seenWords) errs.push('farklı kelime artmadı');
+  for (let i = 0; i < 12; i++) { const s2 = await S.getLevelSession('A1', true); s2.seconds = 100 + i; S.markSolved('level', 'A1'); }
+  const avg = S.getDetailedStats().avgRecent;
+  const want = Array.from({ length: 10 }, (_, i) => 102 + i).reduce((a, b) => a + b, 0) / 10;
+  if (Math.abs(avg - want) > 0.01) errs.push(`son 10 ortalama ${avg} ≠ ${want}`);
+  if (errs.length) { fails++; console.log('HATA:', errs.join(' | ')); }
+  else console.log(`✓ İstatistik: çözülmeyen sayılmıyor, +${words.length} karşılaşma, son 10 ortalaması ${avg.toFixed(1)} sn`);
+}
+
+// Çengel 6x9 boşluksuz + arka planda hazırlanan sonraki bulmaca anında gelir
+{
+  const errs = [];
+  S.prefetchLevel('B1');
+  await new Promise((r) => setTimeout(r, 6000)); // hazırlansın
+  const t0 = Date.now();
+  const sess = await S.getLevelSession('B1', true);
+  const ms = Date.now() - t0;
+  const p = sess.puzzle;
+  if (p.w !== 6 || p.h !== 9) errs.push(`boyut ${p.w}x${p.h}`);
+  if (p.rows.join('').includes('.')) errs.push('boş kare var');
+  if (ms > 300) errs.push(`hazır bulmaca gecikti (${ms} ms)`);
+  if (errs.length) { fails++; console.log('HATA:', errs.join(' | ')); }
+  else console.log(`✓ Çengel 6x9 boşluksuz, arka planda hazırlanan bulmaca ${ms} ms'de geldi`);
+}
+
+// Bulmaca arşivi: geçmiş gün üretilir, kaydedilir, çözülünce listede "solved" görünür
+{
+  const errs = [];
+  const days = S.archiveDays();
+  if (days.length !== S.ARCHIVE_DAYS || days.some((d) => d.state !== 'new')) errs.push('arşiv listesi');
+  const key = days[2].key;
+  const st = S.archiveStore(key);
+  if (S.archiveStore(key) !== st) errs.push('arşiv mağazası sabit değil');
+  const sess = await st.getDaily();
+  if (!sess.puzzle || sess.puzzle.clues.length < 10 || (await st.getDaily()) !== sess) errs.push('arşiv bulmacası');
+  sess.solved = true;
+  sess.seconds = 95;
+  st.markSolved();
+  const after = S.archiveDays().find((d) => d.key === key);
+  if (after.state !== 'solved' || after.seconds !== 95) errs.push('arşiv çözüldü durumu');
+  if (errs.length) { fails++; console.log('HATA:', errs.join(' | ')); }
+  else console.log(`✓ Bulmaca arşivi (${days.length} gün, ${sess.puzzle.clues.length} ipuçlu bulmaca, çözüldü işareti)`);
+}
+
 // Resimli bulmaca ağ ister; anahtarsız anlaşılır hata vermeli
 try {
   await S.picture.getSession('A1', true);

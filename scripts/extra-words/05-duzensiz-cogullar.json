@@ -1,0 +1,21 @@
+[
+ { "a": "CHILDREN", "l": 0, "p": "noun", "c": "Çocuklar", "m": ["çocuklar", "child kelimesinin çoğulu"], "ex": [["The children are playing in the garden.", "Çocuklar bahçede oynuyor."]] },
+ { "a": "MEN", "l": 0, "p": "noun", "c": "Adamlar", "m": ["adamlar", "erkekler", "man kelimesinin çoğulu"], "ex": [["Two men are waiting outside.", "Dışarıda iki adam bekliyor."]] },
+ { "a": "WOMEN", "l": 0, "p": "noun", "c": "Kadınlar", "m": ["kadınlar", "woman kelimesinin çoğulu"], "ex": [["The women talked about the project.", "Kadınlar proje hakkında konuştu."]] },
+ { "a": "FEET", "l": 0, "p": "noun", "c": "Ayaklar", "m": ["ayaklar", "foot kelimesinin çoğulu"], "ex": [["My feet are cold.", "Ayaklarım üşüyor."]] },
+ { "a": "TEETH", "l": 0, "p": "noun", "c": "Dişler", "m": ["dişler", "tooth kelimesinin çoğulu"], "ex": [["Brush your teeth twice a day.", "Dişlerini günde iki kez fırçala."]] },
+ { "a": "MICE", "l": 1, "p": "noun", "c": "Fareler", "m": ["fareler", "mouse kelimesinin çoğulu"], "ex": [["The cat chased the mice.", "Kedi fareleri kovaladı."]] },
+ { "a": "GEESE", "l": 2, "p": "noun", "c": "Kazlar", "m": ["kazlar", "goose kelimesinin çoğulu"], "ex": [["The geese flew south.", "Kazlar güneye uçtu."]] },
+ { "a": "LIVES", "l": 1, "p": "noun", "c": "Hayatlar", "m": ["hayatlar", "life kelimesinin çoğulu"], "ex": [["Doctors save lives every day.", "Doktorlar her gün hayat kurtarır."]] },
+ { "a": "KNIVES", "l": 1, "p": "noun", "c": "Bıçaklar", "m": ["bıçaklar", "knife kelimesinin çoğulu"], "ex": [["The knives are in the drawer.", "Bıçaklar çekmecede."]] },
+ { "a": "WIVES", "l": 1, "p": "noun", "c": "Eşler (kadın)", "m": ["eşler", "karılar", "wife kelimesinin çoğulu"], "ex": [["The players came with their wives.", "Oyuncular eşleriyle geldi."]] },
+ { "a": "LEAVES", "l": 1, "p": "noun", "c": "Yapraklar", "m": ["yapraklar", "leaf kelimesinin çoğulu"], "ex": [["The leaves turn yellow in autumn.", "Yapraklar sonbaharda sararır."]] },
+ { "a": "WOLVES", "l": 2, "p": "noun", "c": "Kurtlar", "m": ["kurtlar", "wolf kelimesinin çoğulu"], "ex": [["Wolves live in groups.", "Kurtlar gruplar halinde yaşar."]] },
+ { "a": "SHELVES", "l": 2, "p": "noun", "c": "Raflar", "m": ["raflar", "shelf kelimesinin çoğulu"], "ex": [["The shelves are full of books.", "Raflar kitaplarla dolu."]] },
+ { "a": "HALVES", "l": 2, "p": "noun", "c": "Yarımlar", "m": ["yarımlar", "yarılar", "half kelimesinin çoğulu"], "ex": [["Cut the apple into two halves.", "Elmayı iki yarıya kes."]] },
+ { "a": "THIEVES", "l": 2, "p": "noun", "c": "Hırsızlar", "m": ["hırsızlar", "thief kelimesinin çoğulu"], "ex": [["The thieves escaped through the window.", "Hırsızlar pencereden kaçtı."]] },
+ { "a": "CRITERIA", "l": 4, "p": "noun", "c": "Ölçütler", "m": ["ölçütler", "kriterler", "criterion kelimesinin çoğulu"], "ex": [["What are the criteria for the job?", "İşin ölçütleri neler?"]] },
+ { "a": "PHENOMENA", "l": 4, "p": "noun", "c": "Olgular", "m": ["olgular", "fenomenler", "phenomenon kelimesinin çoğulu"], "ex": [["Rainbows are natural phenomena.", "Gökkuşakları doğal olgulardır."]] },
+ { "a": "FARTHER", "l": 2, "p": "adverb", "c": "Daha uzak", "m": ["daha uzak", "daha uzağa", "far kelimesinin karşılaştırma hali"], "ex": [["The station is farther than I thought.", "İstasyon düşündüğümden daha uzak."]] },
+ { "a": "ELDEST", "l": 2, "p": "adjective", "c": "En büyük (yaşça)", "m": ["en büyük", "yaşça en büyük"], "ex": [["She is the eldest of three sisters.", "Üç kız kardeşin en büyüğü o."]] }
+]

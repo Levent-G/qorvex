@@ -27,6 +27,8 @@ export const colors = {
   frame: '#A9A296', // ızgara dış çerçevesi
   bulb: '#18324D', // seçili ipucundaki ampul
   sameCell: '#FCE3CF', // aynı numaralı kareler
+  photoClue: '#F37216', // resimli bulmacada "Resimdeki nesne" ipucu karesi (hemen göze çarpsın)
+  photoClueText: '#FFFFFF',
 };
 
 // "Puzzle Club" arayüz paleti: lacivert zemin, turkuaz vurgu, krem kartlar (uygulama kabuğu)
@@ -86,7 +88,7 @@ const DARK_COLORS = {
   clueCell: '#243140', clueCellActive: '#2F5274', deadCell: '#121A23', deadHatch: '#253140', gridLine: '#3A4654',
   blankCell: '#4A5563', cell: '#1A2430', wordHighlight: '#213A52', cellActive: '#2F6496', okCell: '#24512F',
   closeCell: '#5E4C12', badCell: '#5E2723', wrong: '#FF8A80', revealed: '#8DBBF2', good: '#7DD08A',
-  block: '#060A0F', frame: '#3E4A58', bulb: '#F2B33D', sameCell: '#4A2F18',
+  block: '#060A0F', frame: '#3E4A58', bulb: '#F2B33D', sameCell: '#4A2F18', photoClue: '#FF8A3D', photoClueText: '#FFFFFF',
 };
 const DARK_ED = {
   bg: '#0F1720', surface: '#17212C', surfaceAlt: '#202B38', surfaceDim: '#141D27', border: '#2A3644',

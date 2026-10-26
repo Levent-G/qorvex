@@ -31,7 +31,7 @@ const LetterCell = memo(function LetterCell({ size, letter, status, revealed, hi
   );
 });
 
-const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, learned1, lastCol, lastRow, showText }) {
+const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, learned1, photoSlot, lastCol, lastRow, showText }) {
   const texts = t1 != null ? [t0, t1] : [t0];
   const learned = [learned0, learned1];
   const two = texts.length === 2;
@@ -51,6 +51,8 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
             styles.clueSlot,
             two && i === 0 && styles.clueDivider,
             activeSlot === i && { backgroundColor: colors.clueCellActive },
+            // resimli bulmaca: fotoğraftaki nesnenin ipucu hemen göze çarpsın
+            photoSlot === i && { backgroundColor: colors.photoClue },
           ]}
         >
           {showText ? (
@@ -64,6 +66,7 @@ const ClueCell = memo(function ClueCell({ size, t0, t1, activeSlot, learned0, le
                 { fontSize: fs, lineHeight: fs * 1.3 },
                 activeSlot === i && { color: colors.ink, fontFamily: fonts.clueBold },
                 learned[i] && styles.learnedText,
+                photoSlot === i && { color: colors.photoClueText, fontFamily: fonts.clueBold },
               ]}
             >
               {t}
@@ -168,6 +171,7 @@ export default function ArrowGrid({
     return s;
   }, [activeWord, model]);
   const aw = activeWord != null && model ? model.words[activeWord] : null;
+  const photoAnswer = puzzle.photo ? puzzle.photo.answer : null;
   const activeClueKey = aw ? `${aw.r},${aw.c}` : null;
 
   const rows = [];
@@ -187,6 +191,7 @@ export default function ArrowGrid({
             learned0={!!(learned && ks[0] && learned.has(ks[0].answer))}
             learned1={!!(learned && ks[1] && learned.has(ks[1].answer))}
             activeSlot={activeClueKey === key ? aw.slot : null}
+            photoSlot={photoAnswer ? (ks[0]?.answer === photoAnswer ? 0 : ks[1]?.answer === photoAnswer ? 1 : null) : null}
             lastCol={lastCol} lastRow={lastRow} showText={showClueText}
           />,
         );

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -34,12 +34,15 @@ import CryptogramScreen from './src/screens/CryptogramScreen';
 import ReviewScreen from './src/screens/ReviewScreen';
 import TimeAttackScreen from './src/screens/TimeAttackScreen';
 import PronounceScreen from './src/screens/PronounceScreen';
+import ArchiveScreen from './src/screens/ArchiveScreen';
+import { maybeAskReview } from './src/rating';
 import BadgeModal from './src/components/BadgeModal';
 import { WhatsNewModal, UpdateModal, WHATS_NEW } from './src/components/VersionModals';
 import { whatsNewToShow, markWhatsNewSeen, checkStoreUpdate, snoozeUpdate } from './src/appVersion';
 import { getGame } from './src/games';
 import { loadStore } from './src/storage';
-import { refreshStoredClues, getProfile, picture, weekly, checkBadges } from './src/engine/session';
+import { refreshStoredClues, getProfile, picture, weekly, checkBadges, archiveStore } from './src/engine/session';
+import { getStore } from './src/storage';
 import { ed } from './src/theme';
 import { onSettingsChange } from './src/settings';
 import { rescheduleReminders } from './src/reminders';
@@ -89,6 +92,7 @@ export default function App() {
   }, []);
 
   const [newBadges, setNewBadges] = useState(null);
+  const solvedAtLeave = useRef(null); // oyuna girerken çözülmüş bulmaca sayısı (dönünce: az önce bitti mi?)
   // sürüm: güncelleyene bir kez 'Yenilikler', App Store'da yeni sürüm varsa uyarı
   const [whatsNew, setWhatsNew] = useState(null);
   const [update, setUpdate] = useState(null);
@@ -103,7 +107,14 @@ export default function App() {
       rescheduleReminders();
       const fresh = checkBadges(); // oyundan/alıştırmadan dönünce yeni rozet var mı?
       if (fresh.length) setNewBadges(fresh);
+      // az önce bir bulmaca bittiyse ve başka pencere yoksa: seyrek değerlendirme isteği
+      else if (!whatsNew && !update && solvedAtLeave.current != null) {
+        const prev = solvedAtLeave.current;
+        setTimeout(() => maybeAskReview(prev), 900);
+      }
     }
+    if (ready && stack.length > 1 && solvedAtLeave.current == null) solvedAtLeave.current = getStore().stats?.total || 0;
+    if (stack.length === 1) solvedAtLeave.current = null;
   }, [ready, stack.length]);
 
   const push = useCallback((route) => setStack((s) => [...s, route]), []);
@@ -157,6 +168,10 @@ export default function App() {
     screen = <TimeAttackScreen onBack={pop} />;
   } else if (route.name === 'pronounce') {
     screen = <PronounceScreen onBack={pop} />;
+  } else if (route.name === 'archive') {
+    screen = <ArchiveScreen onOpen={(key) => push({ name: 'archivePuzzle', key })} onBack={pop} />;
+  } else if (route.name === 'archivePuzzle') {
+    screen = <PuzzleScreen key={'arc' + route.key} kind="daily" store={archiveStore(route.key)} onBack={pop} />;
   } else if (route.name === 'weekly') {
     screen = <PuzzleScreen key="weekly" kind="daily" store={weekly} onBack={pop} />;
   } else if (route.name === 'puzzle') {

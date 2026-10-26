@@ -1,6 +1,7 @@
 // Telaffuz için ses tanıma (expo-speech-recognition). Expo Go'da yerel modül yok: yükleme korumalı,
 // yoksa available() false döner ve ekran bilgi mesajı gösterir.
 import { resetAudio } from './speech';
+import { getSettings } from './settings';
 
 let M = null;
 try {
@@ -65,7 +66,7 @@ export function listenOnce(target, { onPartial, timeoutMs = 6000 } = {}) {
     }, timeoutMs);
     try {
       M.start({
-        lang: 'en-US',
+        lang: getSettings().accent || 'en-US', // seçilen aksanla tanı
         interimResults: true,
         maxAlternatives: 5,
         continuous: false,

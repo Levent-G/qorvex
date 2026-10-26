@@ -219,7 +219,7 @@ export default function StatsTab() {
           </View>
         );
       })}
-      <Text style={styles.footer}>Süre ve ipucu kayıtları 1.1 güncellemesinden itibaren tutuluyor.</Text>
+      <Text style={styles.footer}>Süre ve ipucu kayıtları 1.1, karşılaşılan kelime sayımı 1.3 güncellemesinden itibaren tutuluyor (yalnızca çözülen bulmacalar).</Text>
     </ScrollView>
   );
 }
