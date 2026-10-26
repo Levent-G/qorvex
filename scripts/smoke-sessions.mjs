@@ -164,7 +164,7 @@ for (const [name, get] of games) {
   else console.log(`✓ İstatistik: çözülmeyen sayılmıyor, +${words.length} karşılaşma, son 10 ortalaması ${avg.toFixed(1)} sn`);
 }
 
-// Çengel 6x9 boşluksuz + arka planda hazırlanan sonraki bulmaca anında gelir
+// Çengel 6x10 boşluksuz + arka planda hazırlanan sonraki bulmaca anında gelir
 {
   const errs = [];
   S.prefetchLevel('B1');
@@ -173,11 +173,11 @@ for (const [name, get] of games) {
   const sess = await S.getLevelSession('B1', true);
   const ms = Date.now() - t0;
   const p = sess.puzzle;
-  if (p.w !== 6 || p.h !== 9) errs.push(`boyut ${p.w}x${p.h}`);
+  if (p.w !== 6 || p.h !== 10) errs.push(`boyut ${p.w}x${p.h}`);
   if (p.rows.join('').includes('.')) errs.push('boş kare var');
   if (ms > 300) errs.push(`hazır bulmaca gecikti (${ms} ms)`);
   if (errs.length) { fails++; console.log('HATA:', errs.join(' | ')); }
-  else console.log(`✓ Çengel 6x9 boşluksuz, arka planda hazırlanan bulmaca ${ms} ms'de geldi`);
+  else console.log(`✓ Çengel 6x10 boşluksuz, arka planda hazırlanan bulmaca ${ms} ms'de geldi`);
 }
 
 // Bulmaca arşivi: geçmiş gün üretilir, kaydedilir, çözülünce listede "solved" görünür

@@ -148,7 +148,7 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 **Türkçe**
 
 ```
-• Çengel bulmacalarda hiç boş kare yok: her kare harf ya da ipucu
+• Çengel bulmacalar daha büyük ve hiç boş kare yok
 • Sıradaki bulmaca arka planda hazırlanır, anında açılır
 • Bulmaca arşivi: son 30 günün günlük bulmacaları
 • Amerikan / İngiliz aksan seçimi
@@ -161,7 +161,7 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 **English**
 
 ```
-• Arrowword puzzles have no blank cells: every cell is a letter or a clue
+• Bigger arrowword puzzles with no blank cells
 • The next puzzle is prepared in the background and opens instantly
 • Puzzle archive: daily puzzles from the last 30 days
 • Choose a US or UK accent

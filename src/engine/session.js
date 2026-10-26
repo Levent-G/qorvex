@@ -55,8 +55,8 @@ function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
 }
 
-// Çengel bulmaca boyutu: 6x9'da boşluksuz (sıfır boş kare) üretici her seferinde ~1 sn'de bulur
-export const ARROW_SIZE = { w: 6, h: 9 };
+// Çengel bulmaca boyutu: 6x10'da boşluksuz (sıfır boş kare) üretici güvenilir; 7 sütun ve 6x11'de boş kare kalabiliyor
+export const ARROW_SIZE = { w: 6, h: 10 };
 async function makePuzzle(level, seed, withPrio, strict = true, size = ARROW_SIZE) {
   const store = getStore();
   const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, strict);
@@ -819,7 +819,7 @@ export const weekly = {
     const base = getLevel(levelId);
     const seed = ('weekly' + wk.key + levelId).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 23);
     // tekrar kuralı gevşek: haftada bir gelen büyük bulmaca dolu olsun (daha önce çıkmış kelime de gelebilir)
-    const puzzle = await makePuzzle(base, seed, false, false, { w: 6, h: 10 }); // haftalık: biraz daha büyük, yine boşluksuz
+    const puzzle = await makePuzzle(base, seed, false, false, ARROW_SIZE); // haftalık: bir üst seviyenin kelimeleri, boşluksuz
     recordAnswers(realAnswers(puzzle.clues));
     recordFillers(puzzle.clues);
     puzzle.no = wk.no;
