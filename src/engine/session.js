@@ -6,7 +6,7 @@ import { generateLadder } from './ladder';
 import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
 import { generateSpiral, generateJumble, generateCryptogram } from './wordgames';
 import { WORDS } from './words';
-import { buildInputs as buildPoolInputs, recordAnswersTo } from './pool';
+import { buildInputs as buildPoolInputs, recordAnswersTo, TWO_LETTER_COOLDOWN } from './pool';
 import { findPhoto, photoCache } from '../services/pexels';
 import { photoBlock } from './picture';
 import { wordOfDay, isoWeek } from './practice';
@@ -34,11 +34,16 @@ const buildInputs = (level, learn, withPrio, strict = false) => buildPoolInputs(
 const FILLERS = fillerEntries(WORDS);
 const realAnswers = (clues) => clues.filter((k) => !k.filler).map((k) => k.answer);
 // Dolgu olarak kullanılan kısa kelimeler istatistiğe sayılmaz ama dönüşüm için ayrı izlenir
-const FILLER_REST = 4; // iki harfli dolgu en az bu kadar bulmaca dinlenir
-function fillersNow() {
+// İki harfli kelime (gerçek ya da dolgu, fark etmez) son geldiği bulmacadan sonra en az 5 bulmaca dinlenir:
+// en erken 6. bulmacada yeniden gelebilir. (pool.js'deki gerçek kelime kuralıyla aynı sayaç)
+const twoRested = (a) => {
   const learn = getStore().learn;
-  const fr = learn.fillerRecent || {};
-  return FILLERS.filter((f) => f.a.length > 2 || learn.counter - (fr[f.a] ?? -1e9) >= FILLER_REST);
+  const last = Math.max(learn.recent[a] ?? -1e9, (learn.fillerRecent || {})[a] ?? -1e9);
+  return learn.counter - last >= TWO_LETTER_COOLDOWN;
+};
+const restOk = (f) => f.a.length > 2 || twoRested(f.a);
+function fillersNow() {
+  return FILLERS.filter(restOk);
 }
 function recordFillers(clues) {
   const learn = getStore().learn;
@@ -60,9 +65,12 @@ async function makePuzzle(level, seed, withPrio, strict = true, size = ARROW_SIZ
   const p = await generateSwedish({ w: size.w, h: size.h, entries, fillers, prio, seed, timeMs: 1500, maxTwo: 4, yieldFn });
   if (p) return p;
   // 1b) havuz daralmışsa: seviyedeki görülmüş kelimeler de dolgu olarak (istatistiğe sayılmaz) — yine boşluksuz
-  const seenAsFill = buildInputs(level, store.learn, false, false).entries.map((e) => ({ a: e.a, c: e.c, filler: true }));
+  const seenAsFill = buildInputs(level, store.learn, false, false).entries.map((e) => ({ a: e.a, c: e.c, filler: true })).filter(restOk);
   const p2 = await generateSwedish({ w: size.w, h: size.h, entries, fillers: [...fillers, ...seenAsFill], prio, seed: seed ^ 0x5bd1e995, timeMs: 3000, maxTwo: 5, yieldFn });
   if (p2) return p2;
+  // 1c) son boşluksuz deneme: öncelik zorunluluğu yok, biraz daha fazla iki harfliye izin (dinlenme kuralı yine geçerli)
+  const p3 = await generateSwedish({ w: size.w, h: size.h, entries, fillers: [...fillers, ...seenAsFill], prio: undefined, seed: seed ^ 0x27d4eb2f, timeMs: 3000, maxTwo: 6, yieldFn });
+  if (p3) return p3;
   // 2) yedek: eski üretici (nadiren; boş kare kalabilir)
   return generatePuzzle({ w: size.w, h: size.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers });
 }

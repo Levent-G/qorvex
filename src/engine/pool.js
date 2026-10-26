@@ -14,7 +14,7 @@ export const MIN_FRESH = 120; // taze kelime bunun altına düşünce en eski g�
 // 2 harfliler (yalnızca 27 tane) ızgarayı dolduran yapıştırıcıdır; hiç dönmezlerse bulmacalar seyrekleşir.
 // Hepsi birden dönüp 3-4 bulmacada bitmesin diye zamana yayılır: her bulmacaya en uzun süredir
 // gelmeyenlerden en fazla TWO_LETTER_MAX tane girer; bir kez gelen en az TWO_LETTER_COOLDOWN oyun dinlenir.
-export const TWO_LETTER_COOLDOWN = 4;
+export const TWO_LETTER_COOLDOWN = 5; // en erken 6. bulmacada (gerçek ya da dolgu olarak) yeniden gelir
 export const TWO_LETTER_MAX = 27;
 
 // Seviye kademesi: oyuncunun seviyesi en ağırlıklı, her alt seviye bir öncekinden daha az gelir
@@ -74,7 +74,8 @@ export function buildInputs(words, level, learn, withPrio, strict = false, rand 
   // defterden yalnızca bu bulmacanın tekrar kelimeleri (en fazla PRIO_MAX) girer; diğerleri vakti gelse de bekler
   const prio = prioOf(learn, new Set(words.filter(inLevel).map((w) => w.a)), withPrio);
   // bu bulmacaya girebilecek 2 harfliler: hiç gelmemişler önce, sonra en uzun süredir dinlenenler
-  const rest = (a) => learn.counter - (learn.recent[a] ?? -1e9);
+  // dolgu olarak gelmesi de sayılır (learn.fillerRecent)
+  const rest = (a) => learn.counter - Math.max(learn.recent[a] ?? -1e9, (learn.fillerRecent || {})[a] ?? -1e9);
   const twoAllowed = new Set(
     words
       .filter((w) => w.a.length <= 2 && rest(w.a) >= TWO_LETTER_COOLDOWN)
