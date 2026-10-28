@@ -8,12 +8,13 @@ import { ed, efonts } from '../theme';
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
   '1.3.1': [
-    ['🧩', 'Boş karesiz bulmacalar', 'Çengel bulmacalar daha büyük ve gazetedekiler gibi: her kare ya harf ya ipucu, hiç boş kare yok.'],
+    ['🧩', 'Boş karesiz büyük bulmacalar', 'Çengel bulmacalar gazetedekiler gibi: her kare ya harf ya ipucu, hiç boş kare yok. Bulmaca başına daha çok kelime.'],
+    ['🖼️', 'Resimli bulmaca da boşluksuz', 'Fotoğrafın çevresi de tamamen dolu; resimdeki nesne her zaman bulmacada.'],
+    ['👆', 'Akıllı seçim', 'Bir kareye dokununca o kareye en yakın kelime seçilir, imleç dokunduğun yerde kalır.'],
     ['⚡', 'Sonraki bulmaca hazır', 'Sen çözerken sıradaki bulmaca arka planda hazırlanır, "Sonraki"ye basınca hemen açılır.'],
     ['🗂️', 'Bulmaca arşivi', 'Kaçırdığın günlük bulmacaları son 30 gün içinden çözebilirsin.'],
     ['🔊', 'Aksan seçimi', 'Kelimeleri Amerikan ya da İngiliz aksanıyla dinle (Profil > Ayarlar).'],
     ['📚', 'Daha fazla kelime', 'Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar; ipucunun altında Türkçe örnek cümle.'],
-    ['🔁', 'Tekrar yok', 'İki harfli kısa kelimeler de art arda bulmacalarda tekrar gelmez.'],
   ],
   '1.3.0': [
     ['🧩', 'Daha dolu bulmacalar', 'Çengel bulmacalarda boş kareler yarı yarıya azaldı.'],

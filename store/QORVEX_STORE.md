@@ -148,12 +148,13 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 **Türkçe**
 
 ```
-• Çengel bulmacalar daha büyük ve hiç boş kare yok
+• Boş karesiz büyük bulmacalar: her kare harf ya da ipucu, bulmaca başına daha çok kelime
+• Resimli bulmaca da artık boşluksuz
+• Akıllı seçim: dokunduğun kareye en yakın kelime seçilir
 • Sıradaki bulmaca arka planda hazırlanır, anında açılır
 • Bulmaca arşivi: son 30 günün günlük bulmacaları
 • Amerikan / İngiliz aksan seçimi
-• Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar
-• İpucunun altında Türkçe örnek cümle
+• Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar; ipucunun altında Türkçe örnek cümle
 • Kısa kelimeler art arda bulmacalarda tekrar gelmez
 • Birçok düzeltme
 ```
@@ -161,12 +162,13 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 **English**
 
 ```
-• Bigger arrowword puzzles with no blank cells
+• Bigger arrowword puzzles with no blank cells: every cell is a letter or a clue, with more words per puzzle
+• Picture puzzles have no blank cells either
+• Smart selection: tapping a cell picks the nearest word
 • The next puzzle is prepared in the background and opens instantly
 • Puzzle archive: daily puzzles from the last 30 days
 • Choose a US or UK accent
-• Hundreds of new words, irregular verbs and plurals
-• A Turkish example sentence under each clue
+• Hundreds of new words, irregular verbs and plurals; a Turkish example sentence under each clue
 • Short words no longer repeat in back-to-back puzzles
 • Many fixes
 ```
