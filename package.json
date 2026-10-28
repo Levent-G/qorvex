@@ -45,6 +45,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@resvg/resvg-js": "^2.6.2"
   }
 }

@@ -24,6 +24,14 @@ function firstOpen(s, w) {
   return j < 0 ? 0 : j;
 }
 
+// kelimede verilen kareye en yakın yazılabilir (kilitsiz) kare
+function nearestOpen(s, w, key) {
+  const i = Math.max(0, w.keys.indexOf(key));
+  let best = -1;
+  for (let j = 0; j < w.keys.length; j++) if (!locked(s, w.keys[j]) && (best < 0 || Math.abs(j - i) < Math.abs(best - i))) best = j;
+  return best < 0 ? firstOpen(s, w) : best;
+}
+
 export function selectWordState(s, idx) {
   const w = s.model.words[idx];
   const j = firstOpen(s, w);
@@ -56,15 +64,23 @@ export function reducer(s, a) {
       const cur = model.words[s.active];
       let idx;
       if (s.sel && s.sel.r === a.r && s.sel.c === a.c) idx = cur.dir === 'A' ? at.D ?? at.A : at.A ?? at.D;
-      else idx = at[cur.dir] ?? at.A ?? at.D;
+      else if (at.A != null && at.D != null) {
+        // kare iki kelimede: başı (ipucu) dokunulan kareye daha yakın olan kelime; eşitse mevcut yön
+        const da = model.words[at.A].keys.indexOf(key), dd = model.words[at.D].keys.indexOf(key);
+        idx = da < dd ? at.A : dd < da ? at.D : at[cur.dir];
+      } else idx = at.A ?? at.D;
       // doğru bilinen kelimeye gerek yok: karedeki diğer (bitmemiş) kelimeyi seç, ikisi de doğruysa dokunuşu yok say
       if (wordOk(s, idx)) {
         const other = idx === at.A ? at.D : at.A;
         if (other == null || wordOk(s, other)) return s;
         idx = other;
       }
-      // kilitli kareye (yazılamaz) imleç koyma: kelimenin yazılabilir karesine git
-      if (locked(s, key)) return selectWordState(s, idx);
+      // kilitli kareye (yazılamaz) imleç koyma: kelimede dokunulan kareye en yakın yazılabilir kareye git
+      if (locked(s, key)) {
+        const w = model.words[idx];
+        const j = nearestOpen(s, w, key);
+        return { ...s, active: idx, sel: { r: w.cells[j][0], c: w.cells[j][1] } };
+      }
       return { ...s, active: idx, sel: { r: a.r, c: a.c } };
     }
     case 'selectWord':

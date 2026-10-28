@@ -1,6 +1,6 @@
 // Bulmaca oturumları: seviye başına tek aktif bulmaca, günün bulmacası, öğrenme takibi.
 import { generatePuzzle, mulberry32 } from './generator';
-import { generateSwedish } from './swedish';
+import { generateSlotFill } from './slotfill';
 import { generateWordSearch } from './wordsearch';
 import { generateLadder } from './ladder';
 import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
@@ -55,21 +55,23 @@ function newSession(puzzle) {
   return { puzzle, entries: {}, revealed: {}, seconds: 0, solved: false, opened: [] };
 }
 
-// Çengel bulmaca boyutu: 6x10'da boşluksuz (sıfır boş kare) üretici güvenilir; 7 sütun ve 6x11'de boş kare kalabiliyor
-export const ARROW_SIZE = { w: 6, h: 10 };
-async function makePuzzle(level, seed, withPrio, strict = true, size = ARROW_SIZE) {
+// Çengel bulmaca boyutu seviyenin boyutu (A1/A2 8x10, B1+ 9x11); boşluksuz üretici (desen + yuva doldurma) bu boyutlarda ~0,1–0,4 sn
+const MAX_WORD = 7; // en uzun kelime: daha uzunlar deseni zorlaştırıyor
+async function makePuzzle(level, seed, withPrio, strict = true, size = { w: level.w, h: level.h }) {
   const store = getStore();
   const { entries, dict, prio } = buildInputs(level, store.learn, withPrio, strict);
   const fillers = fillersNow();
-  // 1) boşluksuz üretici (İsveç tipi): her kare harf ya da ipucu
-  const p = await generateSwedish({ w: size.w, h: size.h, entries, fillers, prio, seed, timeMs: 1500, maxTwo: 4, yieldFn });
+  const sf = (extra) => generateSlotFill({ w: size.w, h: size.h, entries, fillers, prio, seed, timeMs: 2500, maxTwo: 5, maxLen: MAX_WORD, clueP: 0.24, yieldFn, ...extra });
+  // 1) boşluksuz üretici: her kare harf ya da ipucu
+  const p = await sf();
   if (p) return p;
   // 1b) havuz daralmışsa: seviyedeki görülmüş kelimeler de dolgu olarak (istatistiğe sayılmaz) — yine boşluksuz
   const seenAsFill = buildInputs(level, store.learn, false, false).entries.map((e) => ({ a: e.a, c: e.c, filler: true })).filter(restOk);
-  const p2 = await generateSwedish({ w: size.w, h: size.h, entries, fillers: [...fillers, ...seenAsFill], prio, seed: seed ^ 0x5bd1e995, timeMs: 3000, maxTwo: 5, yieldFn });
+  const p2 = await sf({ fillers: [...fillers, ...seenAsFill], seed: seed ^ 0x5bd1e995, maxTwo: 6 });
   if (p2) return p2;
-  // 1c) son boşluksuz deneme: öncelik zorunluluğu yok, biraz daha fazla iki harfliye izin (dinlenme kuralı yine geçerli)
-  const p3 = await generateSwedish({ w: size.w, h: size.h, entries, fillers: [...fillers, ...seenAsFill], prio: undefined, seed: seed ^ 0x27d4eb2f, timeMs: 3000, maxTwo: 6, yieldFn });
+  // 1c) son boşluksuz deneme: öncelik zorunluluğu yok, sözlüğün tüm kelimeleri dolgu (dinlenme kuralı yine geçerli)
+  const allFill = WORDS.filter((x) => x.a.length > 2).map((x) => ({ a: x.a, c: x.c, filler: true }));
+  const p3 = await sf({ fillers: [...fillers, ...seenAsFill, ...allFill], prio: undefined, seed: seed ^ 0x27d4eb2f, timeMs: 3000, maxTwo: 7 });
   if (p3) return p3;
   // 2) yedek: eski üretici (nadiren; boş kare kalabilir)
   return generatePuzzle({ w: size.w, h: size.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers });
@@ -380,6 +382,13 @@ const gridSize = (levelId) => {
 // Önce fotoğrafı olan bir isim seçilir (Pexels), sonra o kelime öncelikli olarak çengel üretilir;
 // kelimenin ipucu karesinde "Resimdeki nesne" yazar, fotoğraf ızgaranın ortasındaki alanda durur.
 const NOUNS = new Set(WORDS.filter((w) => w.p === 'noun').map((w) => w.a));
+function withPhoto(p, target, photo, block) {
+  const clue = p.clues.find((k) => k.answer === target.a);
+  clue.tr = clue.text;
+  clue.text = 'Resimdeki nesne';
+  p.photo = { ...block, ...photo, answer: target.a, tr: target.c };
+  return p;
+}
 // 'picture3': önceki biçimlerin kayıtları yeni ekranda açılmasın
 export const picture = makeGameStore('picture3', {
   gameId: 'picture',
@@ -392,11 +401,13 @@ export const picture = makeGameStore('picture3', {
     // aday isimler: fotoğrafı bilinenler önce, sonra rastgele (fotoğrafı olmadığı bilinenler hariç)
     const rand = mulberry32(seed);
     const cands = entries
-      .filter((e) => NOUNS.has(e.a) && e.a.length >= 4 && e.a.length <= Math.min(7, level.w - 1) && cache[e.a] !== null)
+      // 3–5 harf: fotoğraf alanının çevresine boşluksuz sığar (daha uzunlarda desen çoğu zaman tutmuyor)
+      .filter((e) => NOUNS.has(e.a) && e.a.length >= 3 && e.a.length <= 5 && cache[e.a] !== null)
       .map((e) => ({ e, s: (cache[e.a] ? 10 : 0) + rand() * 10 }))
       .sort((x, y) => y.s - x.s)
       .map((x) => x.e);
     const tried = new Set();
+    let last = null;
     for (let attempt = 0; attempt < 3; attempt++) {
       // fotoğrafı olan bir isim bul (en fazla 8 sorgu)
       let target = null, photo = null;
@@ -411,19 +422,25 @@ export const picture = makeGameStore('picture3', {
         if (tried.size >= 8 * (attempt + 1)) break;
       }
       if (!target) break;
-      const pr = new Set([...(prio || []), target.a]);
+      last = { target, photo };
+      // boşluksuz üretici: fotoğraf alanı ortada, nesnenin kelimesi mutlaka bulmacada
+      const allFill = WORDS.filter((x) => x.a.length > 2).map((x) => ({ a: x.a, c: x.c, filler: true }));
       for (let t = 0; t < 2; t++) {
-        const p = await generatePuzzle({
-          w: level.w, h: level.h, entries, dict, prio: pr, seed: (seed + attempt * 7919 + t * 104729) >>> 0,
-          budgetMs: 1600, restarts: 4, blocks: [block], yieldFn, fillers: fillersNow(),
+        const p = await generateSlotFill({
+          w: level.w, h: level.h, entries, fillers: t ? [...fillersNow(), ...allFill] : fillersNow(), prio,
+          seed: (seed + attempt * 7919 + t * 104729) >>> 0, timeMs: t ? 3000 : 2500, maxTwo: t ? 7 : 6, maxLen: MAX_WORD, clueP: 0.24,
+          blocks: [block], must: target, yieldFn,
         });
-        const clue = p.clues.find((k) => k.answer === target.a);
-        if (!clue) continue;
-        clue.tr = clue.text;
-        clue.text = 'Resimdeki nesne';
-        p.photo = { ...block, ...photo, answer: target.a, tr: target.c };
-        return p;
+        if (p) return withPhoto(p, target, photo, block);
       }
+    }
+    // son çare: eski üretici (boş kare kalabilir)
+    if (last) {
+      const p = await generatePuzzle({
+        w: level.w, h: level.h, entries, dict, prio: new Set([...(prio || []), last.target.a]), seed,
+        budgetMs: 1600, restarts: 4, blocks: [block], yieldFn, fillers: fillersNow(),
+      });
+      if (p.clues.some((k) => k.answer === last.target.a)) return withPhoto(p, last.target, last.photo, block);
     }
     throw new Error('Resimli bulmaca hazırlanamadı. İnternet bağlantını kontrol edip tekrar dene.');
   },
@@ -819,7 +836,7 @@ export const weekly = {
     const base = getLevel(levelId);
     const seed = ('weekly' + wk.key + levelId).split('').reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 23);
     // tekrar kuralı gevşek: haftada bir gelen büyük bulmaca dolu olsun (daha önce çıkmış kelime de gelebilir)
-    const puzzle = await makePuzzle(base, seed, false, false, ARROW_SIZE); // haftalık: bir üst seviyenin kelimeleri, boşluksuz
+    const puzzle = await makePuzzle(base, seed, false, false, { w: 9, h: 11 }); // haftalık: bir üst seviyenin kelimeleri, büyük ve boşluksuz
     recordAnswers(realAnswers(puzzle.clues));
     recordFillers(puzzle.clues);
     puzzle.no = wk.no;

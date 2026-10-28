@@ -111,7 +111,8 @@ const Arrows = memo(function Arrows({ puzzle, size }) {
   puzzle.clues.forEach((k, i) => {
     const slotY = k.of === 1 ? size / 2 : k.slot === 0 ? size / 4 : (size * 3) / 4;
     const twoBottom = bottomCount[`${k.r},${k.c}`] === 2;
-    const bottomX = twoBottom ? (k.arrow === 'DR' ? size * 0.3 : size * 0.7) : size / 2;
+    // iki ok da alt kenardaysa: aşağı (D) solda, aşağı-sağa (DR) sağda
+    const bottomX = twoBottom ? (k.arrow === 'DR' ? size * 0.7 : size * 0.3) : size / 2;
     if (k.arrow === 'R') {
       const x = (k.c + 1) * size;
       const y = k.r * size + slotY;
