@@ -143,32 +143,26 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 ```
 
 
-## Sürüm 1.3.1 — "Bu sürümdeki yenilikler"
+## Sürüm 1.3.2 — "Bu sürümdeki yenilikler"
 
 **Türkçe**
 
 ```
-• Boş karesiz büyük bulmacalar: her kare harf ya da ipucu, bulmaca başına daha çok kelime
+• Büyük, boş karesiz bulmacalar: her kare harf ya da ipucu, bulmaca başına çok daha fazla kelime
 • Resimli bulmaca da artık boşluksuz
-• Akıllı seçim: dokunduğun kareye en yakın kelime seçilir
-• Sıradaki bulmaca arka planda hazırlanır, anında açılır
-• Bulmaca arşivi: son 30 günün günlük bulmacaları
-• Amerikan / İngiliz aksan seçimi
-• Yüzlerce yeni kelime, düzensiz fiiller ve çoğullar; ipucunun altında Türkçe örnek cümle
-• Kısa kelimeler art arda bulmacalarda tekrar gelmez
+• Akıllı seçim: dokunduğun kareye en yakın kelime seçilir, imleç orada kalır
+• İki ipuçlu karelerde daha anlaşılır oklar
+• Bulmacalar çok daha hızlı hazırlanıyor
 • Birçok düzeltme
 ```
 
 **English**
 
 ```
-• Bigger arrowword puzzles with no blank cells: every cell is a letter or a clue, with more words per puzzle
+• Bigger arrowword puzzles with no blank cells: every cell is a letter or a clue, with many more words per puzzle
 • Picture puzzles have no blank cells either
-• Smart selection: tapping a cell picks the nearest word
-• The next puzzle is prepared in the background and opens instantly
-• Puzzle archive: daily puzzles from the last 30 days
-• Choose a US or UK accent
-• Hundreds of new words, irregular verbs and plurals; a Turkish example sentence under each clue
-• Short words no longer repeat in back-to-back puzzles
+• Smart selection: tapping a cell picks the nearest word and keeps the cursor there
+• Clearer arrows in two-clue cells
+• Puzzles are generated much faster
 • Many fixes
 ```
