@@ -166,3 +166,37 @@ Daily streak, weekly rhythm, fastest times, learned words and hint-free solve ra
 • Puzzles are generated much faster
 • Many fixes
 ```
+
+
+## Kelime kaynakları (açıklamanın sonuna eklenebilir)
+
+```
+Kelime kaynakları: New General Service List (CC BY-SA 4.0), CEFR-J Wordlist (TUFS), Octanove Vocabulary Profile (CC BY-SA 4.0), Wiktionary (CC BY-SA), Tatoeba (CC BY 2.0 FR).
+```
+
+
+## Sürüm 1.3.3 — "Bu sürümdeki yenilikler"
+
+**Türkçe**
+
+```
+• 6.200+ kelime; her kelimenin kendine özgü, daha net bir ipucu var
+• Seviyeler yeniden düzenlendi: her seviyede sana uygun kelimeler
+• Şifreli Bulmaca: doğru harf her yere işlenir, cümle çözülünce bulmaca biter
+• Kelime Merdiveni: hedef kelimeyi de sen buluyorsun
+• Şifreli Cümle: doğru kelimeler kilitlenir, her kelimenin kartı açılır
+• Bulmacalar daha hızlı hazırlanıyor
+• Yeni logo ve birçok düzeltme
+```
+
+**English**
+
+```
+• 6,200+ words, each with its own clearer clue
+• Levels rebalanced so every level has the right words
+• Codeword: correct letters fill in everywhere; solving the hidden sentence completes the puzzle
+• Word Ladder: you now find the target word too
+• Cryptogram: correct words lock, and you can open a card for every word
+• Puzzles are generated faster
+• New logo and many fixes
+```

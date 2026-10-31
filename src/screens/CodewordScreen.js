@@ -1,5 +1,5 @@
 // Şifreli Bulmaca (Codeword): her harfin yerinde bir sayı; sayının harfini bul.
-// Doğru kelimenin harfleri aynı sayılı her kareye işlenir; yanlışsa işlenmez. Kesinleşen kareler silinmez.
+// Doğru yazılan harf hemen aynı sayılı her kareye (ve gizli cümleye) işlenir; yanlış harf yalnız kendi karesinde kalır. Kesinleşen kareler silinmez.
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +11,7 @@ import { useGameSession, LoadingPage, GameHeader, HintMenu, useSolvedEffect, use
 import { buildWordModel, cellsOf, cellKey } from '../engine/gridgames';
 import { wordStatus } from '../engine/model';
 import {
-  initCodeword, displayLetter, isLockedCell, isSolved, typeLetter, deleteLetter, nextOpenInWord, revealNumber,
-} from '../engine/codewordBoard';
+  initCodeword, displayLetter, isLockedCell, isSolved, typeLetter, deleteLetter, nextOpenInWord, revealNumber, hiddenSolved, solveAll, isKeptCell } from '../engine/codewordBoard';
 import { codeword, getLevel, recordHint } from '../engine/session';
 import { persist } from '../storage';
 import { colors, fonts, ed, efonts } from '../theme';
@@ -106,6 +105,13 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   }, [statuses]);
 
   const solved = isSolved(p, s);
+  // gizli cümle (alttaki şerit) tamamen çözülünce bulmacanın tamamı çözülmüş sayılır: kalan sayılar da işlenir
+  useEffect(() => {
+    if (!solved && hiddenSolved(p, s, typed)) {
+      setS(solveAll(p, model, s));
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    }
+  }, [solved, p, model, s, typed]);
   // bitince modal yok: gizli cümle okunur, oyuncu "Sonraki" ile kendisi geçer
   useSolvedEffect(solved, session, () => codeword.markSolved(kind, levelId));
 
@@ -115,6 +121,12 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       const r = typeLetter(p, model, s, activeWord, selKey, ch);
       const ns = r.s;
       setS(ns);
+      // yanlış harf: imleç aynı karede kalır (düzeltilebilsin; cümlede de seçim kaymasın)
+      if (ch !== model.solution[r.key]) {
+        setSelKey(r.key);
+        Haptics.selectionAsync().catch(() => {});
+        return;
+      }
       const wordDone = activeWord.keys.every((k) => displayLetter(p, ns, k));
       const wordOk = activeWord.keys.every((k) => isLockedCell(p, ns, k));
       if (wordDone) {
@@ -202,7 +214,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       />
       <View style={shellStyles.kickerRow}>
         <Text style={[shellStyles.kicker, learn.toast && { color: colors.ink }]} numberOfLines={1}>
-          {learn.toast || 'CODEWORD · DOĞRU KELİMENİN HARFLERİ AYNI SAYILI HER KAREYE İŞLENİR'}
+          {learn.toast || 'CODEWORD · DOĞRU HARF AYNI SAYILI HER KAREYE İŞLENİR'}
         </Text>
       </View>
       <View
@@ -326,16 +338,16 @@ function Board({ session, kind, levelId, onBack, onNext }) {
             recordHint('letter', session);
             setS(revealNumber(p, model, s, selNum));
           }],
-          ['Kelimeyi temizle', 'Seçili kelimedeki doğrulanmamış harfleri sil', () => {
+          ['Kelimeyi temizle', 'Seçili kelimedeki yanlış harfleri sil', () => {
             if (!activeWord) return;
             const cells = { ...s.cells };
-            for (const k of activeWord.keys) delete cells[k];
+            for (const k of activeWord.keys) if (!isKeptCell(p, s, k)) delete cells[k];
             setS({ ...s, cells });
           }],
           ['Kelime kartı', `Seçili kelimeyi öğren (kalan hak ${learn.left}/${learn.limit})`, () => activeWord && learn.openLearn(activeWord.answer, activeWord.text)],
           ['Baştan başla', 'Verilenler hariç tüm harfleri sil', () => setS(initCodeword(p, model, {}))],
         ]}
-        note="Yazdığın harfler kelime doğru çıkana kadar sadece o kelimede durur. Kelime doğruysa harfleri aynı sayılı her kareye işlenir ve kilitlenir."
+        note="Doğru yazdığın harf aynı sayılı her kareye ve alttaki cümleye hemen işlenir ve kilitlenir. Yanlış harf yalnızca yazdığın karede kalır."
       />
       {learn.modal}
       {solved ? (

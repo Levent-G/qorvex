@@ -1,8 +1,8 @@
 // Şifreli Bulmaca (Codeword) tahta mantığı — saf fonksiyonlar, test edilebilir.
 // committed: sayı -> harf (yalnızca DOĞRU olduğu kesinleşenler; verilenler, açılanlar, doğru kelimelerden gelenler)
 // cells:     "r,c" -> harf (henüz kesinleşmemiş, sadece o karede duran geçici harfler)
-// Kural: Bir kelime tamamlanıp doğruysa harfleri kesinleşir ve aynı sayılı her kareye işlenir;
-//        yanlışsa hiçbir yere işlenmez. Kesinleşmiş kareler silinmez.
+// Kural: Doğru yazılan harf hemen kesinleşir ve aynı sayılı her kareye (ve gizli cümleye) işlenir;
+//        yanlış harf yalnızca yazıldığı karede kalır. Kesinleşmiş kareler silinmez.
 
 export const cellKey = (r, c) => `${r},${c}`;
 
@@ -58,6 +58,11 @@ export function isLockedCell(p, s, key) {
   return !!s.committed[p.code[s.solution[key]]];
 }
 
+// Korunan kare: kesinleşmiş ya da bu kareye doğru harf yazılmış (kelime bitmese de silinmez, üzerine yazılmaz)
+export function isKeptCell(p, s, key) {
+  return isLockedCell(p, s, key) || (!!s.cells[key] && s.cells[key] === s.solution[key]);
+}
+
 export function isSolved(p, s) {
   const present = new Set(Object.keys(s.solution).map((k) => p.code[s.solution[k]]));
   return [...present].every((n) => s.committed[n]);
@@ -66,19 +71,21 @@ export function isSolved(p, s) {
 // Harf yaz (seçili kare kesinleşmişse, kelimede sıradaki açık kareye yaz)
 export function typeLetter(p, model, s, word, key, ch) {
   let k = key;
-  if (isLockedCell(p, s, k)) {
-    const free = word.keys.find((kk) => !isLockedCell(p, s, kk));
+  if (isKeptCell(p, s, k)) {
+    const free = word.keys.find((kk) => !isKeptCell(p, s, kk));
     if (!free) return { s, key };
     k = free;
   }
   const cells = { ...s.cells, [k]: ch };
-  const st = settle(p, model, s.committed, cells);
+  // doğru harf: o sayı kesinleşir, aynı sayılı her kare dolar
+  const committed = ch === s.solution[k] ? { ...s.committed, [p.code[ch]]: ch } : s.committed;
+  const st = settle(p, model, committed, cells);
   return { s: { ...s, ...st }, key: k };
 }
 
 // Sil: bu karede geçici harf varsa onu; yoksa kelimede geri gidip kesinleşmemiş ilk kareyi
 export function deleteLetter(p, s, word, key) {
-  if (!isLockedCell(p, s, key) && s.cells[key]) {
+  if (!isKeptCell(p, s, key) && s.cells[key]) {
     const cells = { ...s.cells };
     delete cells[key];
     return { s: { ...s, cells }, key };
@@ -86,7 +93,7 @@ export function deleteLetter(p, s, word, key) {
   const i = word.keys.indexOf(key);
   for (let j = i - 1; j >= 0; j--) {
     const kk = word.keys[j];
-    if (isLockedCell(p, s, kk)) continue; // doğru olduğu kesin kareler silinmez
+    if (isKeptCell(p, s, kk)) continue; // doğru harfli kareler silinmez
     const cells = { ...s.cells };
     delete cells[kk];
     return { s: { ...s, cells }, key: kk };
@@ -99,13 +106,27 @@ export function nextOpenInWord(p, s, word, key) {
   const i = word.keys.indexOf(key);
   for (let j = i + 1; j < word.keys.length; j++) {
     const kk = word.keys[j];
-    if (!isLockedCell(p, s, kk) && !s.cells[kk]) return kk;
+    if (!isKeptCell(p, s, kk) && !s.cells[kk]) return kk;
   }
   for (let j = 0; j < word.keys.length; j++) {
     const kk = word.keys[j];
-    if (!isLockedCell(p, s, kk) && !s.cells[kk]) return kk;
+    if (!isKeptCell(p, s, kk) && !s.cells[kk]) return kk;
   }
   return key;
+}
+
+// Gizli cümle çözüldü mü: cümledeki her harfin sayısı kesinleşmiş ya da doğru yazılmış (typed: sayı -> yazılan harf)
+export function hiddenSolved(p, s, typed = {}) {
+  if (!p.hidden) return false;
+  const letters = [...new Set(p.hidden.text.toUpperCase().replace(/[^A-Z]/g, ''))];
+  return letters.length > 0 && letters.every((ch) => { const n = p.code[ch]; return s.committed[n] === ch || typed[n] === ch; });
+}
+
+// Bulmacanın tamamını çöz (gizli cümle bilinince): ızgaradaki her sayı kesinleşir
+export function solveAll(p, model, s) {
+  const committed = { ...s.committed };
+  for (const k of Object.keys(model.solution)) committed[p.code[model.solution[k]]] = model.solution[k];
+  return { ...s, committed, cells: {} };
 }
 
 // Bir sayıyı aç (ipucu): doğru harf kesinleşir

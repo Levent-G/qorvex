@@ -10,6 +10,7 @@ import {
   makeCrypto, initCrypto, select, typeLetter, deleteLetter, reveal, isSolved, allFilled, reading, wordStatuses,
 } from '../engine/cryptoBoard';
 import { cryptogram, getLevel, recordHint } from '../engine/session';
+import { getWord } from '../engine/words';
 import { persist } from '../storage';
 import { colors, fonts, ed, efonts } from '../theme';
 
@@ -75,6 +76,21 @@ function Board({ session, kind, levelId, onBack, onNext }) {
     return out;
   }, [c]);
   const statusAt = (i) => (words.find((w) => i >= w.start && i < w.end) || {}).status;
+  // cümledeki sözlük kelimeleri (kelime kartı açılabilenler): gerçek yazılış + Türkçesi
+  const realOf = (w) => c.enc.slice(w.start, w.end).replace(/[A-Z]/g, (ch) => c.decode[ch]);
+  const cardWords = useMemo(() => {
+    const seen = new Set();
+    return words.map((w) => ({ ...w, real: realOf(w) })).filter((w) => {
+      const e = getWord(w.real);
+      if (!e || seen.has(w.real)) return false;
+      seen.add(w.real);
+      w.tr = e.c;
+      return true;
+    });
+  }, [c, words]);
+  const selWord = words.find((w) => st.sel >= w.start && st.sel < w.end);
+  const selCard = selWord ? cardWords.find((w) => w.real === realOf(selWord)) : null;
+  const openWord = (w) => learn.openLearn(w.real, w.tr, { free: solved || w.status === 'ok' });
 
   const maxWord = Math.max(...tokens.map((t) => t.length));
   const cell = Math.max(24, Math.min(40, Math.floor((width - 32 - (maxWord - 1) * 3) / maxWord)));
@@ -144,16 +160,31 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           ))}
         </View>
 
+        {/* Seçili kelimenin kartı: doğru kelimede hak harcamaz, çözülmemişte cevabı gösterdiği için hak düşer */}
+        {!solved && selCard ? (
+          <Pressable onPress={() => openWord(selCard)} style={({ pressed }) => [styles.cardPill, pressed && { opacity: 0.7 }]}>
+            <Text style={styles.cardPillText}>
+              {selCard.status === 'ok' ? `${selCard.real.toLowerCase()} — ${selCard.tr} · kelime kartı ›` : 'Bu kelimenin kartını gör ›'}
+            </Text>
+          </Pressable>
+        ) : null}
+
         {/* Okunuş: çözdüğün kadarıyla cümle düz metin */}
         <View style={[styles.readBox, solved && { borderColor: colors.good, backgroundColor: colors.okCell }]}>
           <Text style={[styles.label, solved && { color: colors.good }]}>{solved ? 'ÇÖZÜLEN CÜMLE ✓' : 'OKUNUŞ · ŞİMDİYE KADAR'}</Text>
           <Text style={styles.readText}>{solved ? plain : reading(c, st)}</Text>
           {solved ? (
-            <Pressable onPress={() => learn.openLearn(p.word, p.wordClue)}>
-              <Text style={styles.keyWord}>
-                Anahtar kelime: <Text style={{ fontFamily: efonts.headlineBold }}>{p.word.toLowerCase()}</Text> — {p.wordClue} · kartını aç ›
-              </Text>
-            </Pressable>
+            <View style={{ marginTop: 10 }}>
+              <Text style={styles.label}>KELİMELER · KARTINI AÇMAK İÇİN DOKUN</Text>
+              <View style={styles.chips}>
+                {cardWords.map((w) => (
+                  <Pressable key={w.real} onPress={() => openWord(w)} style={({ pressed }) => [styles.chip, w.real === p.word && styles.chipKey, pressed && { opacity: 0.7 }]}>
+                    <Text style={styles.chipText}>{w.real.toLowerCase()}</Text>
+                    <Text style={styles.chipTr} numberOfLines={1}>{w.tr}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
           ) : null}
           {solved ? <ShareButton info={{ title: `Şifreli Cümle · ${kind === 'daily' ? 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : level.id} · No. ${p.no}`, seconds: session.seconds, hints: session.hinted, line: `🔐 ${c.letters.length} harflik şifre çözüldü` }} /> : null}
         </View>
@@ -174,7 +205,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
             recordHint('letter', session);
             setSt((s) => reveal(c, s));
           }],
-          ['Kelime kartı', `Cümlenin anahtar kelimesini öğren (kalan hak ${learn.left}/${learn.limit})`, () => learn.openLearn(p.word, p.wordClue)],
+          ['Kelime kartı', `Seçili kelimenin kartı (doğru kelimede ücretsiz · kalan hak ${learn.left}/${learn.limit})`, () => (selCard ? openWord(selCard) : learn.openLearn(p.word, p.wordClue))],
           ['Baştan başla', 'Verilenler hariç tüm harfleri sil', () => setSt(initCrypto(c, {}, {}))],
         ]}
         note="Aynı gri harf cümlenin her yerinde aynı gerçek harftir. Kelime dolunca rengi söyler: yeşil doğru, sarı yakın, kırmızı yanlış."
@@ -219,4 +250,11 @@ const styles = StyleSheet.create({
   readBox: { backgroundColor: ed.surface, borderRadius: 12, borderWidth: 1, borderColor: ed.border, padding: 12, marginTop: 18 },
   readText: { fontFamily: efonts.headlineBold, fontSize: 20, lineHeight: 28, letterSpacing: 1, color: ed.text, marginTop: 4 },
   keyWord: { fontFamily: efonts.body, fontSize: 15, lineHeight: 21, color: ed.text, marginTop: 8 },
+  cardPill: { alignSelf: 'flex-start', marginTop: 14, backgroundColor: ed.accentSoft, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 7 },
+  cardPillText: { fontFamily: efonts.bodyBold, fontSize: 13.5, color: ed.accentInk },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
+  chip: { backgroundColor: ed.surfaceAlt, borderRadius: 12, borderWidth: 1, borderColor: ed.border, paddingHorizontal: 10, paddingVertical: 6, maxWidth: '48%' },
+  chipKey: { borderColor: ed.accentLine, backgroundColor: ed.accentSoft },
+  chipText: { fontFamily: efonts.headlineBold, fontSize: 15, color: ed.text },
+  chipTr: { fontFamily: efonts.body, fontSize: 12, color: ed.textSoft },
 });

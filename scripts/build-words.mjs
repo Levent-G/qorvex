@@ -149,6 +149,26 @@ if (fs.existsSync(QUAL_FILE)) {
 const missing = Object.keys(fixes).filter((a) => !map.has(a.toLowerCase()));
 if (missing.length) console.warn(`UYARI: listede olmayan düzeltmeler: ${missing.join(', ')}`);
 console.log(`${fixed} ipucu elle düzeltildi`);
+// Seviye düzeltmeleri (scripts/level-overrides.json — CEFR-J/Octanove'a göre) ve çıkarılacak kelimeler (scripts/word-exclude.json)
+const LEVEL_FILE = path.resolve(__dirname, 'level-overrides.json');
+if (fs.existsSync(LEVEL_FILE)) {
+  const ov = JSON.parse(fs.readFileSync(LEVEL_FILE, 'utf8'));
+  const byA = new Map(words.map((w) => [w.a, w]));
+  let n = 0;
+  for (const [a, lv] of Object.entries(ov)) {
+    if (a.startsWith('_')) continue;
+    const w = byA.get(a), i = LEVELS.indexOf(lv);
+    if (w && i >= 0 && w.l !== i) { w.l = i; n++; }
+  }
+  console.log(`${n} kelimenin seviyesi düzeltildi`);
+}
+const EXCL_FILE = path.resolve(__dirname, 'word-exclude.json');
+if (fs.existsSync(EXCL_FILE)) {
+  const ex = new Set(JSON.parse(fs.readFileSync(EXCL_FILE, 'utf8')).words || []);
+  const before = words.length;
+  for (let i = words.length - 1; i >= 0; i--) if (ex.has(words[i].a)) words.splice(i, 1);
+  console.log(`${before - words.length} kelime çıkarıldı`);
+}
 words.sort((x, y) => x.l - y.l || (x.a < y.a ? -1 : 1));
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(words));

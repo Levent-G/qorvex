@@ -73,6 +73,12 @@ async function makePuzzle(level, seed, withPrio, strict = true, size = { w: leve
   const allFill = WORDS.filter((x) => x.a.length > 2).map((x) => ({ a: x.a, c: x.c, filler: true }));
   const p3 = await sf({ fillers: [...fillers, ...seenAsFill, ...allFill], prio: undefined, seed: seed ^ 0x27d4eb2f, timeMs: 3000, maxTwo: 7 });
   if (p3) return p3;
+  // yavaş cihaz: boş kareli eski üreticiye düşmeden önce yeni tohumlarla denemeye devam (toplam ~25 sn'ye kadar)
+  const until = Date.now() + 15000;
+  for (let k = 1; Date.now() < until; k++) {
+    const p4 = await sf({ fillers: [...fillers, ...seenAsFill, ...allFill], prio: undefined, seed: (seed + k * 2654435761) >>> 0, timeMs: 3000, maxTwo: 7 });
+    if (p4) return p4;
+  }
   // 2) yedek: eski üretici (nadiren; boş kare kalabilir)
   return generatePuzzle({ w: size.w, h: size.h, entries, dict, prio, seed, budgetMs: 1600, restarts: 5, yieldFn, fillers });
 }
@@ -425,7 +431,7 @@ export const picture = makeGameStore('picture3', {
       last = { target, photo };
       // boşluksuz üretici: fotoğraf alanı ortada, nesnenin kelimesi mutlaka bulmacada
       const allFill = WORDS.filter((x) => x.a.length > 2).map((x) => ({ a: x.a, c: x.c, filler: true }));
-      for (let t = 0; t < 2; t++) {
+      for (let t = 0; t < 3; t++) {
         const p = await generateSlotFill({
           w: level.w, h: level.h, entries, fillers: t ? [...fillersNow(), ...allFill] : fillersNow(), prio,
           seed: (seed + attempt * 7919 + t * 104729) >>> 0, timeMs: t ? 3000 : 2500, maxTwo: t ? 7 : 6, maxLen: MAX_WORD, clueP: 0.24,

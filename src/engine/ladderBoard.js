@@ -1,8 +1,8 @@
 // Kelime Merdiveni tahtası durum makinesi (saf fonksiyonlar, test edilebilir)
-// Satırlar: 0 = başlangıç (verilir), son = hedef (verilir), aradakiler doldurulur.
+// Satırlar: 0 = başlangıç (verilir), sonrakiler hedef dahil doldurulur (hedef de ipucusuyla bulunur).
 
 export const key = (row, col) => `${row},${col}`;
-export const fillableRows = (p) => p.rungs.map((_, i) => i).slice(1, -1);
+export const fillableRows = (p) => p.rungs.map((_, i) => i).slice(1);
 
 export function rowStatus(p, entries, row) {
   const ans = p.rungs[row].answer;

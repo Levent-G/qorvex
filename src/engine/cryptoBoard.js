@@ -12,7 +12,16 @@ export function makeCrypto(p) {
 }
 
 export const isLocked = (c, s) => c.given.has(s) || false;
-const locked = (c, st, ch) => c.given.has(ch) || !!st.revealed[ch];
+// doğru (yeşil) kelimelerdeki şifreli harfler
+export function okLetters(c, st) {
+  const set = new Set();
+  const re = /[A-Z]+/g;
+  let m;
+  while ((m = re.exec(c.enc))) if ([...m[0]].every((ch) => st.guess[ch] === c.decode[ch])) for (const ch of m[0]) set.add(ch);
+  return set;
+}
+// kilitli: verilen, açılan ya da doğru bir kelimenin içindeki harf
+const locked = (c, st, ch) => c.given.has(ch) || !!st.revealed[ch] || okLetters(c, st).has(ch);
 
 export function initCrypto(c, saved = {}, revealed = {}) {
   const guess = { ...saved };

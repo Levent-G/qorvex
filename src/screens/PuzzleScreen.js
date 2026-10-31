@@ -204,7 +204,8 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
         style={styles.gridWrap}
         onLayout={(e) => {
           const h = Math.round(e.nativeEvent.layout.height);
-          setGridBox((b) => (b && b.h === h ? b : { h }));
+          // ilk ölçüm sabit kalır; yalnız büyük değişimde (ör. ekran boyu) yeniden hesaplanır — seçim değişince ızgara kaymasın
+          setGridBox((b) => (b && Math.abs(b.h - h) < 60 ? b : { h }));
         }}
       >
         <ArrowGrid
@@ -248,7 +249,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             </Text>
             <CardHintPill onPress={() => openLearn(s.active)} />
           </View>
-          {photo && w.answer === photo.answer ? null : <ClueContext answer={w.answer} />}
+          <ClueContext answer={photo && w.answer === photo.answer ? null : w.answer} />
         </View>
         <Pressable onPress={() => dispatch({ type: 'step', delta: 1 })} hitSlop={8} style={styles.clueNav}>
           <ChevronIcon dir="right" size={20} color={ed.textSoft} />

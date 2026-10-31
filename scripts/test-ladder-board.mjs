@@ -47,7 +47,10 @@ for (const r of rows) {
     run({ type: 'type', ch: p.rungs[r].answer[s.sel.col] });
   }
   if (r !== rows[rows.length - 1]) assert(s.sel.row !== r, `doğru basamaktan sonra geçiş (${r})`);
+  // hedef de bulunmalı: son basamak yazılmadan bitmez
+  if (r === rows[rows.length - 2]) assert(!s.solved, 'hedef yazılmadan merdiven bitmemeli');
 }
+assert(rows.includes(p.rungs.length - 1) && !rows.includes(0), 'hedef doldurulur, başlangıç verilir');
 assert(s.solved, 'merdiven çözülmüş olmalı');
 console.log(`Merdiven: ${p.rungs.map((x) => x.answer).join(' > ')}, çözüldü=${s.solved}`);
 

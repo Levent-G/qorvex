@@ -299,6 +299,11 @@ export default function ProfileTab({ onTab }) {
         />
       </View>
       <Text style={styles.footer}>QORVEX · BUL · ÇÖZ · ÖĞREN</Text>
+      {/* Kelime kaynakları (lisans atıfları) */}
+      <Text style={styles.credits}>
+        Kelime kaynakları: New General Service List (Browne, Culligan, Phillips; CC BY-SA 4.0) · CEFR-J Wordlist 1.5 (Tono Lab., TUFS) ·
+        Octanove Vocabulary Profile C1/C2 (Octanove Labs; CC BY-SA 4.0) · Vikisözlük/Wiktionary (CC BY-SA) · Tatoeba (CC BY 2.0 FR) · Openjam (MIT).
+      </Text>
     </ScrollView>
   );
 }
@@ -346,4 +351,5 @@ const styles = StyleSheet.create({
   segOn: { backgroundColor: ed.primary },
   segText: { fontFamily: efonts.labelBold, fontSize: 12, color: ed.textSoft },
   footer: { fontFamily: efonts.labelBold, fontSize: 10.5, letterSpacing: 1.4, color: ed.textMute, textAlign: 'center', marginTop: 18 },
+  credits: { fontFamily: efonts.body, fontSize: 10.5, lineHeight: 15, color: ed.textMute, textAlign: 'center', marginTop: 8, marginHorizontal: 12 },
 });

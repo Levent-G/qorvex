@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { HomeIcon, ChartIcon, BookOpenIcon, GridIcon, PersonIcon, ChevronRight, BadgeCheckIcon } from './UiIcons';
 import { ed, efonts } from '../theme';
+import BrandLogo from './BrandLogo';
 
 export const TABS = [
   { id: 'home', label: 'Ana Sayfa', Icon: HomeIcon },
@@ -21,8 +22,7 @@ export function TopHeader({ insetTop, onTab, levelId }) {
         </View>
       </Pressable>
       <View style={styles.logo}>
-        <Text style={styles.logoText}>QORVEX</Text>
-        <Text style={styles.logoSub}>BUL · ÇÖZ · ÖĞREN</Text>
+        <BrandLogo height={40} />
       </View>
       <Pressable onPress={() => onTab('levels')} hitSlop={10} style={[styles.side, { alignItems: 'flex-end' }]}>
         <View style={styles.levelPill}>

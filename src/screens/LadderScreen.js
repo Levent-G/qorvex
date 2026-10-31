@@ -100,7 +100,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
 
   // İpucu kutusuna dokunma yalnızca basamağı seçer (kelime kartı "Kelime kartını gör" düğmesiyle açılır)
   const onClue = (row) => {
-    if (row !== 0 && row !== last && row !== s.sel.row) dispatch({ type: 'selectRow', row });
+    if (row !== 0 && row !== s.sel.row) dispatch({ type: 'selectRow', row });
   };
 
   const onKey = useCallback((ch) => {
@@ -126,7 +126,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
 
   const renderRow = (row) => {
     const rung = p.rungs[row];
-    const fixed = row === 0 || row === last;
+    const fixed = row === 0; // yalnız başlangıç verilir; hedef de bulunur
+    const isTarget = row === last;
     const status = fixed ? null : rowStatus(p, s.entries, row);
     const selectedRow = !fixed && s.sel.row === row;
     return (
@@ -141,26 +142,26 @@ function Board({ session, kind, levelId, onBack, onNext }) {
           ]}
         >
           {fixed ? (
-            <Text style={styles.fixedLabel}>{row === 0 ? 'BAŞLANGIÇ' : 'HEDEF'}</Text>
+            <Text style={styles.fixedLabel}>BAŞLANGIÇ</Text>
           ) : (
-            <Text
-              allowFontScaling={false}
-              numberOfLines={2}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
-              style={[styles.clueText, selectedRow && { color: colors.ink }]}
-            >
-              {rung.clue}
-            </Text>
+            <>
+              {isTarget ? <Text style={styles.targetLabel}>HEDEF</Text> : null}
+              <Text
+                allowFontScaling={false}
+                numberOfLines={isTarget ? 1 : 2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                style={[styles.clueText, selectedRow && { color: colors.ink }]}
+              >
+                {rung.clue}
+              </Text>
+            </>
           )}
         </Pressable>
         <View style={styles.cellsRow}>
           {Array.from({ length: p.len }, (_, c) => {
             const k = key(row, c);
             const v = fixed ? rung.answer[c] : s.entries[k];
-            // Boş karede bir üst basamağın harfi soluk görünür
-            const above = row - 1 === 0 ? p.rungs[0].answer[c] : s.entries[key(row - 1, c)];
-            const ghost = !fixed && !v && above ? above : null;
             const active = selectedRow && s.sel.col === c;
             // kilitli (otomatik dolan) harf: değişmeyen harf, kullanıcı yazmaz
             const locked = !fixed && s.fixed && s.fixed[k];
@@ -176,17 +177,15 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 style={[styles.cell, { width: cell, height: cell, backgroundColor: bg }]}
               >
                 {p.hint && !fixed && rung.change === c ? <View style={styles.hintArrow} /> : null}
-                {p.hint && row === last && rung.change === c ? <View style={styles.hintArrow} /> : null}
                 <Text
                   allowFontScaling={false}
                   style={[
                     styles.letter,
                     { fontSize: cell * 0.55, lineHeight: cell * 0.75 },
-                    ghost && styles.ghost,
                     s.revealed[k] && { color: colors.revealed },
                   ]}
                 >
-                  {v || ghost || ''}
+                  {v || ''}
                 </Text>
               </Pressable>
             );
@@ -382,6 +381,7 @@ const styles = StyleSheet.create({
   },
   clueFixed: { backgroundColor: ed.primary },
   fixedLabel: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 1.5, color: ed.bg },
+  targetLabel: { fontFamily: efonts.labelBold, fontSize: 9, letterSpacing: 1.2, color: ed.accent, marginBottom: 1 },
   clueText: { fontFamily: efonts.bodySemi, fontSize: 15, lineHeight: 19, color: ed.text, textAlign: 'center' },
   cellsRow: { flexDirection: 'row', gap: 4 },
   cell: { borderWidth: 1, borderColor: ed.border, alignItems: 'center', justifyContent: 'center', borderRadius: 6 },

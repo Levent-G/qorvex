@@ -46,96 +46,117 @@ function buildIndex(entries, fillers, prio, maxLen) {
 // clue[i]=1 ipucu karesi. Onarım döngüsüyle kurallara uydurulur; uymazsa null.
 function makePattern(w, h, rand, { p, maxLen, maxTwo, lensOk, blk }) {
   const N = w * h;
-  const at = (r, c) => r * w + c;
   const clue = new Uint8Array(N);
   for (let i = 0; i < N; i++) clue[i] = !blk[i] && rand() < p ? 1 : 0;
   clue[0] = 1;
-  const isL = (r, c) => r >= 0 && c >= 0 && r < h && c < w && !clue[at(r, c)] && !blk[at(r, c)];
-  const hLen = (r, c) => { let k = 0; while (isL(r, c + k)) k++; return k; }; // (r,c)'den sağa harf sayısı
-  const vLen = (r, c) => { let k = 0; while (isL(r + k, c)) k++; return k; };
-  const hStart = (r, c) => isL(r, c) && !isL(r, c - 1);
-  const vStart = (r, c) => isL(r, c) && !isL(r - 1, c);
-  // ipucu karesi bir kelimeye ipucu verebilir mi
-  const useful = (r, c) =>
-    (hStart(r, c + 1) && hLen(r, c + 1) >= 2) || // R
-    (vStart(r + 1, c) && vLen(r + 1, c) >= 2) || // D
-    (c + 1 < w && vStart(r, c + 1) && vLen(r, c + 1) >= 2 && r === 0) || // RD (yalnız üst satırda gerekir; altta D zaten var)
-    (r + 1 < h && hStart(r + 1, c) && hLen(r + 1, c) >= 2 && c === 0) || // DR (yalnız sol sütunda)
-    (c + 1 < w && vStart(r, c + 1) && vLen(r, c + 1) >= 2) ||
-    (r + 1 < h && hStart(r + 1, c) && hLen(r + 1, c) >= 2);
-
-  for (let it = 0; it < 80; it++) {
+  const isLet = (i) => !clue[i] && !blk[i];
+  // dizi tabloları: her harf karesi için içinde bulunduğu yatay/dikey dizinin başı ve uzunluğu (O(N) ile yenilenir)
+  const hS = new Int16Array(N), hL = new Int8Array(N), vS = new Int16Array(N), vL = new Int8Array(N);
+  const rec = () => {
+    for (let r = 0; r < h; r++) {
+      let c = 0;
+      while (c < w) {
+        const i = r * w + c;
+        if (!isLet(i)) { hS[i] = -1; hL[i] = 0; c++; continue; }
+        let k = c;
+        while (k < w && isLet(r * w + k)) k++;
+        for (let x = c; x < k; x++) { hS[r * w + x] = i; hL[r * w + x] = k - c; }
+        c = k;
+      }
+    }
+    for (let c = 0; c < w; c++) {
+      let r = 0;
+      while (r < h) {
+        const i = r * w + c;
+        if (!isLet(i)) { vS[i] = -1; vL[i] = 0; r++; continue; }
+        let k = r;
+        while (k < h && isLet(k * w + c)) k++;
+        for (let y = r; y < k; y++) { vS[y * w + c] = i; vL[y * w + c] = k - r; }
+        r = k;
+      }
+    }
+  };
+  const bad = (L) => L > maxLen || (L >= 2 && !lensOk(L));
+  // ipucu karesi bir kelimeye ipucu verebilir mi (R, D, RD, DR)
+  const useful = (i) => {
+    const r = (i / w) | 0, c = i % w;
+    if (c + 1 < w) { const j = i + 1; if (isLet(j) && ((hS[j] === j && hL[j] >= 2) || (vS[j] === j && vL[j] >= 2))) return true; }
+    if (r + 1 < h) { const j = i + w; if (isLet(j) && ((vS[j] === j && vL[j] >= 2) || (hS[j] === j && hL[j] >= 2))) return true; }
+    return false;
+  };
+  rec();
+  for (let it = 0; it < 120; it++) {
     let changed = false;
-    // uzun dizileri böl
-    for (let r = 0; r < h; r++)
-      for (let c = 0; c < w; c++) {
-        if (hStart(r, c)) { const L = hLen(r, c); if (L > maxLen || (L >= 2 && !lensOk(L))) { clue[at(r, c + Math.min(L - 1, 1 + Math.floor(rand() * (L - 1))))] = 1; changed = true; } }
-        if (vStart(r, c)) { const L = vLen(r, c); if (L > maxLen || (L >= 2 && !lensOk(L))) { clue[at(r + Math.min(L - 1, 1 + Math.floor(rand() * (L - 1))), c)] = 1; changed = true; } }
-      }
-    // ipucu yeri olmayan kelime (solu/üstü kenar ya da fotoğraf): başı ipucu karesi olur, kelime bir kare kısalır
-    for (let r = 0; r < h; r++)
-      for (let c = 0; c < w; c++) {
-        if (hStart(r, c) && hLen(r, c) >= 2 && !(c > 0 && clue[at(r, c - 1)]) && !(r > 0 && clue[at(r - 1, c)])) { clue[at(r, c)] = 1; changed = true; continue; }
-        if (vStart(r, c) && vLen(r, c) >= 2 && !(r > 0 && clue[at(r - 1, c)]) && !(c > 0 && clue[at(r, c - 1)])) { clue[at(r, c)] = 1; changed = true; }
-      }
-    // yalnız harf (iki yönde de 1 harflik dizi): komşu ipucunu harfe çevir ya da kendisi ipucu olsun
-    for (let r = 0; r < h; r++)
-      for (let c = 0; c < w; c++) {
-        if (!isL(r, c)) continue;
-        const hl = (() => { let a = c; while (isL(r, a - 1)) a--; return hLen(r, a); })();
-        const vl = (() => { let a = r; while (isL(a - 1, c)) a--; return vLen(a, c); })();
-        if (hl >= 2 || vl >= 2) continue;
-        const nb = [[r, c + 1], [r + 1, c], [r, c - 1], [r - 1, c]].filter(([y, x]) => y >= 0 && x >= 0 && y < h && x < w && clue[at(y, x)] && !(y === 0 && x === 0));
-        if (nb.length && rand() < 0.75) { const [y, x] = nb[Math.floor(rand() * nb.length)]; clue[at(y, x)] = 0; }
-        else clue[at(r, c)] = 1;
+    for (let i = 0; i < N && !changed; i++) {
+      if (!isLet(i)) continue;
+      const r = (i / w) | 0, c = i % w;
+      // uzun / uygunsuz uzunluktaki diziyi böl
+      if (hS[i] === i && bad(hL[i])) { const L = hL[i]; clue[i + Math.min(L - 1, 1 + Math.floor(rand() * (L - 1)))] = 1; changed = true; break; }
+      if (vS[i] === i && bad(vL[i])) { const L = vL[i]; clue[i + w * Math.min(L - 1, 1 + Math.floor(rand() * (L - 1)))] = 1; changed = true; break; }
+      // ipucu yeri olmayan kelime (solu/üstü kenar ya da fotoğraf): başı ipucu karesi olur
+      if (hS[i] === i && hL[i] >= 2 && !(c > 0 && clue[i - 1]) && !(r > 0 && clue[i - w])) { clue[i] = 1; changed = true; break; }
+      if (vS[i] === i && vL[i] >= 2 && !(r > 0 && clue[i - w]) && !(c > 0 && clue[i - 1])) { clue[i] = 1; changed = true; break; }
+      // yalnız harf (iki yönde de 1 harflik dizi): komşu ipucunu harfe çevir ya da kendisi ipucu olsun
+      if (hL[i] < 2 && vL[i] < 2) {
+        const nb = [];
+        if (c + 1 < w && clue[i + 1]) nb.push(i + 1);
+        if (r + 1 < h && clue[i + w]) nb.push(i + w);
+        if (c > 0 && clue[i - 1] && i - 1 !== 0) nb.push(i - 1);
+        if (r > 0 && clue[i - w] && i - w !== 0) nb.push(i - w);
+        if (nb.length && rand() < 0.75) clue[nb[Math.floor(rand() * nb.length)]] = 0;
+        else clue[i] = 1;
         changed = true;
+        break;
       }
-    // iki harfli kelime fazlaysa: birinin sonundaki ipucu karesini kaldır, kelime uzasın (komşu diziyle birleşir)
+    }
     if (!changed) {
+      // iki harfli kelime fazlaysa: birinin sonundaki (ya da satır/sütun sonundaysa önündeki) ipucunu kaldır
       const twos = [];
-      for (let r = 0; r < h; r++)
-        for (let c = 0; c < w; c++) {
-          if (hStart(r, c) && hLen(r, c) === 2) {
-            if (c + 2 < w && clue[at(r, c + 2)]) twos.push(at(r, c + 2));
-            else if (c > 1 && clue[at(r, c - 1)]) twos.push(at(r, c - 1)); // satır sonunda: öndeki ipucunu kaldır
-          }
-          if (vStart(r, c) && vLen(r, c) === 2) {
-            if (r + 2 < h && clue[at(r + 2, c)]) twos.push(at(r + 2, c));
-            else if (r > 1 && clue[at(r - 1, c)]) twos.push(at(r - 1, c)); // sütun sonunda
-          }
+      for (let i = 0; i < N; i++) {
+        if (!isLet(i)) continue;
+        const r = (i / w) | 0, c = i % w;
+        if (hS[i] === i && hL[i] === 2) {
+          if (c + 2 < w && clue[i + 2]) twos.push(i + 2);
+          else if (c > 1 && clue[i - 1]) twos.push(i - 1);
         }
+        if (vS[i] === i && vL[i] === 2) {
+          if (r + 2 < h && clue[i + 2 * w]) twos.push(i + 2 * w);
+          else if (r > 1 && clue[i - w]) twos.push(i - w);
+        }
+      }
       if (twos.length > maxTwo) { clue[twos[Math.floor(rand() * twos.length)]] = 0; changed = true; }
     }
-    // işe yaramayan ipucu karesi harfe döner
-    for (let r = 0; r < h; r++)
-      for (let c = 0; c < w; c++) if (clue[at(r, c)] && !(r === 0 && c === 0) && !useful(r, c)) { clue[at(r, c)] = 0; changed = true; }
+    if (!changed) {
+      // işe yaramayan ipucu karesi harfe döner
+      for (let i = 1; i < N; i++) if (clue[i] && !useful(i)) { clue[i] = 0; changed = true; break; }
+    }
     if (!changed) break;
-    if (it === 79) return null;
+    if (it === 119) return null;
+    rec();
   }
   if (!clue[0]) return null;
   // yuvalar
   const slots = [];
-  for (let r = 0; r < h; r++)
-    for (let c = 0; c < w; c++) {
-      if (hStart(r, c) && hLen(r, c) >= 2) {
-        const L = hLen(r, c), opts = [];
-        if (c > 0 && clue[at(r, c - 1)]) opts.push([at(r, c - 1), 'R']);
-        if (r > 0 && clue[at(r - 1, c)]) opts.push([at(r - 1, c), 'DR']);
-        slots.push({ r, c, dir: 'A', len: L, cells: Array.from({ length: L }, (_, k) => at(r, c + k)), opts });
-      }
-      if (vStart(r, c) && vLen(r, c) >= 2) {
-        const L = vLen(r, c), opts = [];
-        if (r > 0 && clue[at(r - 1, c)]) opts.push([at(r - 1, c), 'D']);
-        if (c > 0 && clue[at(r, c - 1)]) opts.push([at(r, c - 1), 'RD']);
-        slots.push({ r, c, dir: 'D', len: L, cells: Array.from({ length: L }, (_, k) => at(r + k, c)), opts });
-      }
+  for (let i = 0; i < N; i++) {
+    if (!isLet(i)) continue;
+    const r = (i / w) | 0, c = i % w;
+    if (hS[i] === i && hL[i] >= 2) {
+      const L = hL[i], opts = [];
+      if (c > 0 && clue[i - 1]) opts.push([i - 1, 'R']);
+      if (r > 0 && clue[i - w]) opts.push([i - w, 'DR']);
+      slots.push({ r, c, dir: 'A', len: L, cells: Array.from({ length: L }, (_, k) => i + k), opts });
     }
-  if (slots.some((s) => !s.opts.length || s.len > maxLen || !lensOk(s.len))) return null;
+    if (vS[i] === i && vL[i] >= 2) {
+      const L = vL[i], opts = [];
+      if (r > 0 && clue[i - w]) opts.push([i - w, 'D']);
+      if (c > 0 && clue[i - 1]) opts.push([i - 1, 'RD']);
+      slots.push({ r, c, dir: 'D', len: L, cells: Array.from({ length: L }, (_, k) => i + k * w), opts });
+    }
+  }
+  if (slots.some((s) => !s.opts.length || bad(s.len))) return null;
   if (slots.filter((s) => s.len === 2).length > maxTwo) return null;
-  // her harf bir yuvada mı (onarım sonrası güvence)
-  const cover = new Uint8Array(N);
-  for (const s of slots) for (const i of s.cells) cover[i] = 1;
-  for (let i = 0; i < N; i++) if (!clue[i] && !blk[i] && !cover[i]) return null;
+  // her harf bir yuvada mı
+  for (let i = 0; i < N; i++) if (isLet(i) && hL[i] < 2 && vL[i] < 2) return null;
   // ipucu ataması: her yuva bir ipucu karesine, karede en fazla 2, her karede en az 1
   const assign = assignClues(slots, clue, N);
   if (!assign) return null;
@@ -225,13 +246,16 @@ function fill(w, h, pat, index, rand, { nodeCap, branch, deadline, must, mustSlo
     }
     return out || ix.all;
   };
+  const cnt = new Int32Array(slots.length).fill(-1); // -1: yeniden sayılmalı
   const count = (si) => {
+    if (cnt[si] >= 0) return cnt[si];
     const b = cand(si);
-    if (!b) return 0;
     let n = 0;
-    for (let k = 0; k < b.length; k++) if (b[k]) n += popcount(b[k]);
+    if (b) for (let k = 0; k < b.length; k++) if (b[k]) n += popcount(b[k]);
+    cnt[si] = n;
     return n;
   };
+  const touch = (ci) => { for (const [sj] of cellSlots[ci]) cnt[sj] = -1; };
   let nodes = 0;
   function solve(left) {
     if (left === 0) return true;
@@ -270,7 +294,7 @@ function fill(w, h, pat, index, rand, { nodeCap, branch, deadline, must, mustSlo
       let ok = true;
       for (let p = 0; p < s.len; p++) {
         const ci = s.cells[p], l = e.a.charCodeAt(p) - A;
-        if (letter[ci] < 0) { letter[ci] = l; set.push(ci); }
+        if (letter[ci] < 0) { letter[ci] = l; set.push(ci); touch(ci); }
         else if (letter[ci] !== l) { ok = false; break; }
       }
       if (ok) {
@@ -283,7 +307,7 @@ function fill(w, h, pat, index, rand, { nodeCap, branch, deadline, must, mustSlo
         if (ok && solve(left - 1)) return true;
         filled[best] = 0; used.delete(e.a); choice[best] = undefined;
       }
-      for (const ci of set) letter[ci] = -1;
+      for (const ci of set) { letter[ci] = -1; touch(ci); }
     }
     return false;
   }
@@ -291,7 +315,7 @@ function fill(w, h, pat, index, rand, { nodeCap, branch, deadline, must, mustSlo
   if (must) {
     // zorunlu kelime: verilen yuvaya önceden yerleşir
     const si = mustSlot;
-    slots[si].cells.forEach((ci, p) => { letter[ci] = must.a.charCodeAt(p) - A; });
+    slots[si].cells.forEach((ci, p) => { letter[ci] = must.a.charCodeAt(p) - A; touch(ci); });
     filled[si] = 1; used.add(must.a); choice[si] = must; left--;
     for (const ci of slots[si].cells) for (const [sj] of cellSlots[ci]) if (sj !== si && count(sj) === 0) return null;
   }

@@ -23,6 +23,21 @@ const c = cb.makeCrypto(p);
 let st = cb.initCrypto(c);
 console.log('Cümle:', p.text, '| şifre:', c.enc);
 
+// Doğru kelime kilitlenir: silinmez, üzerine başka harf yazılmaz
+{
+  const m = /[A-Z]+/.exec(c.enc);
+  let t = cb.initCrypto(c);
+  for (const ch of new Set(m[0])) { t = cb.select(c, t, c.enc.indexOf(ch)); if (!c.given.has(ch)) t = cb.typeLetter(c, t, c.decode[ch]); }
+  const okNow = [...m[0]].every((ch) => t.guess[ch] === c.decode[ch]);
+  assert(okNow, 'ilk kelime doğru yazılabilmeli');
+  const last = m.index + m[0].length - 1;
+  let d = cb.deleteLetter(c, cb.select(c, t, last));
+  for (let k = 0; k < m[0].length + 2; k++) d = cb.deleteLetter(c, d);
+  assert([...m[0]].every((ch) => d.guess[ch] === c.decode[ch]), 'doğru kelime silinmemeli');
+  const w = cb.typeLetter(c, cb.select(c, t, m.index), c.decode[m[0][0]] === 'Q' ? 'Z' : 'Q');
+  assert(w.guess[m[0][0]] === c.decode[m[0][0]], 'doğru kelimenin harfinin üzerine yazılmamalı');
+}
+
 // 1) Yazma: seçili konum ileriye doğru sıradaki boş kareye ilerler
 const first = st.sel;
 st = cb.typeLetter(c, st, c.decode[c.enc[first]]);

@@ -174,9 +174,10 @@ export function CardHintPill({ onPress }) {
 
 // İpucu bağlamı: kelimenin Türkçe örnek cümlesi (ör. "Lastik" → "Arabanın lastiklerinden biri patlak.").
 // Cevabı ele vermez, yalnızca hangi anlamın kastedildiğini gösterir.
+// Örnek cümle yoksa aynı yükseklikte boş satır: ipucu çubuğu kelimeden kelimeye boy değiştirmesin (ızgara kaymasın).
 export function ClueContext({ answer }) {
   const tr = answer ? getWord(answer)?.ex?.[0]?.[1] : null;
-  if (!tr) return null;
+  if (!tr) return <Text style={styles.clueContext}> </Text>;
   return (
     <Text style={styles.clueContext} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
       “{tr}”
@@ -225,8 +226,11 @@ export function useLearnCard(session) {
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 2600);
   }, []);
-  const openLearn = (answer, clue) => {
-    if (!opened.includes(answer)) {
+  // free: cevabı zaten bilinen (doğru çözülmüş) kelime — kart hakkından düşmez
+  const openLearn = (answer, clue, { free = false } = {}) => {
+    if (free) {
+      if (!opened.includes(answer)) markLearned(answer);
+    } else if (!opened.includes(answer)) {
       if (opened.length >= LEARN_LIMIT) {
         showToast(`Bu bulmacada ${LEARN_LIMIT} kelime kartı hakkını kullandın`);
         return;
