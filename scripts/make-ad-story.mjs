@@ -167,7 +167,7 @@ function kidRoom(t) {
 }
 
 // Telefon ekranı (yerel 260x500): QORVEX çengel, TREE yazılır
-function phoneScreen(t, t0) {
+export function phoneScreen(t, t0) {
   const s = 52, ox = 12, oy = 120;
   let g = `<rect x="0" y="0" width="260" height="500" rx="30" fill="#FAF8F5"/>
     <text x="130" y="62" text-anchor="middle" font-family="Newsreader" font-style="italic" font-weight="500" font-size="24" fill="${C.INK}">Çengel Bulmaca</text>
@@ -244,7 +244,7 @@ function kid(t, { t0 = 9.0, happy = false } = {}) {
 }
 
 // konfeti
-function confetti(t, a, cx, cy) {
+export function confetti(t, a, cx, cy) {
   const q = prog(t, a, a + 1.6);
   if (q <= 0 || q >= 1) return '';
   let g = '';
@@ -358,4 +358,5 @@ function frame(t) {
   return s + '</svg>';
 }
 
-makeVideo({ name: 'qorvex-ad-story', dur: DUR, frame });
+// yalnız doğrudan çalıştırılınca video üretir (başka scriptler parçalarını içe aktarabilir)
+if ((process.argv[1] || '').replace(/\\/g, '/').endsWith('make-ad-story.mjs')) makeVideo({ name: 'qorvex-ad-story', dur: DUR, frame });

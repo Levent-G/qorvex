@@ -65,8 +65,62 @@ export function cta(t, a, y = 1660, label = "App Store'da ücretsiz", foot = '9 
     <text x="${W / 2}" y="${y + 180}" opacity="${easeOut(prog(t, a + 0.3, a + 0.9))}" text-anchor="middle" font-family="Hanken Grotesk" font-weight="500" font-size="28" fill="${C.CREAM}" fill-opacity="0.75">${esc(foot)}</text>`;
 }
 
-// Kareleri çizip MP4'e çevir. frame(t) → svg. --stills a,b,c → store/ads/_still-<ad>-<t>.png
-export function makeVideo({ name, dur, frame }) {
+// ---------- Ses (sentez, telifsiz) ----------
+export const SR = 44100;
+export function makeAudio(dur) {
+  const buf = new Float32Array(Math.ceil(dur * SR));
+  const at = (t) => Math.floor(t * SR);
+  const env = (x, a, d) => (x < a ? x / a : Math.exp(-(x - a) / d));
+  const a = {
+    buf,
+    // sinüs tonu (tık, zil)
+    tone(t, freq, len = 0.06, vol = 0.3, decay = 0.03) {
+      for (let i = 0; i < len * SR; i++) { const k = at(t) + i; if (k >= buf.length) break; const x = i / SR; buf[k] += Math.sin(2 * Math.PI * freq * x) * env(x, 0.002, decay) * vol; }
+    },
+    // harf yazma tıkı: kısa gürültü
+    click(t, vol = 0.18) {
+      let s = 12345 + at(t);
+      for (let i = 0; i < 0.025 * SR; i++) { const k = at(t) + i; if (k >= buf.length) break; s = (s * 1103515245 + 12345) & 0x7fffffff; buf[k] += ((s / 0x7fffffff) * 2 - 1) * Math.exp(-i / (0.004 * SR)) * vol; }
+    },
+    // doğru cevap: iki notalı parlak zil
+    ding(t, vol = 0.28) { a.tone(t, 1318.5, 0.9, vol, 0.25); a.tone(t + 0.09, 1975.5, 0.9, vol * 0.8, 0.3); a.tone(t, 2637, 0.5, vol * 0.25, 0.12); },
+    // geçiş: yükselen gürültü süpürmesi
+    whoosh(t, len = 0.35, vol = 0.12) {
+      let s = 777, lp = 0;
+      for (let i = 0; i < len * SR; i++) { const k = at(t) + i; if (k >= buf.length) break; s = (s * 1103515245 + 12345) & 0x7fffffff; const n = (s / 0x7fffffff) * 2 - 1; const x = i / (len * SR); const c = 0.02 + 0.25 * x; lp += c * (n - lp); buf[k] += lp * Math.sin(Math.PI * x) * vol * 3; }
+    },
+    // arka plan: yumuşak akorlar + bas (C–G–Am–F), düşük ses
+    pad(t0, t1, bpm = 100, vol = 0.05) {
+      const chords = [[261.6, 329.6, 392.0], [196.0, 246.9, 293.7], [220.0, 261.6, 329.6], [174.6, 220.0, 261.6]];
+      const bar = (60 / bpm) * 4;
+      for (let k = at(t0); k < Math.min(buf.length, at(t1)); k++) {
+        const t = k / SR, rel = t - t0, ci = Math.floor(rel / bar) % 4, inBar = rel % bar;
+        const fade = Math.min(1, rel / 1.5, (t1 - t) / 1.2);
+        let v = 0;
+        for (const f of chords[ci]) v += Math.sin(2 * Math.PI * f * t) * 0.33 + Math.sin(2 * Math.PI * f * 2 * t) * 0.06;
+        v += Math.sin(2 * Math.PI * (chords[ci][0] / 2) * t) * 0.5 * Math.exp(-((inBar % (bar / 2)) / 0.5));
+        buf[k] += v * vol * fade;
+      }
+    },
+  };
+  return a;
+}
+function writeWav(file, buf) {
+  let peak = 0;
+  for (const v of buf) peak = Math.max(peak, Math.abs(v));
+  const g = peak > 0.95 ? 0.95 / peak : 1;
+  const data = Buffer.alloc(buf.length * 2);
+  for (let i = 0; i < buf.length; i++) data.writeInt16LE(Math.round(Math.max(-1, Math.min(1, buf[i] * g)) * 32767), i * 2);
+  const h = Buffer.alloc(44);
+  h.write('RIFF', 0); h.writeUInt32LE(36 + data.length, 4); h.write('WAVE', 8); h.write('fmt ', 12);
+  h.writeUInt32LE(16, 16); h.writeUInt16LE(1, 20); h.writeUInt16LE(1, 22); h.writeUInt32LE(SR, 24); h.writeUInt32LE(SR * 2, 28); h.writeUInt16LE(2, 32); h.writeUInt16LE(16, 34);
+  h.write('data', 36); h.writeUInt32LE(data.length, 40);
+  fs.writeFileSync(file, Buffer.concat([h, data]));
+}
+
+// Kareleri çizip MP4'e çevir. frame(t) → svg. audio: makeAudio ile üretilmiş ses (isteğe bağlı).
+// --stills a,b,c → store/ads/_still-<ad>-<t>.png
+export function makeVideo({ name, dur, frame, audio }) {
   const FFMPEG = require('@ffmpeg-installer/ffmpeg').path;
   const out = path.join(ROOT, 'store', 'ads', `${name}.mp4`);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'qad-'));
@@ -86,7 +140,10 @@ export function makeVideo({ name, dur, frame }) {
     if (fs.existsSync(f)) fs.copyFileSync(f, path.join(ROOT, 'store', 'ads', `_still-${name}-${s}.png`));
   }
   if (!only) {
-    execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.png'), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'slow', '-movflags', '+faststart', out]);
+    const args = ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(dir, 'f%04d.png')];
+    if (audio) { const wav = path.join(dir, 'audio.wav'); writeWav(wav, audio.buf); args.push('-i', wav, '-c:a', 'aac', '-b:a', '160k', '-shortest'); }
+    args.push('-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'slow', '-movflags', '+faststart', out);
+    execFileSync(FFMPEG, args);
     console.log(path.relative(ROOT, out), (fs.statSync(out).size / 1e6).toFixed(1), 'MB');
   }
   fs.rmSync(dir, { recursive: true, force: true });

@@ -6,7 +6,7 @@ const DUR = 20;
 const T_GAMES = 2.0, PER = 1.5;
 
 // ---------- küçük çizim yardımcıları (yerel koordinat, kutu 780x560) ----------
-const BW = 780, BH = 560;
+export const BW = 780, BH = 560;
 const cellR = (x, y, s, fill = '#FFFFFF') => `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" stroke="${C.LINE}" stroke-width="2"/>`;
 const ltr = (x, y, s, ch, o = 1, color = C.INK, k = 0.56) => (o > 0 ? `<text x="${x + s / 2}" y="${y + s / 2 + s * 0.2}" opacity="${o}" text-anchor="middle" font-family="Libre Franklin" font-weight="600" font-size="${s * k}" fill="${color}">${ch}</text>` : '');
 const clueTxt = (x, y, s, txt, size = 22) => `<text x="${x + s / 2}" y="${y + s / 2 + size * 0.35}" text-anchor="middle" font-family="Archivo Narrow" font-weight="500" font-size="${size}" fill="${C.INK}">${esc(txt)}</text>`;
@@ -220,7 +220,7 @@ function gPicture(p) {
   return g + `<rect x="${ox}" y="${oy}" width="${cols * s}" height="${rows * s}" fill="none" stroke="${C.INK}" stroke-width="4"/>`;
 }
 
-const GAMES = [
+export const GAMES = [
   ['ARROWWORD', 'Çengel Bulmaca', 'İpucunu çöz, kelimeyi bul.', gArrow],
   ['CROSSWORD', 'Kare Bulmaca', 'Numaralı klasik bulmaca.', gCross],
   ['CODEWORD', 'Şifreli Bulmaca', 'Sayıların harfini çöz.', gCode],
@@ -305,4 +305,4 @@ function frame(t) {
   return s + '</svg>';
 }
 
-makeVideo({ name: 'qorvex-ad-games', dur: DUR, frame });
+if ((process.argv[1] || '').replace(/\\/g, '/').endsWith('make-ad-games.mjs')) makeVideo({ name: 'qorvex-ad-games', dur: DUR, frame });
