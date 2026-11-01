@@ -7,6 +7,10 @@ import { ed, efonts } from '../theme';
 
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
+  '1.3.4': [
+    ['??', 'Daha zengin kelime kartlar?', '?eviriler ve ?rnek c?mleler g?ncellendi; kelimelerin anlamlar? daha eksiksiz.'],
+    ['???', 'Daha iyi foto?raflar', 'Resimli bulmacada bir?ok kelime i?in ?zenle se?ilmi? foto?raflar kullan?l?yor.'],
+  ],
   '1.3.3': [
     ['📚', 'Daha çok ve daha iyi kelime', '6.200+ kelime; her kelimenin kendine özgü, daha net bir ipucu var. Seviyeler yeniden düzenlendi.'],
     ['🔐', 'Şifreli Bulmaca', 'Doğru harf hemen aynı sayılı her kareye işlenir ve silinmez; alttaki cümle çözülünce bulmaca biter.'],
