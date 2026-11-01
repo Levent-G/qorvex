@@ -288,9 +288,11 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
               <Image source={{ uri: photo.url }} style={{ width: '100%', aspectRatio: 1 }} resizeMode="cover" />
               <View style={{ padding: 10 }}>
                 <Text style={styles.zoomMeta}>RESİMDEKİ NESNE · {photo.answer.length} HARF</Text>
-                <Text style={styles.zoomCredit} onPress={() => photo.link && Linking.openURL(photo.link).catch(() => {})}>
-                  Fotoğraf: {photo.by} · Pexels
-                </Text>
+                {photo.by ? (
+                  <Text style={styles.zoomCredit} onPress={() => photo.link && Linking.openURL(photo.link).catch(() => {})}>
+                    Fotoğraf: {photo.by} · Pexels
+                  </Text>
+                ) : null}
               </View>
             </View>
           ) : null}

@@ -42,3 +42,7 @@ yarn-error.*
 
 # Claude Code yerel ayarları
 .claude/
+
+# Firebase servis hesabi anahtarlari asla commit edilmez
+*firebase-adminsdk*.json
+*service-account*.json

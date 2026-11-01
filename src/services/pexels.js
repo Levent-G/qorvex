@@ -3,6 +3,7 @@
 // null = o kelimenin ana konu olduğu fotoğraf bulunamadı (soyut kelimeler), tekrar denenmez.
 import { getStore, persist } from '../storage';
 import { pickPhoto } from '../engine/picture';
+import { getWord } from '../engine/words';
 
 const KEY = process.env.EXPO_PUBLIC_PEXELS_KEY;
 
@@ -12,7 +13,15 @@ export const photoCache = () => {
   return store.photos || (store.photos = {});
 };
 
+// Ortak kelime veritabanında (davinci admin paneli) seçilmiş fotoğraf varsa önce o kullanılır.
+export const adminPhoto = (word) => {
+  const img = getWord(word)?.img;
+  return img ? { url: img, by: '', link: '', alt: '' } : null;
+};
+
 export async function findPhoto(word) {
+  const own = adminPhoto(word);
+  if (own) return own;
   const cache = photoCache();
   if (word in cache) return cache[word];
   if (!KEY) throw new Error('Fotoğraf servisi ayarlı değil (Pexels anahtarı eksik).');

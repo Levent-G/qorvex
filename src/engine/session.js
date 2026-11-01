@@ -7,7 +7,7 @@ import { makeBlockPuzzle, makeCodeword, pickHiddenSentence } from './gridgames';
 import { generateSpiral, generateJumble, generateCryptogram } from './wordgames';
 import { WORDS } from './words';
 import { buildInputs as buildPoolInputs, recordAnswersTo, TWO_LETTER_COOLDOWN } from './pool';
-import { findPhoto, photoCache } from '../services/pexels';
+import { findPhoto, photoCache, adminPhoto } from '../services/pexels';
 import { photoBlock } from './picture';
 import { wordOfDay, isoWeek } from './practice';
 import { fillerEntries } from './fillers';
@@ -408,8 +408,8 @@ export const picture = makeGameStore('picture3', {
     const rand = mulberry32(seed);
     const cands = entries
       // 3–5 harf: fotoğraf alanının çevresine boşluksuz sığar (daha uzunlarda desen çoğu zaman tutmuyor)
-      .filter((e) => NOUNS.has(e.a) && e.a.length >= 3 && e.a.length <= 5 && cache[e.a] !== null)
-      .map((e) => ({ e, s: (cache[e.a] ? 10 : 0) + rand() * 10 }))
+      .filter((e) => NOUNS.has(e.a) && e.a.length >= 3 && e.a.length <= 5 && (cache[e.a] !== null || adminPhoto(e.a)))
+      .map((e) => ({ e, s: (cache[e.a] || adminPhoto(e.a) ? 10 : 0) + rand() * 10 }))
       .sort((x, y) => y.s - x.s)
       .map((x) => x.e);
     const tried = new Set();

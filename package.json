@@ -37,15 +37,18 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "words": "node scripts/build-words.mjs",
+    "words:build-local": "node scripts/build-words.mjs",
     "test:gen": "node scripts/test-generator.mjs",
     "brand": "node scripts/build-brand.mjs",
     "screenshots": "node scripts/resize-screenshots.mjs",
-    "site": "npx eas-cli@latest deploy --export-dir store/site --prod"
+    "site": "npx eas-cli@latest deploy --export-dir store/site --prod",
+    "words:push": "node scripts/firebase-words.mjs push",
+    "words:pull": "node scripts/firebase-words.mjs pull"
   },
   "private": true,
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@resvg/resvg-js": "^2.6.2"
+    "@resvg/resvg-js": "^2.6.2",
+    "firebase-admin": "^14.5.0"
   }
 }
