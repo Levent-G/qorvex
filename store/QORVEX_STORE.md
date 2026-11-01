@@ -175,6 +175,25 @@ Kelime kaynakları: New General Service List (CC BY-SA 4.0), CEFR-J Wordlist (TU
 ```
 
 
+## Sürüm 1.3.4 — "Bu sürümdeki yenilikler"
+
+**Türkçe**
+
+```
+• Kelime kartlarında güncellenmiş çeviriler ve örnek cümleler
+• Resimli bulmacada birçok kelime için özenle seçilmiş fotoğraflar
+• Küçük düzeltmeler
+```
+
+**English**
+
+```
+• Updated translations and example sentences on word cards
+• Hand-picked photos for many words in the picture puzzle
+• Minor fixes
+```
+
+
 ## Sürüm 1.3.3 — "Bu sürümdeki yenilikler"
 
 **Türkçe**
