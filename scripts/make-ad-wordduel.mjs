@@ -175,8 +175,20 @@ function audio() {
 }
 
 // kareler → MP4 (720×1280, uygulama içinde küçük boyut için crf 27)
-const out = path.join(ROOT, 'assets/ads/wordduel-ad.mp4');
+// video yalnızca tanıtım için (uygulama içinde --slides kareleri kullanılır)
+const out = path.join(ROOT, 'store/ads/wordduel-ad.mp4');
 fs.mkdirSync(path.dirname(out), { recursive: true });
+// --slides: uygulama içi slayt reklamı için sahne kareleri (yerel video modülü gerektirmez) → assets/ads/wd-1..5.jpg
+if (process.argv.includes('--slides')) {
+  [1.4, 4.8, 8.9, 11.8, 14.2].forEach((s, i) => {
+    const png = path.join(tmp, `s${i}.png`);
+    fs.writeFileSync(png, render(frame(s)));
+    execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', png, '-q:v', '4', path.join(ROOT, `assets/ads/wd-${i + 1}.jpg`)]);
+  });
+  console.log('assets/ads/wd-1..5.jpg');
+  fs.rmSync(tmp, { recursive: true, force: true });
+  process.exit(0);
+}
 const stillsArg = process.argv.indexOf('--stills');
 if (stillsArg > 0) {
   for (const s of process.argv[stillsArg + 1].split(',').map(Number)) fs.writeFileSync(path.join(ROOT, 'store/ads', `_still-wordduel-${s}.png`), render(frame(s)));

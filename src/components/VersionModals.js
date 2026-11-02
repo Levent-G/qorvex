@@ -7,6 +7,11 @@ import { ed, efonts } from '../theme';
 
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
+  '1.3.6': [
+    ['🛠️', 'Açılış sorunu giderildi', 'Uygulamanın bazı cihazlarda açılmaması düzeltildi.'],
+    ['📚', 'Yaklaşık 1.000 yeni kelime', '7.300+ kelime; seviyeler CEFR listelerine göre yeniden düzenlendi.'],
+    ['🎬', 'Kart hakkın mı bitti?', 'Kısa bir tanıtım izle, o bulmacada +1 kelime kartı hakkı kazan.'],
+  ],
   '1.3.5': [
     ['📚', 'Yaklaşık 1.000 yeni kelime', '7.300+ kelime; seviyeler CEFR listelerine göre yeniden düzenlendi.'],
     ['🎬', 'Kart hakkın mı bitti?', 'Kısa bir video izle, o bulmacada +1 kelime kartı hakkı kazan.'],

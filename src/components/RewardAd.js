@@ -1,13 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, View, Text, Pressable, StyleSheet, Linking, Alert } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { Modal, View, Text, Pressable, StyleSheet, Linking, Alert, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ed, efonts } from '../theme';
 import { grantLearnBonus } from '../engine/session';
 
-// Ödüllü video: kelime kartı hakkı bitince Word Duel tanıtımı (scripts/make-ad-wordduel.mjs) oynatılır.
+// Ödüllü reklam: kelime kartı hakkı bitince Word Duel tanıtımı gösterilir. Sahneler video yerine
+// geçişli resimlerdir (scripts/make-ad-wordduel.mjs --slides): yerel video modülü gerekmez.
 // En az REWARD_AT saniye izlenirse bu bulmacada +1 kart hakkı kazanılır.
-const AD = require('../../assets/ads/wordduel-ad.mp4');
+const SLIDES = [
+  require('../../assets/ads/wd-1.jpg'),
+  require('../../assets/ads/wd-2.jpg'),
+  require('../../assets/ads/wd-3.jpg'),
+  require('../../assets/ads/wd-4.jpg'),
+  require('../../assets/ads/wd-5.jpg'),
+];
+const SLIDE_MS = 2600;
+const TOTAL = (SLIDES.length * SLIDE_MS) / 1000;
 export const REWARD_AT = 10;
 const STORE_URL = 'https://apps.apple.com/app/id6828526837';
 
@@ -37,37 +45,51 @@ function RewardFlow({ onReward, onClose }) {
 function AdPlayer({ onDone }) {
   const insets = useSafeAreaInsets();
   const [time, setTime] = useState(0);
-  const [ended, setEnded] = useState(false);
   const earned = time >= REWARD_AT;
-  const player = useVideoPlayer(AD, (p) => {
-    p.loop = false;
-    p.timeUpdateEventInterval = 0.25;
-    p.play();
-  });
+  const ended = time >= TOTAL;
   const earnedRef = useRef(false);
   earnedRef.current = earned;
+  // sahneler: tek bir 0..N ilerleme değeriyle geçişli gösterilir (yerel animasyon sürücüsü)
+  const progress = useRef(new Animated.Value(0)).current;
+  const paused = useRef(false);
+  const started = useRef(Date.now());
+  const pausedFor = useRef(0);
+  const pauseAt = useRef(0);
+  const run = (from) => {
+    Animated.timing(progress, { toValue: SLIDES.length, duration: (SLIDES.length - from) * SLIDE_MS, easing: Easing.linear, useNativeDriver: true }).start();
+  };
   useEffect(() => {
-    const a = player.addListener('timeUpdate', (e) => setTime(e.currentTime));
-    const b = player.addListener('playToEnd', () => {
-      setTime((t) => Math.max(t, REWARD_AT));
-      setEnded(true);
-    });
+    run(0);
+    const id = setInterval(() => {
+      if (!paused.current) setTime((Date.now() - started.current - pausedFor.current) / 1000);
+    }, 250);
     return () => {
-      a.remove();
-      b.remove();
+      clearInterval(id);
+      progress.stopAnimation();
     };
-  }, [player]);
+  }, []);
+  const pause = () => {
+    if (paused.current) return;
+    paused.current = true;
+    pauseAt.current = Date.now();
+    progress.stopAnimation();
+  };
+  const resume = () => {
+    if (!paused.current) return;
+    paused.current = false;
+    pausedFor.current += Date.now() - pauseAt.current;
+    progress.stopAnimation((v) => run(v));
+  };
 
   const close = () => {
     if (earnedRef.current) return onDone(true);
-    player.pause();
-    Alert.alert('Videoyu kapat', 'Şimdi kapatırsan kart hakkı kazanamazsın.', [
-      { text: 'İzlemeye devam', onPress: () => player.play() },
+    pause();
+    Alert.alert('Reklamı kapat', 'Şimdi kapatırsan kart hakkı kazanamazsın.', [
+      { text: 'İzlemeye devam', onPress: resume },
       { text: 'Kapat', style: 'destructive', onPress: () => onDone(false) },
     ]);
   };
   const openStore = () => {
-    player.pause();
     Linking.openURL(STORE_URL).catch(() => {});
   };
   const left = Math.max(0, Math.ceil(REWARD_AT - time));
@@ -75,7 +97,16 @@ function AdPlayer({ onDone }) {
   return (
     <Modal animationType="fade" onRequestClose={close} supportedOrientations={['portrait']}>
       <View style={styles.player}>
-        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="contain" nativeControls={false} />
+        {SLIDES.map((src, i) => {
+          const last = i === SLIDES.length - 1;
+          const opacity = progress.interpolate({
+            inputRange: i === 0 ? [0, 0.85, 1] : last ? [i - 0.15, i, SLIDES.length] : [i - 0.15, i, i + 0.85, i + 1],
+            outputRange: i === 0 ? [1, 1, 0] : last ? [0, 1, 1] : [0, 1, 1, 0],
+            extrapolate: 'clamp',
+          });
+          const scale = progress.interpolate({ inputRange: [i, i + 1], outputRange: [1, 1.05], extrapolate: 'clamp' });
+          return <Animated.Image key={i} source={src} resizeMode="contain" style={[StyleSheet.absoluteFill, { opacity, transform: [{ scale }] }]} />;
+        })}
         <View style={[styles.top, { paddingTop: insets.top + 8 }]}>
           <View style={styles.tag}>
             <Text style={styles.tagText}>REKLAM · WORD DUEL</Text>
