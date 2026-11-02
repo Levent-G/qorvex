@@ -8,7 +8,8 @@ import { BulbIcon } from './Icons';
 import { ClockIcon, ShareIcon } from './UiIcons';
 import ShareSheet from './ShareSheet';
 import { getWord } from '../engine/words';
-import { markLearned, LEARN_LIMIT } from '../engine/session';
+import { markLearned, learnLimit } from '../engine/session';
+import { useLearnReward } from './RewardAd';
 import { persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
@@ -215,11 +216,12 @@ export function useSolvedEffect(solved, session, onSolved) {
   return [showWin, setShowWin];
 }
 
-// Kelime kartı (bulmaca başına 5 hak) + kısa bildirim
+// Kelime kartı (bulmaca başına 5 hak, video izleyerek +1) + kısa bildirim
 export function useLearnCard(session) {
   const [learn, setLearn] = useState(null);
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
+  const reward = useLearnReward(session);
   const opened = session.opened || (session.opened = []);
   const showToast = useCallback((msg) => {
     setToast(msg);
@@ -231,8 +233,8 @@ export function useLearnCard(session) {
     if (free) {
       if (!opened.includes(answer)) markLearned(answer);
     } else if (!opened.includes(answer)) {
-      if (opened.length >= LEARN_LIMIT) {
-        showToast(`Bu bulmacada ${LEARN_LIMIT} kelime kartı hakkını kullandın`);
+      if (opened.length >= learnLimit(session)) {
+        reward.ask(() => openLearn(answer, clue));
         return;
       }
       opened.push(answer);
@@ -240,11 +242,15 @@ export function useLearnCard(session) {
     }
     setLearn({ answer, clue });
   };
-  const left = LEARN_LIMIT - opened.length;
-  const modal = learn ? (
-    <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={LEARN_LIMIT} onClose={() => setLearn(null)} />
-  ) : null;
-  return { openLearn, modal, toast, showToast, left, limit: LEARN_LIMIT };
+  const limit = learnLimit(session);
+  const left = limit - opened.length;
+  const modal = (
+    <>
+      {learn ? <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={limit} onClose={() => setLearn(null)} /> : null}
+      {reward.node}
+    </>
+  );
+  return { openLearn, modal, toast, showToast, left, limit };
 }
 
 export const shellStyles = StyleSheet.create({

@@ -9,8 +9,9 @@ import { GameHeader, ShareButton } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { DIRS, readSelection, snapEnd } from '../engine/wordsearch';
 import {
-  getLevel, getWordSearchSession, getWordSearchDaily, markWordSearchSolved, markLearned, LEARN_LIMIT, recordHint, recordHard,
+  getLevel, getWordSearchSession, getWordSearchDaily, markWordSearchSolved, markLearned, learnLimit, recordHint, recordHard,
 } from '../engine/session';
+import { useLearnReward } from '../components/RewardAd';
 import { persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
@@ -55,7 +56,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   const [showWin, setShowWin] = useState(false);
   const solved = puzzle.words.every((w) => found[w.answer]);
   const opened = session.opened || (session.opened = []);
-  const left = LEARN_LIMIT - opened.length;
+  const reward = useLearnReward(session);
+  const limit = learnLimit(session);
+  const left = limit - opened.length;
 
   useEffect(() => {
     session.found = found;
@@ -148,8 +151,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   // ---- Kelime kartı ----
   const openLearn = (w) => {
     if (!opened.includes(w.answer)) {
-      if (opened.length >= LEARN_LIMIT) {
-        showToast(`Bu bulmacada ${LEARN_LIMIT} kelime kartı hakkını kullandın`);
+      if (opened.length >= learnLimit(session)) {
+        reward.ask(() => openLearn(w));
         return;
       }
       opened.push(w.answer);
@@ -221,7 +224,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!solved}
         subtitle={`${kind === 'daily' ? 'Günün Kelime Avı' : `Kelime Avı · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${puzzle.no}`}
-        badge={`${left}/${LEARN_LIMIT}`}
+        badge={`${left}/${limit}`}
         onMenu={() => setMenu(true)}
       />
 
@@ -263,7 +266,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         <View style={styles.learnTag}>
           <BookIcon size={13} />
           <Text style={styles.learnTagText}>
-            {left}/{LEARN_LIMIT}
+            {left}/{limit}
           </Text>
         </View>
       </View>
@@ -311,8 +314,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       </Modal>
 
       {learn ? (
-        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={LEARN_LIMIT} onClose={() => setLearn(null)} />
+        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={limit} onClose={() => setLearn(null)} />
       ) : null}
+      {reward.node}
 
       <Modal visible={showWin} transparent animationType="fade" onRequestClose={() => setShowWin(false)}>
         <View style={styles.backdrop}>

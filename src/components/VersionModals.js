@@ -7,6 +7,10 @@ import { ed, efonts } from '../theme';
 
 // Sürüm notları (yeni sürümde en üste ekle)
 export const WHATS_NEW = {
+  '1.3.5': [
+    ['📚', 'Yaklaşık 1.000 yeni kelime', '7.300+ kelime; seviyeler CEFR listelerine göre yeniden düzenlendi.'],
+    ['🎬', 'Kart hakkın mı bitti?', 'Kısa bir video izle, o bulmacada +1 kelime kartı hakkı kazan.'],
+  ],
   '1.3.4': [
     ['📖', 'Daha zengin kelime kartları', 'Çeviriler ve örnek cümleler güncellendi; kelimelerin anlamları daha eksiksiz.'],
     ['🖼️', 'Daha iyi fotoğraflar', 'Resimli bulmacada birçok kelime için özenle seçilmiş fotoğraflar kullanılıyor.'],

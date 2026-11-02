@@ -8,7 +8,8 @@ import BackBar, { BACK_BAR_HEIGHT } from '../components/BackBar';
 import { GameHeader, ShareButton, CardHintPill } from '../components/GameShell';
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { reducer, initState, rowStatus, fillableRows, key } from '../engine/ladderBoard';
-import { getLevel, getLadderSession, getLadderDaily, markLadderSolved, markLearned, LEARN_LIMIT, recordHint, recordHard } from '../engine/session';
+import { getLevel, getLadderSession, getLadderDaily, markLadderSolved, markLearned, learnLimit, recordHint, recordHard } from '../engine/session';
+import { useLearnReward } from '../components/RewardAd';
 import { persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
@@ -44,7 +45,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   const [toast, setToast] = useState(null);
   const [showWin, setShowWin] = useState(false);
   const opened = session.opened || (session.opened = []);
-  const left = LEARN_LIMIT - opened.length;
+  const reward = useLearnReward(session);
+  const limit = learnLimit(session);
+  const left = limit - opened.length;
   const last = p.rungs.length - 1;
 
   useEffect(() => {
@@ -88,8 +91,8 @@ function Board({ session, kind, levelId, onBack, onNext }) {
   const openLearn = (row) => {
     const r = p.rungs[row];
     if (!opened.includes(r.answer)) {
-      if (opened.length >= LEARN_LIMIT) {
-        showToast(`Bu bulmacada ${LEARN_LIMIT} kelime kartı hakkını kullandın`);
+      if (opened.length >= learnLimit(session)) {
+        reward.ask(() => openLearn(row));
         return;
       }
       opened.push(r.answer);
@@ -202,7 +205,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
         session={session}
         running={!s.solved}
         subtitle={`${kind === 'daily' ? 'Günün Merdiveni' : `Kelime Merdiveni · ${level.id === 'MIX' ? 'Karışık' : level.id}`} · No. ${p.no}`}
-        badge={`${left}/${LEARN_LIMIT}`}
+        badge={`${left}/${limit}`}
         onMenu={() => setMenu(true)}
       />
 
@@ -258,7 +261,7 @@ function Board({ session, kind, levelId, onBack, onNext }) {
                 act('revealRow')();
               }],
               ['Basamağı temizle', 'Seçili basamaktaki harfleri sil', act('clearRow')],
-              ['Kelime kartı', `Seçili basamağı öğren (kalan hak ${left}/${LEARN_LIMIT})`, () => { setMenu(false); openLearn(s.sel.row); }],
+              ['Kelime kartı', `Seçili basamağı öğren (kalan hak ${left}/${limit})`, () => { setMenu(false); openLearn(s.sel.row); }],
               ['Baştan başla', 'Tüm basamakları temizle', act('reset')],
             ].map(([t, d, fn]) => (
               <Pressable key={t} onPress={fn} style={({ pressed }) => [styles.menuItem, pressed && { backgroundColor: ed.accentSoft }]}>
@@ -271,8 +274,9 @@ function Board({ session, kind, levelId, onBack, onNext }) {
       </Modal>
 
       {learn ? (
-        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={LEARN_LIMIT} onClose={() => setLearn(null)} />
+        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={limit} onClose={() => setLearn(null)} />
       ) : null}
+      {reward.node}
 
       <Modal visible={showWin} transparent animationType="fade" onRequestClose={() => setShowWin(false)}>
         <View style={styles.backdrop}>

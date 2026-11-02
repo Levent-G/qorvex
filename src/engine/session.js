@@ -26,6 +26,12 @@ export const LEVELS = [
 export const getLevel = (id) => LEVELS.find((l) => l.id === id);
 
 export const LEARN_LIMIT = 5; // bir bulmacada açılabilecek kelime kartı
+// Hak bitince kısa bir video izlenerek bulmaca başına +1 hak kazanılır (session.bonus, oturumla saklanır)
+export const learnLimit = (session) => LEARN_LIMIT + (session.bonus || 0);
+export function grantLearnBonus(session) {
+  session.bonus = (session.bonus || 0) + 1;
+  persist();
+}
 const yieldFn = () => new Promise((r) => setTimeout(r, 0));
 
 // Havuz kuralları engine/pool.js'de (simülasyonla aynı kod)

@@ -10,7 +10,8 @@ import { GameHeader, HintMenu, WinModal, LoadingPage, shellStyles, CardHintPill,
 import { BulbIcon, BookIcon, ChevronIcon } from '../components/Icons';
 import { buildModel, wordStatus } from '../engine/model';
 import { reducer, selectWordState } from '../engine/board';
-import { getLevel, getLevelSession, getDailySession, markSolved, markLearned, LEARN_LIMIT, recordHint, recordHard, prefetchLevel } from '../engine/session';
+import { getLevel, getLevelSession, getDailySession, markSolved, markLearned, learnLimit, recordHint, recordHard, prefetchLevel } from '../engine/session';
+import { useLearnReward } from '../components/RewardAd';
 import { getStore, persist } from '../storage';
 import { colors, fonts, formatTime, ed, efonts } from '../theme';
 
@@ -117,6 +118,8 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
 
   const learned = useMemo(() => new Set(Object.keys(getStore().learn.marked)), [learn]);
   const opened = session.opened || (session.opened = []);
+  const reward = useLearnReward(session);
+  const limit = learnLimit(session);
 
   const toastTimer = useRef(null);
   const showToast = (msg) => {
@@ -129,8 +132,8 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
     (idx) => {
       const w = model.words[idx];
       if (!opened.includes(w.answer)) {
-        if (opened.length >= LEARN_LIMIT) {
-          showToast(`Bu bulmacada ${LEARN_LIMIT} kelime kartı hakkını kullandın`);
+        if (opened.length >= learnLimit(session)) {
+          reward.ask(() => openLearn(idx));
           return;
         }
         opened.push(w.answer);
@@ -183,7 +186,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
   const w = model.words[s.active];
   const filled = Object.keys(model.solution).filter((k) => s.entries[k]).length;
   const level = getLevel(levelId);
-  const left = LEARN_LIMIT - opened.length;
+  const left = limit - opened.length;
   const act = (type) => () => {
     dispatch({ type });
     setMenu(false);
@@ -196,7 +199,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
         session={session}
         running={!s.solved}
         subtitle={`${photo ? 'Resimli Bulmaca' : 'Çengel Bulmaca'} · ${kind === 'daily' ? store?.label || 'Günün Bulmacası' : level.id === 'MIX' ? 'Karışık' : `${level.id} · ${level.title}`} · No. ${puzzle.no}`}
-        badge={`${left}/${LEARN_LIMIT}`}
+        badge={`${left}/${limit}`}
         onMenu={() => setMenu(true)}
       />
 
@@ -274,7 +277,7 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
             recordHard(w.answer, 'hint');
             dispatch({ type: 'revealWord' });
           }],
-          ['Kelime kartı', `Anlam ve telaffuz kartı (kalan hak ${left}/${LEARN_LIMIT})`, () => openLearn(s.active)],
+          ['Kelime kartı', `Anlam ve telaffuz kartı (kalan hak ${left}/${limit})`, () => openLearn(s.active)],
           ['Kelimeyi temizle', 'Seçili kelimedeki harfleri sil', () => dispatch({ type: 'clearWord' })],
           ['Baştan başla', 'Bulmacayı sıfırla', () => dispatch({ type: 'reset' })],
         ]}
@@ -300,8 +303,9 @@ function Board({ session, kind, levelId, onBack, onNext, store }) {
       </Modal>
 
       {learn ? (
-        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={LEARN_LIMIT} onClose={() => setLearn(null)} />
+        <LearnModal answer={learn.answer} clue={learn.clue} remaining={left} limit={limit} onClose={() => setLearn(null)} />
       ) : null}
+      {reward.node}
 
       {/* Tebrikler */}
       <WinModal

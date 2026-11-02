@@ -175,6 +175,25 @@ Kelime kaynakları: New General Service List (CC BY-SA 4.0), CEFR-J Wordlist (TU
 ```
 
 
+## Sürüm 1.3.5 — "Bu sürümdeki yenilikler"
+
+**Türkçe**
+
+```
+• Yaklaşık 1.000 yeni kelime: toplam 7.300+ kelime
+• Seviyeler CEFR listelerine göre yeniden düzenlendi
+• Kelime kartı hakkın bitince kısa bir video izleyerek +1 hak kazan
+```
+
+**English**
+
+```
+• About 1,000 new words: 7,300+ words in total
+• Levels rebalanced to match CEFR word lists
+• Out of word cards? Watch a short video to earn one more
+```
+
+
 ## Sürüm 1.3.4 — "Bu sürümdeki yenilikler"
 
 **Türkçe**
