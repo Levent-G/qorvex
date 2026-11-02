@@ -4,9 +4,10 @@
 // kelimeler davinci admin panelinden düzenlenir. Şema: davinci2/docs/SHARED_WORDS.md
 //
 //   Ortak alanlar : word, translation, level, example, exampleTr, partOfSpeech,
-//                   category, imageUrl, photos, meanings[], examples[{en,tr}], ipa
-//   Proje alanları: clue (QORVEX ipucu ≤18), qorvexLevel / qorvexPos (yalnızca
-//                   ortak değerden farklıysa), apps.{proje}: false → o projede gizli
+//                   category, imageUrl, photos, meanings[], examples[{en,tr}], ipa,
+//                   levelSource, freqRank (seviye tüm projelerde ortak, CEFR'e göre)
+//   Proje alanları: clue (QORVEX ipucu ≤18), qorvexPos (yalnızca ortak değerden
+//                   farklıysa), apps.{proje}: false → o projede gizli
 //
 // Kullanım (servis hesabı anahtarı REPO DIŞINDA tutulur, asla commit edilmez):
 //   $env:GOOGLE_APPLICATION_CREDENTIALS="C:\...\davinci-d30bc-firebase-adminsdk-....json"
@@ -34,8 +35,8 @@ const uniq = (arr, k) => {
 const splitTr = (t) => String(t || '').split(/[,;]/).map((s) => s.trim()).filter(Boolean);
 
 // QORVEX kaydının ortak belgeye eklenecek alanları. Mevcut davinci alanlarına
-// (translation, example, level, imageUrl…) dokunulmaz; farklı olan seviye/tür
-// QORVEX'e özel alana yazılır.
+// (translation, example, level, imageUrl…) dokunulmaz; seviye ortaktır, farklı
+// olan sözcük türü QORVEX'e özel alana yazılır.
 function qorvexFields(q, d) {
   const f = {
     clue: q.c,
@@ -44,7 +45,6 @@ function qorvexFields(q, d) {
     apps: { qorvex: true },
   };
   if (q.ipa && !d.ipa) f.ipa = q.ipa;
-  if (d.level !== LV[q.l]) f.qorvexLevel = LV[q.l];
   if (d.partOfSpeech !== q.p) f.qorvexPos = q.p;
   return f;
 }
@@ -74,7 +74,7 @@ function newDoc(q) {
 function toQorvex(d) {
   const a = key(d.word).toUpperCase();
   if (!/^[A-Z]{2,10}$/.test(a) || !d.clue || d.clue.length > MAX_CLUE) return null;
-  const l = LV.indexOf(d.qorvexLevel || d.level);
+  const l = LV.indexOf(d.level);
   if (l < 0) return null;
   const m = uniq([...splitTr(d.translation), ...(d.meanings || [])], trKey);
   if (!m.length) return null;
@@ -182,8 +182,8 @@ if (cmd === 'selftest') {
   console.log(`güncellenen ${plan.updated} · yeni ${plan.created} · qorvex=false ${plan.off}`);
   console.log(`pull: ${back.length} kelime (şu an ${qWords.length})`, diffReport(qWords, back));
   const missing = qWords.filter((q) => !back.some((x) => x.a === q.a)).map((q) => q.a);
-  const bad = back.filter((x) => { const q = qWords.find((y) => y.a === x.a); return q && (q.c !== x.c || q.l !== x.l || q.p !== x.p); });
-  console.log(`kayıp kelime: ${missing.length} · ipucu/seviye/tür bozulan: ${bad.length}`);
+  const bad = back.filter((x) => { const q = qWords.find((y) => y.a === x.a); return q && (q.c !== x.c || q.p !== x.p); });
+  console.log(`kayıp kelime: ${missing.length} · ipucu/tür bozulan: ${bad.length}`);
   if (missing.length || bad.length) process.exit(1);
 } else if (cmd === 'push') {
   const { fs: fsdb, FieldValue } = await db();

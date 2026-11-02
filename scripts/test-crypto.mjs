@@ -46,9 +46,12 @@ const nextPos = c.positions.find((i) => i > first && !st.guess[c.enc[i]] && !c.g
 assert(nextPos === undefined || st.sel === nextPos, `sıradaki boş kareye gitmeli (${st.sel} != ${nextPos})`);
 
 // 2) Silme: boş karede geri gidip öncekini siler
+// (yazılan harf bir kelimeyi tamamladıysa o kelime kilitlidir: silinmez)
 const before = st.sel;
+const lockedFirst = cb.okLetters(c, st).has(c.enc[first]);
 st = cb.deleteLetter(c, st);
-assert(st.sel === first && !st.guess[c.enc[first]], 'boş karede silme geri gidip silmeli');
+if (lockedFirst) assert(st.guess[c.enc[first]] === c.decode[c.enc[first]], 'kilitli kelimenin harfi silinmemeli');
+else assert(st.sel === first && !st.guess[c.enc[first]], 'boş karede silme geri gidip silmeli');
 
 // 3) Verilen harfler silinemez
 const g = [...c.given][0];
