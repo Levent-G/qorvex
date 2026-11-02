@@ -174,18 +174,34 @@ function audio() {
   return a;
 }
 
+// makeAudio tamponu → 16 bit mono WAV
+function wavOf(a) {
+  let peak = 0;
+  for (const v of a.buf) peak = Math.max(peak, Math.abs(v));
+  const gain = peak > 0.95 ? 0.95 / peak : 1;
+  const data = Buffer.alloc(a.buf.length * 2);
+  for (let i = 0; i < a.buf.length; i++) data.writeInt16LE(Math.round(Math.max(-1, Math.min(1, a.buf[i] * gain)) * 32767), i * 2);
+  const hdr = Buffer.alloc(44);
+  hdr.write('RIFF', 0); hdr.writeUInt32LE(36 + data.length, 4); hdr.write('WAVE', 8); hdr.write('fmt ', 12);
+  hdr.writeUInt32LE(16, 16); hdr.writeUInt16LE(1, 20); hdr.writeUInt16LE(1, 22); hdr.writeUInt32LE(SR, 24); hdr.writeUInt32LE(SR * 2, 28); hdr.writeUInt16LE(2, 32); hdr.writeUInt16LE(16, 34);
+  hdr.write('data', 36); hdr.writeUInt32LE(data.length, 40);
+  return Buffer.concat([hdr, data]);
+}
+
 // kareler → MP4 (720×1280, uygulama içinde küçük boyut için crf 27)
 // video yalnızca tanıtım için (uygulama içinde --slides kareleri kullanılır)
 const out = path.join(ROOT, 'store/ads/wordduel-ad.mp4');
 fs.mkdirSync(path.dirname(out), { recursive: true });
-// --slides: uygulama içi slayt reklamı için sahne kareleri (yerel video modülü gerektirmez) → assets/ads/wd-1..5.jpg
-if (process.argv.includes('--slides')) {
-  [1.4, 4.8, 8.9, 11.8, 14.2].forEach((s, i) => {
-    const png = path.join(tmp, `s${i}.png`);
-    fs.writeFileSync(png, render(frame(s)));
-    execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', png, '-q:v', '4', path.join(ROOT, `assets/ads/wd-${i + 1}.jpg`)]);
-  });
-  console.log('assets/ads/wd-1..5.jpg');
+// --app: uygulama içi animasyonlu reklamın parçaları (src/components/RewardAd.js aynı sahneleri canlı çizer)
+//   assets/ads/wd-shot-01..04.jpg  Word Duel ekran görüntüleri · assets/ads/wd-audio.m4a  videodaki ses
+if (process.argv.includes('--app')) {
+  for (const n of ['01', '02', '03', '04']) {
+    execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', path.join(SHOT_DIR, `${n}.png`), '-vf', 'scale=640:-1', '-q:v', '4', path.join(ROOT, `assets/ads/wd-shot-${n}.jpg`)]);
+  }
+  const wav = path.join(tmp, 'a.wav');
+  fs.writeFileSync(wav, wavOf(audio()));
+  execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-i', wav, '-c:a', 'aac', '-b:a', '64k', path.join(ROOT, 'assets/ads/wd-audio.m4a')]);
+  console.log('assets/ads/wd-shot-01..04.jpg, assets/ads/wd-audio.m4a');
   fs.rmSync(tmp, { recursive: true, force: true });
   process.exit(0);
 }
@@ -201,18 +217,7 @@ for (let i = 0; i < N; i++) {
   fs.writeFileSync(path.join(tmp, `f${String(i).padStart(4, '0')}.png`), render(frame(i / FPS)));
   if (i % 90 === 0) console.log(`kare ${i}/${N} (${((Date.now() - t0) / 1000).toFixed(0)} sn)`);
 }
-// WAV
-const a = audio();
-let peak = 0;
-for (const v of a.buf) peak = Math.max(peak, Math.abs(v));
-const gain = peak > 0.95 ? 0.95 / peak : 1;
-const data = Buffer.alloc(a.buf.length * 2);
-for (let i = 0; i < a.buf.length; i++) data.writeInt16LE(Math.round(Math.max(-1, Math.min(1, a.buf[i] * gain)) * 32767), i * 2);
-const hdr = Buffer.alloc(44);
-hdr.write('RIFF', 0); hdr.writeUInt32LE(36 + data.length, 4); hdr.write('WAVE', 8); hdr.write('fmt ', 12);
-hdr.writeUInt32LE(16, 16); hdr.writeUInt16LE(1, 20); hdr.writeUInt16LE(1, 22); hdr.writeUInt32LE(SR, 24); hdr.writeUInt32LE(SR * 2, 28); hdr.writeUInt16LE(2, 32); hdr.writeUInt16LE(16, 34);
-hdr.write('data', 36); hdr.writeUInt32LE(data.length, 40);
-fs.writeFileSync(path.join(tmp, 'a.wav'), Buffer.concat([hdr, data]));
+fs.writeFileSync(path.join(tmp, 'a.wav'), wavOf(audio()));
 execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(tmp, 'f%04d.png'), '-i', path.join(tmp, 'a.wav'),
   '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '27', '-preset', 'slow', '-c:a', 'aac', '-b:a', '96k', '-shortest', '-movflags', '+faststart', out]);
 console.log(path.relative(ROOT, out), (fs.statSync(out).size / 1e6).toFixed(2), 'MB');

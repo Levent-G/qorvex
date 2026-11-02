@@ -1,25 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, View, Text, Pressable, StyleSheet, Linking, Alert, Animated, Easing } from 'react-native';
+import { Modal, View, Text, Pressable, StyleSheet, Linking, Alert, Animated, Easing, AppState, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAudioPlayer } from 'expo-audio';
 import { ed, efonts } from '../theme';
 import { grantLearnBonus } from '../engine/session';
+import WordDuelAd, { AD_DURATION } from './WordDuelAd';
 
-// Ödüllü reklam: kelime kartı hakkı bitince Word Duel tanıtımı gösterilir. Sahneler video yerine
-// geçişli resimlerdir (scripts/make-ad-wordduel.mjs --slides): yerel video modülü gerekmez.
+// Ödüllü reklam: kelime kartı hakkı bitince Word Duel tanıtımı (WordDuelAd, canlı animasyon + ses) gösterilir.
+// Yeni yerel modül gerektirmez: animasyon React Native'in kendi sürücüsüyle, ses uygulamadaki expo-audio ile.
 // En az REWARD_AT saniye izlenirse bu bulmacada +1 kart hakkı kazanılır.
-const SLIDES = [
-  require('../../assets/ads/wd-1.jpg'),
-  require('../../assets/ads/wd-2.jpg'),
-  require('../../assets/ads/wd-3.jpg'),
-  require('../../assets/ads/wd-4.jpg'),
-  require('../../assets/ads/wd-5.jpg'),
-];
-const SLIDE_MS = 2600;
-const TOTAL = (SLIDES.length * SLIDE_MS) / 1000;
+const AUDIO = require('../../assets/ads/wd-audio.m4a');
 export const REWARD_AT = 10;
 const STORE_URL = 'https://apps.apple.com/app/id6828526837';
 
-/** Soru → video. onReward: ödül kazanılıp kapatıldığında; onClose: vazgeçildiğinde. */
+/** Soru → reklam. onReward: ödül kazanılıp kapatıldığında; onClose: vazgeçildiğinde. */
 function RewardFlow({ onReward, onClose }) {
   const [stage, setStage] = useState('ask');
   return stage === 'ask' ? (
@@ -44,42 +38,72 @@ function RewardFlow({ onReward, onClose }) {
 
 function AdPlayer({ onDone }) {
   const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
   const [time, setTime] = useState(0);
   const earned = time >= REWARD_AT;
-  const ended = time >= TOTAL;
+  const ended = time >= AD_DURATION;
   const earnedRef = useRef(false);
   earnedRef.current = earned;
-  // sahneler: tek bir 0..N ilerleme değeriyle geçişli gösterilir (yerel animasyon sürücüsü)
-  const progress = useRef(new Animated.Value(0)).current;
+  const audio = useAudioPlayer(AUDIO);
+
+  // tek zaman değeri (saniye) bütün sahneleri sürer; durdurulup kaldığı yerden devam edebilir
+  const t = useRef(new Animated.Value(0)).current;
   const paused = useRef(false);
   const started = useRef(Date.now());
   const pausedFor = useRef(0);
   const pauseAt = useRef(0);
   const run = (from) => {
-    Animated.timing(progress, { toValue: SLIDES.length, duration: (SLIDES.length - from) * SLIDE_MS, easing: Easing.linear, useNativeDriver: true }).start();
+    Animated.timing(t, { toValue: AD_DURATION, duration: Math.max(0, AD_DURATION - from) * 1000, easing: Easing.linear, useNativeDriver: true }).start();
   };
   useEffect(() => {
     run(0);
+    try {
+      audio.play();
+    } catch {}
     const id = setInterval(() => {
       if (!paused.current) setTime((Date.now() - started.current - pausedFor.current) / 1000);
     }, 250);
     return () => {
       clearInterval(id);
-      progress.stopAnimation();
+      t.stopAnimation();
+      try {
+        audio.pause();
+      } catch {}
     };
   }, []);
   const pause = () => {
     if (paused.current) return;
     paused.current = true;
     pauseAt.current = Date.now();
-    progress.stopAnimation();
+    t.stopAnimation();
+    try {
+      audio.pause();
+    } catch {}
   };
   const resume = () => {
     if (!paused.current) return;
     paused.current = false;
     pausedFor.current += Date.now() - pauseAt.current;
-    progress.stopAnimation((v) => run(v));
+    t.stopAnimation((v) => {
+      run(v);
+      if (v < AD_DURATION) {
+        try {
+          audio.play();
+        } catch {}
+      }
+    });
   };
+  // App Store'a gidip dönünce kaldığı yerden devam eder
+  const toStore = useRef(false);
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active' && toStore.current) {
+        toStore.current = false;
+        resume();
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   const close = () => {
     if (earnedRef.current) return onDone(true);
@@ -90,37 +114,35 @@ function AdPlayer({ onDone }) {
     ]);
   };
   const openStore = () => {
-    Linking.openURL(STORE_URL).catch(() => {});
+    toStore.current = true;
+    pause();
+    Linking.openURL(STORE_URL).catch(() => resume());
   };
   const left = Math.max(0, Math.ceil(REWARD_AT - time));
+
+  // sahne (1080×1920) üst ve alt şeritlerin arasına sığar; arka plan ekranın tamamını boyar
+  const TOP = insets.top + 70;
+  const BOTTOM = insets.bottom + 82;
+  const scale = Math.min(width / 1080, (height - TOP - BOTTOM) / 1920);
 
   return (
     <Modal animationType="fade" onRequestClose={close} supportedOrientations={['portrait']}>
       <View style={styles.player}>
-        {SLIDES.map((src, i) => {
-          const last = i === SLIDES.length - 1;
-          const opacity = progress.interpolate({
-            inputRange: i === 0 ? [0, 0.85, 1] : last ? [i - 0.15, i, SLIDES.length] : [i - 0.15, i, i + 0.85, i + 1],
-            outputRange: i === 0 ? [1, 1, 0] : last ? [0, 1, 1] : [0, 1, 1, 0],
-            extrapolate: 'clamp',
-          });
-          const scale = progress.interpolate({ inputRange: [i, i + 1], outputRange: [1, 1.05], extrapolate: 'clamp' });
-          return <Animated.Image key={i} source={src} resizeMode="contain" style={[StyleSheet.absoluteFill, { opacity, transform: [{ scale }] }]} />;
-        })}
+        <WordDuelAd t={t} scale={scale} top={TOP} bottom={BOTTOM} onStore={openStore} />
         <View style={[styles.top, { paddingTop: insets.top + 8 }]}>
           <View style={styles.tag}>
             <Text style={styles.tagText}>REKLAM · WORD DUEL</Text>
           </View>
           <View style={{ flex: 1 }} />
           <View style={[styles.pill, earned && styles.pillDone]}>
-            <Text style={[styles.pillText, earned && styles.pillTextDone]}>{earned ? '+1 hak kazandın' : `Ödüle ${left} sn`}</Text>
+            <Text style={styles.pillText}>{earned ? '+1 hak kazandın' : `Ödüle ${left} sn`}</Text>
           </View>
           <Pressable onPress={close} hitSlop={12} style={styles.close} accessibilityLabel="Kapat">
             <Text style={styles.closeText}>✕</Text>
           </Pressable>
         </View>
         {/* ödüle kalan süre çubuğu */}
-        <View style={[styles.track, { top: insets.top + 60 }]}>
+        <View style={[styles.track, { top: insets.top + 52 }]}>
           <View style={[styles.fill, { width: `${Math.min(100, (time / REWARD_AT) * 100)}%` }]} />
         </View>
         <View style={[styles.bottom, { paddingBottom: insets.bottom + 16 }]}>
@@ -168,21 +190,20 @@ const styles = StyleSheet.create({
   primaryText: { fontFamily: efonts.bodyBold, fontSize: 16, color: ed.onPrimary },
   secondary: { alignItems: 'center', paddingVertical: 12, marginTop: 4 },
   secondaryText: { fontFamily: efonts.bodySemi, fontSize: 15, color: ed.textSoft },
-  player: { flex: 1, backgroundColor: '#000' },
+  player: { flex: 1, backgroundColor: '#F8FAFC' },
   top: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, gap: 8 },
   tag: { backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
   tagText: { fontFamily: efonts.labelBold, fontSize: 11, letterSpacing: 0.8, color: '#FFFFFF' },
   pill: { backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
   pillDone: { backgroundColor: '#36B985' },
   pillText: { fontFamily: efonts.bodyBold, fontSize: 13, color: '#FFFFFF' },
-  pillTextDone: { color: '#FFFFFF' },
   close: { width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(0,0,0,0.55)', alignItems: 'center', justifyContent: 'center' },
   closeText: { color: '#FFFFFF', fontSize: 16, fontFamily: efonts.bodyBold },
-  track: { position: 'absolute', left: 14, right: 14, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.25)', overflow: 'hidden' },
+  track: { position: 'absolute', left: 14, right: 14, height: 4, borderRadius: 2, backgroundColor: 'rgba(32,43,60,0.15)', overflow: 'hidden' },
   fill: { height: 4, backgroundColor: '#36B985' },
-  bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20, gap: 10 },
-  store: { backgroundColor: '#FFFFFF', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
-  storeText: { fontFamily: efonts.bodyBold, fontSize: 16, color: '#2A9D70' },
-  cont: { backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 14, paddingVertical: 13, alignItems: 'center' },
+  bottom: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 20, flexDirection: 'row', gap: 10 },
+  store: { flex: 1, backgroundColor: '#36B985', borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
+  storeText: { fontFamily: efonts.bodyBold, fontSize: 16, color: '#FFFFFF' },
+  cont: { flex: 1, backgroundColor: '#202B3C', borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
   contText: { fontFamily: efonts.bodyBold, fontSize: 15, color: '#FFFFFF' },
 });
