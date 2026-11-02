@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, View, Text, Pressable, StyleSheet, Linking, Alert, Animated, Easing, AppState, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { ed, efonts } from '../theme';
 import { grantLearnBonus } from '../engine/session';
 import WordDuelAd, { AD_DURATION } from './WordDuelAd';
@@ -45,40 +45,63 @@ function AdPlayer({ onDone }) {
   const earnedRef = useRef(false);
   earnedRef.current = earned;
   const audio = useAudioPlayer(AUDIO);
+  const audioStatus = useAudioPlayerStatus(audio);
 
-  // tek zaman değeri (saniye) bütün sahneleri sürer; durdurulup kaldığı yerden devam edebilir
+  // tek zaman değeri (saniye) bütün sahneleri sürer; durdurulup kaldığı yerden devam edebilir.
+  // Ses dosyası yüklenmeden başlarsa ses geride kalır: animasyon sesin hazır olmasını bekler
+  // (en fazla 1 sn), sonra ikisi aynı anda başlar ve ses her saniye animasyona göre düzeltilir.
   const t = useRef(new Animated.Value(0)).current;
+  const begun = useRef(false);
   const paused = useRef(false);
-  const started = useRef(Date.now());
+  const started = useRef(0);
   const pausedFor = useRef(0);
   const pauseAt = useRef(0);
+  const elapsed = () => (Date.now() - started.current - pausedFor.current) / 1000;
+  const safe = (fn) => {
+    try {
+      fn();
+    } catch {}
+  };
+  const playAudioAt = (sec) => {
+    if (sec >= AD_DURATION - 0.1) return;
+    safe(() => audio.seekTo(sec).then(() => !paused.current && safe(() => audio.play())).catch(() => {}));
+  };
   const run = (from) => {
     Animated.timing(t, { toValue: AD_DURATION, duration: Math.max(0, AD_DURATION - from) * 1000, easing: Easing.linear, useNativeDriver: true }).start();
   };
-  useEffect(() => {
+  const begin = () => {
+    if (begun.current) return;
+    begun.current = true;
+    started.current = Date.now();
     run(0);
-    try {
-      audio.play();
-    } catch {}
+    safe(() => audio.play());
+  };
+  useEffect(() => {
+    if (audioStatus?.isLoaded) begin();
+  }, [audioStatus?.isLoaded]);
+  useEffect(() => {
+    const fallback = setTimeout(begin, 1000); // ses yüklenemezse sessiz başla
     const id = setInterval(() => {
-      if (!paused.current) setTime((Date.now() - started.current - pausedFor.current) / 1000);
+      if (!begun.current || paused.current) return;
+      const now = elapsed();
+      setTime(now);
+      // kayma düzeltmesi: ses animasyondan 0,2 sn'den fazla saparsa yerine çekilir
+      const at = audio.currentTime;
+      if (now < AD_DURATION - 0.3 && typeof at === 'number' && Math.abs(at - now) > 0.2) safe(() => audio.seekTo(now));
     }, 250);
     return () => {
+      clearTimeout(fallback);
       clearInterval(id);
       t.stopAnimation();
-      try {
-        audio.pause();
-      } catch {}
+      safe(() => audio.pause());
     };
   }, []);
   const pause = () => {
-    if (paused.current) return;
+    if (paused.current || !begun.current) return;
     paused.current = true;
     pauseAt.current = Date.now();
     t.stopAnimation();
-    try {
-      audio.pause();
-    } catch {}
+    safe(() => audio.pause());
   };
   const resume = () => {
     if (!paused.current) return;
@@ -86,11 +109,7 @@ function AdPlayer({ onDone }) {
     pausedFor.current += Date.now() - pauseAt.current;
     t.stopAnimation((v) => {
       run(v);
-      if (v < AD_DURATION) {
-        try {
-          audio.play();
-        } catch {}
-      }
+      playAudioAt(v);
     });
   };
   // App Store'a gidip dönünce kaldığı yerden devam eder

@@ -180,7 +180,6 @@ Kelime kaynakları: New General Service List (CC BY-SA 4.0), CEFR-J Wordlist (TU
 **Türkçe**
 
 ```
-• Uygulamanın açılmaması sorunu giderildi
 • Yaklaşık 1.000 yeni kelime: toplam 7.300+ kelime
 • Kelime kartı hakkın bitince kısa bir tanıtım izleyerek +1 hak kazan
 ```
@@ -188,7 +187,6 @@ Kelime kaynakları: New General Service List (CC BY-SA 4.0), CEFR-J Wordlist (TU
 **English**
 
 ```
-• Fixed an issue where the app could close on launch
 • About 1,000 new words: 7,300+ words in total
 • Out of word cards? Watch a short promo to earn one more
 ```
